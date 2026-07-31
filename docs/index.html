@@ -168,15 +168,50 @@
   /* --- شیت انتخاب مبدأ/مقصد --- */
   .picker-search {
     width: 100%;
-    padding: 10px 12px;
+    padding: 10px 36px 10px 12px;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
     font-size: 13.5px;
-    margin-bottom: 8px;
     background: #f7f7f9;
   }
   .picker-search:focus { outline: none; border-color: #4b3f72; background: white; }
-  .picker-list { border-top: 1px solid #eee; }
+  .picker-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: #e6e1f2;
+    color: #7a6da8;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .picker-recent { margin-top: 8px; }
+  .picker-recent-label { font-size: 10.5px; font-weight: 700; color: #a49bc2; margin-bottom: 6px; }
+  .picker-recent-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .picker-recent-chip {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #4b3f72;
+    background: #f0edf9;
+    border-radius: 14px;
+    padding: 5px 11px;
+    cursor: pointer;
+  }
+  .picker-recent-chip:active { background: #e2dbf3; }
+  .picker-item-text mark {
+    background: transparent;
+    color: #ff4d8d;
+    font-weight: 800;
+  }
+  .picker-list { border-top: 1px solid #eee; margin-top: 6px; }
   .picker-item {
     display: flex;
     align-items: center;
@@ -597,6 +632,37 @@
   /* --- کارت پرواز به‌سبک بلیط بوردینگ‌پس --- */
   .results-list { display: flex; flex-direction: column; gap: 12px; }
 
+  /* --- کارت‌های اسکلتی حین بارگذاری داده --- */
+  .skeleton-card {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: 0 3px 14px rgba(43,32,74,0.06);
+    border: 1px solid #f1eef8;
+    margin-bottom: 12px;
+  }
+  .sk-row { display: flex; align-items: center; gap: 10px; }
+  .sk-circle {
+    flex: none;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #f0edf9 25%, #e6e1f2 37%, #f0edf9 63%);
+    background-size: 400% 100%;
+    animation: skShimmer 1.4s ease infinite;
+  }
+  .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .sk-line {
+    height: 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #f0edf9 25%, #e6e1f2 37%, #f0edf9 63%);
+    background-size: 400% 100%;
+    animation: skShimmer 1.4s ease infinite;
+  }
+  @keyframes skShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+  }
+
   .flight-card {
     position: relative;
     background: white;
@@ -606,8 +672,13 @@
     border: 1px solid #f1eef8;
     cursor: pointer;
     transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+    animation: cardFadeIn .32s ease backwards;
   }
   .flight-card:active { transform: scale(0.98); background: #faf9fd; }
+  @keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .fc-change {
     position: absolute;
@@ -685,6 +756,19 @@
   }
   .fc-time-label { font-size: 10px; color: #a49bc2; font-weight: 600; }
 
+  .fc-route-sub {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #a49bc2;
+    font-weight: 600;
+    margin-top: 7px;
+    padding-right: 48px;
+  }
+  .fc-route-sub-icon { flex: none; font-size: 10px; transform: rotate(180deg) scaleY(-1); opacity: .8; }
+  .fc-route-sub-dot { margin: 0 2px; color: #d8d3ea; }
+
   /* خط برش‌خورده‌ی بلیط با دو دایره‌ی کنج، شبیه بلیط پرواز واقعی */
   .fc-stub-row {
     position: relative;
@@ -713,32 +797,52 @@
   .fc-bottom-right { display: flex; align-items: center; gap: 10px; flex: none; }
   .fc-spark { flex: none; width: 54px; height: 26px; display: flex; align-items: center; }
   .fc-spark svg { display: block; }
-  .fc-price { flex: none; text-align: left; display: flex; align-items: baseline; gap: 4px; }
+  .fc-price-col { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .fc-price { display: flex; align-items: baseline; gap: 4px; }
   .fc-price-value { font-size: 15.5px; font-weight: 800; color: #1a7a3d; direction: ltr; }
   .fc-price-currency { font-size: 10.5px; color: #9aa89f; font-weight: 600; }
+  .fc-seats-low { font-size: 9.5px; font-weight: 700; color: #d9455f; }
 
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(20,14,36,0.5);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     display: flex;
     align-items: flex-end;
     justify-content: center;
     z-index: 100;
+    animation: overlayFade .22s ease;
   }
+  .modal-overlay.closing { animation: overlayFadeOut .18s ease forwards; }
+  @keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
   .modal-card {
     background: white;
     width: 100%;
     max-width: 480px;
-    border-radius: 16px 16px 0 0;
-    padding: 16px;
-    max-height: 82vh;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 16px 16px;
+    max-height: 84vh;
     overflow-y: auto;
-    animation: slideUp .15s ease-out;
+    animation: sheetUp .32s cubic-bezier(.16,1,.3,1);
   }
-  @keyframes slideUp {
-    from { transform: translateY(16px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  .modal-overlay.closing .modal-card { animation: sheetDown .18s cubic-bezier(.4,0,1,1) forwards; }
+  @keyframes sheetUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  @keyframes sheetDown {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+  }
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 3px;
+    background: #e6e1f2;
+    margin: 2px auto 12px;
   }
   .modal-header {
     display: flex;
@@ -890,7 +994,11 @@
 </section>
 
 <main>
-  <div id="loading">در حال دریافت داده...</div>
+  <div id="loading">
+    <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:55%;"></div><div class="sk-line" style="width:35%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
+    <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:45%;"></div><div class="sk-line" style="width:30%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
+    <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:60%;"></div><div class="sk-line" style="width:40%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
+  </div>
   <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
   <div class="result-count" id="resultCount"></div>
   <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
@@ -908,6 +1016,13 @@ let state = {
   airlines: new Set(),
   cabins: new Set(),
 };
+
+// ---- بستن نرم یک شیت/مودال: قبل از حذف از DOM، انیمیشن اسلاید به پایین رو پخش می‌کنه ----
+function closeSheet(overlay) {
+  if (!overlay || overlay.classList.contains('closing')) return;
+  overlay.classList.add('closing');
+  overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+}
 
 // ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
 const CABIN_META = {
@@ -999,6 +1114,25 @@ function toPriceNumber(str) {
 function formatPriceShort(n) {
   if (!isFinite(n)) return '—';
   return n.toLocaleString('en-US');
+}
+
+// ---- مدت پرواز از روی ساعت حرکت و رسیدن (فرض عبور از نیمه‌شب در صورت منفی‌شدن اختلاف) ----
+function formatDuration(dep, arr) {
+  const dm = /^(\d{1,2}):(\d{2})/.exec(dep || '');
+  const am = /^(\d{1,2}):(\d{2})/.exec(arr || '');
+  if (!dm || !am) return null;
+  let mins = (parseInt(am[1], 10) * 60 + parseInt(am[2], 10)) - (parseInt(dm[1], 10) * 60 + parseInt(dm[2], 10));
+  if (mins < 0) mins += 24 * 60;
+  if (mins <= 0) return null;
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return (h > 0 ? toFaDigits(h) + 'س ' : '') + (m > 0 ? toFaDigits(m) + 'د' : '');
+}
+
+// ---- تعداد صندلی باقی‌مانده، وقتی خیلی کمه به‌عنوان نشونه‌ی کمبود نشون داده می‌شه ----
+function getLowSeatBadge(f) {
+  const n = Math.floor(parseFloat(f.seat_count));
+  if (!isFinite(n) || n <= 0 || n > 4) return '';
+  return `<span class="fc-seats-low">${toFaDigits(n)} صندلی باقی‌مونده</span>`;
 }
 
 // ---- تاریخچه‌ی قیمت یک پرواز مشخص، مرتب‌شده بر اساس زمان ثبت (پایه‌ی مشترک برای نشان تغییر، اسپارک‌لاین و مودال) ----
@@ -1122,6 +1256,28 @@ function trySwapRoute() {
 }
 
 // شیت پایین‌صفحه‌ی انتخاب مبدأ یا مقصد، با جستجوی زنده
+// ---- مسیرهای اخیر: برای نمایش میان‌بر بالای شیت انتخاب مبدأ/مقصد ----
+const RECENT_ROUTES_KEY = 'fareMonitor.recentRoutes';
+function getRecentRoutes() {
+  try { return JSON.parse(localStorage.getItem(RECENT_ROUTES_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function pushRecentRoute(raw) {
+  try {
+    let list = getRecentRoutes().filter(r => r !== raw);
+    list.unshift(raw);
+    localStorage.setItem(RECENT_ROUTES_KEY, JSON.stringify(list.slice(0, 6)));
+  } catch (e) { /* localStorage در دسترس نبود، بی‌خیال می‌شیم */ }
+}
+
+// برجسته‌کردن بخشی از متن که با جستجو مچ شده
+function highlightMatch(text, query) {
+  if (!query) return text;
+  const idx = text.indexOf(query);
+  if (idx === -1) return text;
+  return text.slice(0, idx) + '<mark>' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+}
+
 function openRoutePicker(type) {
   const meta = currentRouteMeta();
   const seen = new Set();
@@ -1140,10 +1296,11 @@ function openRoutePicker(type) {
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
-  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(overlay); };
 
   overlay.innerHTML = `
     <div class="modal-card">
+      <div class="sheet-handle"></div>
       <div class="modal-header">
         <div>
           <div class="modal-title">${type === 'origin' ? 'انتخاب مبدأ' : 'انتخاب مقصد'}</div>
@@ -1151,19 +1308,61 @@ function openRoutePicker(type) {
         </div>
         <button class="modal-close">✕</button>
       </div>
-      <input type="text" class="picker-search" id="pickerSearchInput" placeholder="جستجوی شهر یا فرودگاه...">
+      <div class="search-input-wrap">
+        <input type="text" class="picker-search" id="pickerSearchInput" placeholder="جستجوی شهر یا فرودگاه...">
+        <button type="button" class="picker-search-clear" id="pickerSearchClear" style="display:none;">✕</button>
+      </div>
+      <div class="picker-recent" id="pickerRecent"></div>
       <div class="picker-list" id="pickerList"></div>
     </div>`;
 
-  overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+  overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
   document.body.appendChild(overlay);
 
   const listEl = overlay.querySelector('#pickerList');
+  const recentEl = overlay.querySelector('#pickerRecent');
   const searchInput = overlay.querySelector('#pickerSearchInput');
+  const clearBtn = overlay.querySelector('#pickerSearchClear');
+
+  function selectOption(raw) {
+    const picked = routeMeta.find(r => r.raw === raw);
+    if (type === 'origin') {
+      // با انتخاب مبدأ جدید، اولین مقصد موجود برای اون فعال می‌شه
+      state.route = (routeMeta.find(r => r.from === picked.from) || picked).raw;
+    } else {
+      state.route = picked.raw;
+    }
+    pushRecentRoute(state.route);
+    closeSheet(overlay);
+    updateRouteFields();
+    buildDateCards();
+    render();
+  }
+
+  function renderRecent() {
+    if (!type || searchInput.value.trim()) { recentEl.innerHTML = ''; return; }
+    const recentRaws = getRecentRoutes();
+    const chips = recentRaws
+      .map(raw => routeMeta.find(r => r.raw === raw))
+      .filter(Boolean)
+      .filter(r => type === 'origin' ? true : r.from === meta.from)
+      .slice(0, 6);
+    if (chips.length === 0) { recentEl.innerHTML = ''; return; }
+    recentEl.innerHTML = '<div class="picker-recent-label">اخیر</div>' +
+      '<div class="picker-recent-chips">' +
+      chips.map(r => `<span class="picker-recent-chip" data-raw="${r.raw}">${type === 'origin' ? (r.from || r.raw) : (r.to || r.raw)}</span>`).join('') +
+      '</div>';
+    recentEl.querySelectorAll('.picker-recent-chip').forEach(chip => {
+      chip.onclick = () => selectOption(chip.dataset.raw);
+    });
+  }
 
   function renderPickerList(filterText) {
     const f = (filterText || '').trim();
     const filtered = f ? options.filter(o => o.label.includes(f)) : options;
+
+    clearBtn.style.display = f ? 'flex' : 'none';
+    renderRecent();
 
     listEl.innerHTML = filtered.length ? filtered.map(o => {
       const isSelected = type === 'origin'
@@ -1171,28 +1370,21 @@ function openRoutePicker(type) {
         : o.matchRoute.raw === state.route;
       return `<div class="picker-item${isSelected ? ' selected' : ''}" data-raw="${o.matchRoute.raw}">
         <span class="picker-item-icon">${type === 'origin' ? '✈' : '📍'}</span>
-        <span class="picker-item-text">${o.label}</span>
+        <span class="picker-item-text">${highlightMatch(o.label, f)}</span>
         <span class="picker-item-check">✓</span>
       </div>`;
     }).join('') : '<div class="picker-empty">موردی پیدا نشد</div>';
 
     listEl.querySelectorAll('.picker-item').forEach(item => {
-      item.onclick = () => {
-        const raw = item.dataset.raw;
-        const picked = routeMeta.find(r => r.raw === raw);
-        if (type === 'origin') {
-          // با انتخاب مبدأ جدید، اولین مقصد موجود برای اون فعال می‌شه
-          state.route = (routeMeta.find(r => r.from === picked.from) || picked).raw;
-        } else {
-          state.route = picked.raw;
-        }
-        overlay.remove();
-        updateRouteFields();
-        buildDateCards();
-        render();
-      };
+      item.onclick = () => selectOption(item.dataset.raw);
     });
   }
+
+  clearBtn.onclick = () => {
+    searchInput.value = '';
+    renderPickerList('');
+    searchInput.focus();
+  };
 
   renderPickerList('');
   searchInput.addEventListener('input', (e) => renderPickerList(e.target.value));
@@ -1386,8 +1578,10 @@ function render() {
 
   const list = document.getElementById('resultsList');
   list.innerHTML = '';
-  rows.forEach(f => {
-    list.appendChild(buildFlightCard(f, getLatestChange(f)));
+  rows.forEach((f, idx) => {
+    const card = buildFlightCard(f, getLatestChange(f));
+    card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
+    list.appendChild(card);
   });
 
   document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
@@ -1417,6 +1611,8 @@ function buildChangeBadge(change) {
 // ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
 function buildFlightCard(f, change) {
   const sparkHtml = buildSparkline(getHistoryPoints(f), 54, 26, { mini: true });
+  const duration = formatDuration(f.dep_time, f.arr_time);
+  const seatsLowHtml = getLowSeatBadge(f);
   const card = document.createElement('div');
   card.className = 'flight-card';
   card.innerHTML = `
@@ -1437,6 +1633,10 @@ function buildFlightCard(f, change) {
         <span class="fc-time-label">ساعت حرکت</span>
       </div>
     </div>
+    ${f.arr_time ? `<div class="fc-route-sub">
+      <span class="fc-route-sub-icon">✈</span>
+      رسیدن <bdi style="direction:ltr">${f.arr_time}</bdi>${duration ? `<span class="fc-route-sub-dot">·</span>مدت ${duration}` : ''}
+    </div>` : ''}
     <div class="fc-stub-row"></div>
     <div class="fc-bottom">
       <div class="fc-seller">
@@ -1448,9 +1648,12 @@ function buildFlightCard(f, change) {
       </div>
       <div class="fc-bottom-right">
         ${sparkHtml ? `<span class="fc-spark">${sparkHtml}</span>` : ''}
-        <div class="fc-price">
-          <span class="fc-price-value">${f.adult_price || ''}</span>
-          <span class="fc-price-currency">تومان</span>
+        <div class="fc-price-col">
+          <div class="fc-price">
+            <span class="fc-price-value">${f.adult_price || ''}</span>
+            <span class="fc-price-currency">تومان</span>
+          </div>
+          ${seatsLowHtml}
         </div>
       </div>
     </div>`;
@@ -1553,10 +1756,11 @@ function openHistoryModal(f) {
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
-  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(overlay); };
 
   overlay.innerHTML = `
     <div class="modal-card">
+      <div class="sheet-handle"></div>
       <div class="modal-header">
         <div>
           <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
@@ -1571,7 +1775,7 @@ function openHistoryModal(f) {
       </div>
     </div>`;
 
-  overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+  overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
   document.body.appendChild(overlay);
 }
 
