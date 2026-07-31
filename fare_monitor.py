@@ -1,6 +1,10 @@
 """
-Fare Monitor — رصد نرخ پرواز تهران↔استانبول
+Fare Monitor — رصد نرخ پروازهای چندمسیره (تهران↔استانبول، تهران↔دبی، ...)
 با استفاده از endpoint واقعی موبایل سپهر۳۶۰ که با DevTools پیدا شد.
+
+مسیرها دیگه این‌جا هاردکد نیستن؛ از جدول routes روی D1 خونده می‌شن
+(از طریق GET /routes رو Worker). اضافه/غیرفعال کردن مسیر یعنی یه ردیف
+تو دیتابیس یا از پنل routes.html، نه ادیت این فایل.
 
 ===========================================================
 معماری (نسخه‌ی جدید)
@@ -49,15 +53,6 @@ CF_HEADERS = {
     "Authorization": f"Bearer {CF_SECRET}",
     "Content-Type": "application/json",
 }
-
-# ---- بازه‌ی تاریخ میلادی مورد نظر برای رصد ----
-START_DATE = "2026-08-01"
-END_DATE   = "2026-08-11"
-
-ROUTES = [
-    {"origin": "THR,IKA,PYK", "destination": "TEQ,SAW,IST", "label": "تهران-استانبول"},
-    {"origin": "TEQ,SAW,IST", "destination": "THR,IKA,PYK", "label": "استانبول-تهران"},
-]
 
 DELAY_BETWEEN_REQUESTS_SEC = 4
 
@@ -191,11 +186,19 @@ def fetch_via_api(origin, destination, date_str_greg, session):
 # ===========================================================
 # ارتباط با Cloudflare Worker
 # ===========================================================
-def get_due_targets(session):
+def get_active_routes(session):
+    """مسیرهای فعال رو از جدول routes (روی D1) می‌گیره."""
+    resp = session.get(f"{WORKER_URL}/routes", headers=CF_HEADERS, timeout=20)
+    resp.raise_for_status()
+    routes = resp.json().get("routes", [])
+    return [r for r in routes if r.get("active")]
+
+
+def get_due_targets(session, routes):
     candidates = [
         {"route": route["label"], "flight_date": date_str}
-        for route in ROUTES
-        for date_str in daterange(START_DATE, END_DATE)
+        for route in routes
+        for date_str in daterange(route["start_date"], route["end_date"])
     ]
     resp = session.post(
         f"{WORKER_URL}/due", headers=CF_HEADERS,
@@ -231,9 +234,14 @@ def export_json(session, kind, out_path):
 # ===========================================================
 def run_snapshot():
     session = requests.Session()
-    route_map = {r["label"]: r for r in ROUTES}
 
-    due = get_due_targets(session)
+    routes = get_active_routes(session)
+    if not routes:
+        print("هیچ مسیر فعالی تو جدول routes تعریف نشده — رد شدن از این اجرا")
+        return
+    route_map = {r["label"]: r for r in routes}
+
+    due = get_due_targets(session, routes)
     if not due:
         print("هیچ پروازی الان نوبتش نرسیده — رد شدن از این اجرا")
         return
