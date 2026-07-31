@@ -245,10 +245,19 @@ def export_json(session, kind, out_path):
 def run_snapshot():
     session = requests.Session()
 
-    # جیتر شروع: تاخیر رندوم قبل از هر کاری، تا زمان دقیق اجرا هر بار فرق کنه
-    startup_delay = random.uniform(0, STARTUP_JITTER_MAX_SEC)
-    print(f"جیتر شروع: {startup_delay:.1f} ثانیه صبر می‌کنیم...")
-    time.sleep(startup_delay)
+    # درخواست دستی: از routes.html یا از تب Actions با ورودی force_route/force_date
+    # اجرا شده — این یکی مورد بدون توجه به due-check و بدون جیتر، فوری رصد می‌شه.
+    force_route = os.environ.get("FORCE_ROUTE", "").strip()
+    force_date = os.environ.get("FORCE_DATE", "").strip()
+    is_forced = bool(force_route and force_date)
+
+    if is_forced:
+        print(f"درخواست دستی/فوری: {force_route} — {force_date} — بدون جیتر شروع")
+    else:
+        # جیتر شروع: تاخیر رندوم قبل از هر کاری، تا زمان دقیق اجرا هر بار فرق کنه
+        startup_delay = random.uniform(0, STARTUP_JITTER_MAX_SEC)
+        print(f"جیتر شروع: {startup_delay:.1f} ثانیه صبر می‌کنیم...")
+        time.sleep(startup_delay)
 
     routes = get_active_routes(session)
     if not routes:
@@ -257,6 +266,17 @@ def run_snapshot():
     route_map = {r["label"]: r for r in routes}
 
     due = get_due_targets(session, routes)
+
+    if is_forced:
+        if force_route not in route_map:
+            print(f"مسیر «{force_route}» فعال/موجود نیست تو جدول routes — درخواست دستی نادیده گرفته شد")
+        else:
+            # اگه از قبل تو due بود که هیچ، وگرنه با وجود اینکه due-check معمولی
+            # می‌گفت هنوز نوبتش نیست، اول صف می‌ذاریمش تا حتماً همین اجرا رصد بشه
+            due = [d for d in due if not (d["route"] == force_route and d["flight_date"] == force_date)]
+            due.insert(0, {"route": force_route, "flight_date": force_date})
+            print(f"«{force_route} — {force_date}» به‌صورت فوری اول صف قرار گرفت")
+
     if not due:
         print("هیچ پروازی الان نوبتش نرسیده — رد شدن از این اجرا")
         return
