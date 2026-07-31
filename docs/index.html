@@ -449,23 +449,33 @@
     transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
   }
   .flight-card:active { transform: scale(0.98); background: #faf9fd; }
-  .flight-card.is-cheapest {
-    border-color: #cdf0da;
-    box-shadow: 0 4px 18px rgba(26,122,61,0.14);
-  }
 
-  .fc-ribbon {
+  .fc-change {
     position: absolute;
     top: 12px;
     left: 0;
-    background: linear-gradient(135deg, #1a7a3d, #33b06b);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: white;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 800;
     letter-spacing: .01em;
     padding: 4px 10px 4px 12px;
     border-radius: 8px 0 0 8px;
+  }
+  .fc-change-icon { width: 13px; height: 13px; flex: none; }
+  .fc-change.up {
+    background: linear-gradient(135deg, #b3243f, #d9455f);
+    box-shadow: 0 2px 8px rgba(217,69,95,0.35);
+  }
+  .fc-change.down {
+    background: linear-gradient(135deg, #1a7a3d, #33b06b);
     box-shadow: 0 2px 8px rgba(26,122,61,0.35);
+  }
+  .fc-change.flat {
+    background: linear-gradient(135deg, #7d7690, #9b93b3);
+    box-shadow: 0 2px 8px rgba(125,118,144,0.3);
   }
 
   .fc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -667,9 +677,9 @@
       مرتب‌سازی
     </div>
     <div class="sort-segment" id="sortSegment">
-      <button type="button" class="sort-option active" data-value="price_asc">ارزان‌ترین</button>
-      <button type="button" class="sort-option" data-value="price_desc">گران‌ترین</button>
-      <button type="button" class="sort-option" data-value="time_asc">ساعت پرواز</button>
+      <button type="button" class="sort-option active" data-value="time_asc">ساعت پرواز</button>
+      <button type="button" class="sort-option" data-value="change_desc">بیشترین افزایش</button>
+      <button type="button" class="sort-option" data-value="change_asc">بیشترین کاهش</button>
     </div>
   </div>
 
@@ -710,7 +720,7 @@ let state = {
   route: null,
   date: null,
   flightSearch: '',
-  sort: 'price_asc',
+  sort: 'time_asc',
   airlines: new Set(),
   cabins: new Set(),
 };
@@ -805,6 +815,21 @@ function toPriceNumber(str) {
 function formatPriceShort(n) {
   if (!isFinite(n)) return '—';
   return n.toLocaleString('en-US');
+}
+
+// ---- تغییر نرخ یک پرواز نسبت به آخرین ثبت قبلی (برای نمایش افزایش/کاهش، نه رتبه‌بندی ارزان/گران) ----
+function getLatestChange(f) {
+  const cabinKey = normalizeCabin(f.cabin);
+  const points = allHistory
+    .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
+                 h.flight_no === f.flight_no && h.airline === f.airline &&
+                 normalizeCabin(h.cabin) === cabinKey &&
+                 (h.seller || '') === (f.seller || ''))
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+  if (points.length < 2) return null;
+  const prev = points[points.length - 2];
+  const cur = points[points.length - 1];
+  return { diff: cur.price - prev.price, prevPrice: prev.price, curPrice: cur.price };
 }
 
 async function load() {
@@ -1093,19 +1118,24 @@ function render() {
     rows = rows.filter(f => state.cabins.has(normalizeCabin(f.cabin)));
   }
 
-  if (state.sort === 'price_asc') {
-    rows.sort((a, b) => toPriceNumber(a.adult_price) - toPriceNumber(b.adult_price));
-  } else if (state.sort === 'price_desc') {
-    rows.sort((a, b) => toPriceNumber(b.adult_price) - toPriceNumber(a.adult_price));
+  if (state.sort === 'change_desc') {
+    rows.sort((a, b) => {
+      const ca = getLatestChange(a), cb = getLatestChange(b);
+      return (cb ? cb.diff : -Infinity) - (ca ? ca.diff : -Infinity);
+    });
+  } else if (state.sort === 'change_asc') {
+    rows.sort((a, b) => {
+      const ca = getLatestChange(a), cb = getLatestChange(b);
+      return (ca ? ca.diff : Infinity) - (cb ? cb.diff : Infinity);
+    });
   } else {
     rows.sort((a, b) => (a.dep_time || '').localeCompare(b.dep_time || ''));
   }
 
   const list = document.getElementById('resultsList');
   list.innerHTML = '';
-  const cheapest = rows.length ? Math.min(...rows.map(f => toPriceNumber(f.adult_price))) : null;
   rows.forEach(f => {
-    list.appendChild(buildFlightCard(f, cheapest !== null && toPriceNumber(f.adult_price) === cheapest));
+    list.appendChild(buildFlightCard(f, getLatestChange(f)));
   });
 
   document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
@@ -1113,12 +1143,30 @@ function render() {
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
 }
 
+// ---- نشان تغییر نرخ: افزایش/کاهش/بدون تغییر با آیکون مدرن روند ----
+const TREND_ICON_UP = '<svg class="fc-change-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
+const TREND_ICON_DOWN = '<svg class="fc-change-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>';
+const TREND_ICON_FLAT = '<svg class="fc-change-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>';
+
+function buildChangeBadge(change) {
+  if (!change || change.diff === 0) {
+    if (change && change.diff === 0) {
+      return `<span class="fc-change flat">${TREND_ICON_FLAT}بدون تغییر</span>`;
+    }
+    return '';
+  }
+  if (change.diff > 0) {
+    return `<span class="fc-change up">${TREND_ICON_UP}افزایش ${formatPriceShort(change.diff)}</span>`;
+  }
+  return `<span class="fc-change down">${TREND_ICON_DOWN}کاهش ${formatPriceShort(Math.abs(change.diff))}</span>`;
+}
+
 // ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
-function buildFlightCard(f, isCheapest) {
+function buildFlightCard(f, change) {
   const card = document.createElement('div');
-  card.className = 'flight-card' + (isCheapest ? ' is-cheapest' : '');
+  card.className = 'flight-card';
   card.innerHTML = `
-    ${isCheapest ? '<span class="fc-ribbon">ارزان‌ترین</span>' : ''}
+    ${buildChangeBadge(change)}
     <div class="fc-top">
       <div class="fc-airline">
         <span class="fc-logo">
