@@ -50,23 +50,37 @@ async function handleDue(request, env) {
   }
 
   const now = new Date();
-  const due = [];
 
+  // به‌جای یه SELECT جدا برای هر کاندید (که با ~۴۰-۵۰ کاندید سریالی
+  // می‌شد و گاهی از ۲۰ ثانیه تایم‌اوت کلاینت پایتون رد می‌شد)، همه‌ی
+  // route های دخیل رو یه‌جا با IN (...) می‌خونیم و بقیه‌ی منطق (تشخیص
+  // due بودن بر اساس DTD) رو تو خود جاوااسکریپت انجام می‌دیم؛ یعنی کل
+  // /due همیشه دقیقاً یک رفت‌وبرگشت به D1 داره، صرف‌نظر از تعداد کاندیدها.
+  const routes = [...new Set(candidates.map((c) => c.route))];
+  const placeholders = routes.map(() => "?").join(",");
+  const { results } = await env.DB.prepare(
+    `SELECT route, flight_date, last_checked_at FROM check_state WHERE route IN (${placeholders})`
+  )
+    .bind(...routes)
+    .all();
+
+  const stateMap = new Map();
+  for (const row of results) {
+    stateMap.set(`${row.route}|${row.flight_date}`, row.last_checked_at);
+  }
+
+  const due = [];
   for (const c of candidates) {
     const flightDate = new Date(c.flight_date + "T00:00:00Z");
     const dtdDays = Math.floor((flightDate - now) / 86400000);
     if (dtdDays < 0) continue; // پرواز گذشته
 
     const interval = tierIntervalHours(dtdDays);
-    const row = await env.DB.prepare(
-      "SELECT last_checked_at FROM check_state WHERE route = ? AND flight_date = ?"
-    )
-      .bind(c.route, c.flight_date)
-      .first();
+    const lastCheckedAt = stateMap.get(`${c.route}|${c.flight_date}`);
 
     let isDue = true;
-    if (row && row.last_checked_at) {
-      const hoursSince = (now - new Date(row.last_checked_at)) / 3600000;
+    if (lastCheckedAt) {
+      const hoursSince = (now - new Date(lastCheckedAt)) / 3600000;
       isDue = hoursSince >= interval;
     }
     if (isDue) due.push(c);
