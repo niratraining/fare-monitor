@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رصد نرخ پرواز</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-feature-settings: "ss01" on, "cv01" on;
+    background: #f2f1f7;
+    margin: 0;
+    padding: 0 0 28px 0;
+    color: #221f2e;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- هدر / هیرو --- */
+  header {
+    background: linear-gradient(160deg, #2d2447 0%, #4b3f72 55%, #5b3f7a 100%);
+    color: white;
+    padding: 18px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 6px 20px rgba(28, 18, 54, 0.28);
+  }
+  .hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .hero-title-group { display: flex; flex-direction: column; gap: 3px; }
+  h1 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h1 .hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.14);
+    font-size: 14px;
+  }
+  .meta {
+    color: #d8d3ea;
+    font-size: 11.5px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6ee7a7;
+    box-shadow: 0 0 0 3px rgba(110,231,167,0.18);
+    flex: none;
+  }
+  .manage-routes-link {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 11px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: background .15s ease;
+  }
+  .manage-routes-link:active { background: rgba(255,255,255,0.24); }
+
+  /* --- انتخاب‌گر مدرن مبدأ / مقصد --- */
+  .route-picker {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 20px;
+    padding: 6px;
+    margin-bottom: 12px;
+    position: relative;
+    backdrop-filter: blur(6px);
+  }
+  .route-field {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: right;
+    padding: 8px 13px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background .15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .route-field:active { background: rgba(255,255,255,0.14); }
+  .route-field-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #c9c2e8;
+    margin-bottom: 3px;
+  }
+  .route-field-icon {
+    display: inline-flex;
+    flex: none;
+    width: 13px;
+    height: 13px;
+    color: #ff8fb5;
+  }
+  .route-field-icon svg { width: 100%; height: 100%; display: block; }
+  .route-field-value {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .route-swap {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    align-self: center;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.5);
+    background: #ff4d8d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(255,77,141,0.4);
+    transition: transform .2s ease, background .2s ease, opacity .2s ease;
+  }
+  .route-swap svg { width: 16px; height: 16px; display: block; transition: transform .3s ease; }
+  .route-swap.spin svg { transform: rotate(180deg); }
+  .route-swap:disabled { opacity: .3; cursor: not-allowed; box-shadow: none; }
+  .route-swap:not(:disabled):active { transform: scale(0.9); }
+
+  /* --- شیت انتخاب مبدأ/مقصد --- */
+  .picker-search {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    font-size: 13.5px;
+    margin-bottom: 8px;
+    background: #f7f7f9;
+  }
+  .picker-search:focus { outline: none; border-color: #4b3f72; background: white; }
+  .picker-list { border-top: 1px solid #eee; }
+  .picker-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 4px;
+    border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .picker-item:active { background: #f7f4ff; }
+  .picker-item-icon {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f0edf9;
+    color: #4b3f72;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .picker-item-text { flex: 1; font-size: 13.5px; }
+  .picker-item-check { color: #ff4d8d; font-size: 14px; opacity: 0; }
+  .picker-item.selected { background: #fdf2f7; }
+  .picker-item.selected .picker-item-check { opacity: 1; }
+  .picker-empty { text-align: center; color: #999; padding: 20px; font-size: 13px; }
+
+  /* --- تقویم کارتی افقی، شبیه سپهر --- */
+  .date-cards {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 2px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .date-cards::-webkit-scrollbar { display: none; }
+  .date-card {
+    flex: 0 0 auto;
+    min-width: 74px;
+    background: rgba(255,255,255,0.10);
+    border: 1.5px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    padding: 9px 6px;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+    transition: background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .date-card .weekday {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .date-card .daynum {
+    font-size: 10.5px;
+    color: #c9c2e8;
+    margin-bottom: 5px;
+  }
+  .date-card .cardprice {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #ffd166;
+  }
+  .date-card.active {
+    background: white;
+    border-color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .date-card.active .weekday,
+  .date-card.active .daynum { color: #4b3f72; }
+  .date-card.active .cardprice { color: #1a7a3d; }
+
+  .filter-bar {
+    background: white;
+    margin: 12px 12px 0;
+    border-radius: 18px;
+    padding: 16px 14px 14px;
+    box-shadow: 0 2px 14px rgba(43, 32, 74, 0.07);
+  }
+  .filter-group { margin-bottom: 16px; }
+  .filter-group:last-child { margin-bottom: 0; }
+  .filter-group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #7a6da8;
+    letter-spacing: .01em;
+    margin-bottom: 8px;
+  }
+  .filter-group-label .fi {
+    display: inline-flex;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    color: #ff4d8d;
+  }
+  .filter-group-label .fi svg { width: 100%; height: 100%; display: block; }
+
+  .search-input-wrap { position: relative; }
+  .search-input-wrap .fi {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    color: #b9b0d6;
+    pointer-events: none;
+  }
+  .search-input-wrap .fi svg { width: 100%; height: 100%; display: block; }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 38px 10px 12px;
+    border: 1.5px solid #ececf3;
+    background: #f9f8fc;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #221f2e;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #c9bdec;
+    background: white;
+  }
+
+  .sort-segment {
+    display: flex;
+    background: #f2f0f9;
+    border-radius: 12px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .sort-option {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: #7a6da8;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 6px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+    white-space: nowrap;
+  }
+  .sort-option.active {
+    background: #4b3f72;
+    color: white;
+    box-shadow: 0 2px 8px rgba(75,63,114,0.28);
+  }
+
+  .airline-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .chip {
+    border: 1.5px solid #ececf3;
+    border-radius: 20px;
+    padding: 6px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #f9f8fc;
+    color: #4a4460;
+    user-select: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .chip:active { transform: scale(0.96); }
+  .chip.active {
+    background: linear-gradient(135deg, #4b3f72, #6a4f8f);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(75,63,114,0.25);
+  }
+
+  /* --- چیپ ایرلاین با جای لوگو (بعداً تصویر جایگذاری می‌شود) --- */
+  .chip-airline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px 5px 6px;
+  }
+  .chip-logo {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #ececf3;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chip-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .chip-logo-fallback {
+    display: none;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: #7a6da8;
+    background: #ece8f7;
+  }
+  .chip-airline.active .chip-logo { border-color: rgba(255,255,255,0.5); }
+  .chip-airline.active .chip-logo-fallback { background: rgba(255,255,255,0.25); color: white; }
+
+  /* --- ردیف مشترک: جستجوی شماره پرواز + کلاس پروازی --- */
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .filter-row .filter-group {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .cabin-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1.5px 6px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .cabin-economy { background: #f0f0f0; color: #888; }
+  .cabin-premium { background: #fde2ea; color: #d9455f; }
+  .cabin-business { background: #fde2ea; color: #d9455f; }
+  .cabin-first { background: #ffe9b3; color: #946200; }
+
+  .flight-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  main { padding: 12px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12.5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  th, td {
+    padding: 7px 6px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+  }
+  th { background: #eee; }
+  tr:last-child td { border-bottom: none; }
+  .price { font-weight: bold; color: #1a7a3d; }
+  #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
+  .result-count { font-size: 12px; color: #777; margin: 8px 2px; }
+
+  tbody tr { cursor: pointer; }
+  tbody tr:active { background: #f7f4ff; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-card {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px 16px 0 0;
+    padding: 16px;
+    max-height: 82vh;
+    overflow-y: auto;
+    animation: slideUp .15s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .modal-title { font-size: 15px; font-weight: bold; }
+  .modal-sub { font-size: 12px; color: #888; margin-top: 2px; }
+  .modal-close {
+    border: none;
+    background: #f0f0f0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    flex: none;
+  }
+  .modal-trend { margin-bottom: 10px; }
+  .trend-badge {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+  .trend-badge.up { background: #fde8ea; color: #d9455f; }
+  .trend-badge.down { background: #e6f4ea; color: #1a7a3d; }
+  .trend-badge.flat { background: #f0f0f0; color: #777; }
+  .modal-chart {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 8px 4px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+  }
+  .modal-section-title {
+    font-size: 12px;
+    color: #888;
+    margin: 14px 2px 6px;
+    font-weight: 600;
+  }
+  .history-list {
+    border-top: 1px solid #eee;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 2px;
+    border-bottom: 1px solid #f2f2f2;
+    font-size: 12.5px;
+  }
+  .history-date { color: #777; flex: 1.3; }
+  .history-price { font-weight: bold; flex: 1; text-align: center; }
+  .history-delta { flex: 1; text-align: left; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hero-top">
+    <div class="hero-title-group">
+      <h1><span class="hero-icon">✈</span> رصد نرخ پرواز</h1>
+      <div class="meta" id="meta">در حال بارگذاری...</div>
+    </div>
+    <a href="routes.html" class="manage-routes-link">⚙ مدیریت مسیرها</a>
+  </div>
+
+  <div class="route-picker" id="routePicker">
+    <button class="route-field" id="originField" type="button">
+      <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></span> مبدأ</span>
+      <span class="route-field-value" id="originValue">—</span>
+    </button>
+    <button class="route-swap" id="swapBtn" type="button" aria-label="جابجایی مبدأ و مقصد" title="جابجایی مبدأ و مقصد">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 7h13M17 3l4 4-4 4M17 17H4M7 21l-4-4 4-4"/>
+      </svg>
+    </button>
+    <button class="route-field" id="destField" type="button">
+      <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></span> مقصد</span>
+      <span class="route-field-value" id="destValue">—</span>
+    </button>
+  </div>
+  <div class="date-cards" id="dateCards"></div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-group">
+    <div class="filter-group-label">
+      <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11z"/><path d="M5 11h7"/></svg></span>
+      ایرلاین
+    </div>
+    <div class="airline-chips" id="airlineChips"></div>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-group-label">
+      <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
+      مرتب‌سازی
+    </div>
+    <div class="sort-segment" id="sortSegment">
+      <button type="button" class="sort-option active" data-value="price_asc">ارزان‌ترین</button>
+      <button type="button" class="sort-option" data-value="price_desc">گران‌ترین</button>
+      <button type="button" class="sort-option" data-value="time_asc">ساعت پرواز</button>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-group">
+      <div class="filter-group-label">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 0-1.3.4l-.7.9c-.4.5-.2 1.2.3 1.5L9 12l-2 3H4l-1 1.5 3.5 1.5L8 21.5 9 20.5v-3l3-2 2.8 6.3c.3.5 1 .7 1.5.3l.9-.7c.4-.3.5-.8.4-1.3z"/></svg></span>
+        شماره پرواز
+      </div>
+      <div class="search-input-wrap">
+        <input type="text" id="flightSearch" placeholder="مثلاً 6846" inputmode="numeric">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="2.5"/><path d="M4 10h16M9 3v13"/><path d="M7 20h10"/></svg></span>
+        کلاس پروازی
+      </div>
+      <div class="airline-chips" id="cabinChips"></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div id="loading">در حال دریافت داده...</div>
+  <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
+  <div class="result-count" id="resultCount"></div>
+  <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
+  <table id="resultsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ایرلاین</th>
+        <th>پرواز</th>
+        <th>ساعت</th>
+        <th>فروشنده</th>
+        <th>قیمت</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+</main>
+
+<script>
+let allFlights = [];
+let allHistory = [];
+let allRouteTrend = [];
+let allAirlineTrend = [];
+let state = {
+  route: null,
+  date: null,
+  flightSearch: '',
+  sort: 'price_asc',
+  airlines: new Set(),
+  cabins: new Set(),
+};
+
+// ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
+const CABIN_META = {
+  economy:  { label: 'اکونومی',          cls: 'cabin-economy' },
+  premium:  { label: 'پریمیوم اکونومی', cls: 'cabin-premium' },
+  business: { label: 'بیزنس',            cls: 'cabin-business' },
+  first:    { label: 'فرست',             cls: 'cabin-first' },
+};
+function normalizeCabin(raw) {
+  const key = String(raw || '').toLowerCase();
+  if (key.includes('first')) return 'first';
+  if (key.includes('business')) return 'business';
+  if (key.includes('premium')) return 'premium';
+  return 'economy';
+}
+function cabinBadge(raw) {
+  const meta = CABIN_META[normalizeCabin(raw)];
+  return `<span class="cabin-badge ${meta.cls}">${meta.label}</span>`;
+}
+// اکونومی نیازی به برچسب نداره؛ فقط کلاس‌های بالاتر برچسب می‌گیرن
+function cabinBadgeIfNotEconomy(raw) {
+  return normalizeCabin(raw) === 'economy' ? '' : cabinBadge(raw);
+}
+
+// ---- لوگوی ایرلاین‌ها: هر ایرلاین رو اینجا به مسیر فایل لوگو وصل کن ----
+// مثال: 'ماهان ایر': 'logos/mahan.png'
+const AIRLINE_LOGOS = {};
+function slugifyAirline(name) {
+  return String(name || '').trim().toLowerCase().replace(/\s+/g, '-');
+}
+function airlineLogoSrc(name) {
+  return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.png`;
+}
+
+const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+
+function toFaDigits(n) {
+  return String(n).replace(/[0-9]/g, d => FA_DIGITS[d]);
+}
+
+// تبدیل میلادی به شمسی (همون الگوریتمی که تو fare_monitor.py هم هست)
+function gregorianToJalali(gy, gm, gd) {
+  const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+  gy = gy - 1600; gm = gm - 1; gd = gd - 1;
+  let g_day_no = 365*gy + Math.floor((gy+3)/4) - Math.floor((gy+99)/100) + Math.floor((gy+399)/400);
+  g_day_no += g_d_m[gm] + gd;
+  if (gm > 1 && ((gy+1600) % 4 === 0 && ((gy+1600) % 100 !== 0 || (gy+1600) % 400 === 0))) g_day_no += 1;
+  let j_day_no = g_day_no - 79;
+  const j_np = Math.floor(j_day_no / 12053);
+  j_day_no %= 12053;
+  let jy = 979 + 33*j_np + 4*Math.floor(j_day_no/1461);
+  j_day_no %= 1461;
+  if (j_day_no >= 366) {
+    jy += Math.floor((j_day_no - 1) / 365);
+    j_day_no = (j_day_no - 1) % 365;
+  }
+  const j_days_in_month = [31,31,31,31,31,31,30,30,30,30,30,29];
+  let jm = 0, jd = j_day_no;
+  for (; jm < 11; jm++) {
+    if (jd < j_days_in_month[jm]) break;
+    jd -= j_days_in_month[jm];
+  }
+  return [jy, jm + 1, jd + 1];
+}
+
+function formatDateCard(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const weekday = WEEKDAYS_FA[d.getDay()];
+  const [jy, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  const label = toFaDigits(jd) + ' ' + JALALI_MONTHS[jm-1];
+  return { weekday, label };
+}
+
+function toPriceNumber(str) {
+  if (!str) return Infinity;
+  const n = parseInt(String(str).replace(/[^0-9]/g, ''), 10);
+  return isNaN(n) ? Infinity : n;
+}
+
+function formatPriceShort(n) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('en-US');
+}
+
+async function load() {
+  try {
+    const res = await fetch('data.json?t=' + Date.now());
+    const data = await res.json();
+    allFlights = data.flights || [];
+
+    // history.json ممکنه هنوز تولید نشده باشه (مثلاً اولین اجرا)، پس خطاش نباید کل پنل رو خراب کنه
+    try {
+      const histRes = await fetch('history.json?t=' + Date.now());
+      const histData = await histRes.json();
+      allHistory = histData.history || [];
+    } catch (e2) {
+      allHistory = [];
+    }
+
+    // این دوتا هم مثل history.json ممکنه اولین اجرا هنوز تولید نشده باشن
+    try {
+      const rtRes = await fetch('route-trend.json?t=' + Date.now());
+      const rtData = await rtRes.json();
+      allRouteTrend = rtData.route_trend || [];
+    } catch (e3) {
+      allRouteTrend = [];
+    }
+    try {
+      const atRes = await fetch('airline-trend.json?t=' + Date.now());
+      const atData = await atRes.json();
+      allAirlineTrend = atData.airline_trend || [];
+    } catch (e4) {
+      allAirlineTrend = [];
+    }
+
+    document.getElementById('meta').innerHTML = data.generated_at
+      ? 'آخرین به‌روزرسانی: <bdi style="direction:ltr">' + data.generated_at + '</bdi>'
+      : 'هنوز اجرایی ثبت نشده';
+
+    document.getElementById('loading').style.display = 'none';
+
+    if (allFlights.length === 0) {
+      document.getElementById('empty').style.display = 'block';
+      return;
+    }
+
+    buildRoutePicker();
+    buildDateCards();
+    buildAirlineChips();
+    buildCabinChips();
+    bindControls();
+    render();
+
+  } catch (e) {
+    document.getElementById('loading').textContent =
+      'هنوز داده‌ای موجود نیست — منتظر بمون تا اولین اجرای Action تموم بشه.';
+  }
+}
+
+// ===========================================================
+// انتخاب‌گر مدرن مبدأ / مقصد
+// ===========================================================
+
+// تفکیک رشته‌ی خام route (مثلاً «تهران-دبی» یا «THR → DXB») به مبدأ و مقصد
+function parseRoute(route) {
+  const raw = String(route || '').trim();
+  const parts = raw.split(/\s*(?:->|→|⇄|-|–|—|به)\s*/).filter(Boolean);
+  if (parts.length >= 2) {
+    return { from: parts[0].trim(), to: parts.slice(1).join('-').trim(), raw };
+  }
+  return { from: raw, to: '', raw };
+}
+
+let routeMeta = []; // [{ raw, from, to }, ...] یکی به ازای هر مسیر موجود در داده
+
+function buildRoutePicker() {
+  const routes = [...new Set(allFlights.map(f => f.route))];
+  routeMeta = routes.map(parseRoute);
+  state.route = routeMeta[0].raw;
+
+  document.getElementById('originField').onclick = () => openRoutePicker('origin');
+  document.getElementById('destField').onclick = () => openRoutePicker('dest');
+  document.getElementById('swapBtn').onclick = trySwapRoute;
+
+  updateRouteFields();
+}
+
+function currentRouteMeta() {
+  return routeMeta.find(r => r.raw === state.route) || routeMeta[0];
+}
+
+function updateRouteFields() {
+  const meta = currentRouteMeta();
+  document.getElementById('originValue').textContent = meta.from || '—';
+  document.getElementById('destValue').textContent = meta.to || '—';
+  updateSwapButton();
+}
+
+function updateSwapButton() {
+  const meta = currentRouteMeta();
+  const reverse = routeMeta.find(r => r.from === meta.to && r.to === meta.from);
+  document.getElementById('swapBtn').disabled = !meta.to || !reverse;
+}
+
+function trySwapRoute() {
+  const meta = currentRouteMeta();
+  const reverse = routeMeta.find(r => r.from === meta.to && r.to === meta.from);
+  if (!reverse) return;
+
+  const btn = document.getElementById('swapBtn');
+  btn.classList.add('spin');
+  setTimeout(() => btn.classList.remove('spin'), 250);
+
+  state.route = reverse.raw;
+  updateRouteFields();
+  buildDateCards();
+  render();
+}
+
+// شیت پایین‌صفحه‌ی انتخاب مبدأ یا مقصد، با جستجوی زنده
+function openRoutePicker(type) {
+  const meta = currentRouteMeta();
+  const seen = new Set();
+  let options;
+
+  if (type === 'origin') {
+    options = routeMeta.filter(r => {
+      if (seen.has(r.from)) return false;
+      seen.add(r.from);
+      return true;
+    }).map(r => ({ label: r.from || r.raw, matchRoute: r }));
+  } else {
+    options = routeMeta.filter(r => r.from === meta.from)
+      .map(r => ({ label: r.to || r.raw, matchRoute: r }));
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">${type === 'origin' ? 'انتخاب مبدأ' : 'انتخاب مقصد'}</div>
+          <div class="modal-sub">${toFaDigits(options.length)} مسیر موجود</div>
+        </div>
+        <button class="modal-close">✕</button>
+      </div>
+      <input type="text" class="picker-search" id="pickerSearchInput" placeholder="جستجوی شهر یا فرودگاه...">
+      <div class="picker-list" id="pickerList"></div>
+    </div>`;
+
+  overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
+
+  const listEl = overlay.querySelector('#pickerList');
+  const searchInput = overlay.querySelector('#pickerSearchInput');
+
+  function renderPickerList(filterText) {
+    const f = (filterText || '').trim();
+    const filtered = f ? options.filter(o => o.label.includes(f)) : options;
+
+    listEl.innerHTML = filtered.length ? filtered.map(o => {
+      const isSelected = type === 'origin'
+        ? o.matchRoute.from === meta.from
+        : o.matchRoute.raw === state.route;
+      return `<div class="picker-item${isSelected ? ' selected' : ''}" data-raw="${o.matchRoute.raw}">
+        <span class="picker-item-icon">${type === 'origin' ? '✈' : '📍'}</span>
+        <span class="picker-item-text">${o.label}</span>
+        <span class="picker-item-check">✓</span>
+      </div>`;
+    }).join('') : '<div class="picker-empty">موردی پیدا نشد</div>';
+
+    listEl.querySelectorAll('.picker-item').forEach(item => {
+      item.onclick = () => {
+        const raw = item.dataset.raw;
+        const picked = routeMeta.find(r => r.raw === raw);
+        if (type === 'origin') {
+          // با انتخاب مبدأ جدید، اولین مقصد موجود برای اون فعال می‌شه
+          state.route = (routeMeta.find(r => r.from === picked.from) || picked).raw;
+        } else {
+          state.route = picked.raw;
+        }
+        overlay.remove();
+        updateRouteFields();
+        buildDateCards();
+        render();
+      };
+    });
+  }
+
+  renderPickerList('');
+  searchInput.addEventListener('input', (e) => renderPickerList(e.target.value));
+  requestAnimationFrame(() => searchInput.focus());
+}
+
+function buildDateCards() {
+  const dates = [...new Set(
+    allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
+  )].sort();
+  state.date = dates[0] || null;
+
+  const el = document.getElementById('dateCards');
+  el.innerHTML = '';
+  dates.forEach(d => {
+    const minPrice = Math.min(
+      ...allFlights
+        .filter(f => f.route === state.route && f.flight_date === d)
+        .map(f => toPriceNumber(f.adult_price))
+    );
+    const { weekday, label } = formatDateCard(d);
+
+    const card = document.createElement('div');
+    card.className = 'date-card' + (d === state.date ? ' active' : '');
+    card.dataset.date = d;
+    card.innerHTML = `
+      <div class="weekday">${weekday}</div>
+      <div class="daynum">${label}</div>
+      <div class="cardprice">${formatPriceShort(minPrice)}</div>`;
+    card.onclick = () => {
+      state.date = d;
+      document.querySelectorAll('.date-card').forEach(c =>
+        c.classList.toggle('active', c.dataset.date === d));
+      render();
+    };
+    el.appendChild(card);
+  });
+
+  // اسکرول خودکار به کارت انتخاب‌شده
+  requestAnimationFrame(() => {
+    const active = el.querySelector('.date-card.active');
+    if (active) active.scrollIntoView({ inline: 'center', behavior: 'instant' });
+  });
+}
+
+function buildAirlineChips() {
+  const airlines = [...new Set(allFlights.map(f => f.airline).filter(Boolean))].sort();
+  const el = document.getElementById('airlineChips');
+  el.innerHTML = '';
+  airlines.forEach(a => {
+    const chip = document.createElement('div');
+    chip.className = 'chip chip-airline';
+    chip.innerHTML = `
+      <span class="chip-logo">
+        <img src="${airlineLogoSrc(a)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="chip-logo-fallback">${(a || '؟').charAt(0)}</span>
+      </span>
+      <span class="chip-airline-name">${a}</span>`;
+    chip.onclick = () => {
+      if (state.airlines.has(a)) state.airlines.delete(a);
+      else state.airlines.add(a);
+      chip.classList.toggle('active');
+      render();
+    };
+    el.appendChild(chip);
+  });
+}
+
+function buildCabinChips() {
+  const cabinKeys = [...new Set(allFlights.map(f => normalizeCabin(f.cabin)))];
+  cabinKeys.sort((a, b) => Object.keys(CABIN_META).indexOf(a) - Object.keys(CABIN_META).indexOf(b));
+  const el = document.getElementById('cabinChips');
+  el.innerHTML = '';
+  cabinKeys.forEach(key => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = CABIN_META[key].label;
+    chip.onclick = () => {
+      if (state.cabins.has(key)) state.cabins.delete(key);
+      else state.cabins.add(key);
+      chip.classList.toggle('active');
+      render();
+    };
+    el.appendChild(chip);
+  });
+}
+
+function bindControls() {
+  document.getElementById('flightSearch').addEventListener('input', (e) => {
+    state.flightSearch = e.target.value.trim();
+    render();
+  });
+  document.querySelectorAll('.sort-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.sort = btn.dataset.value;
+      document.querySelectorAll('.sort-option').forEach(b =>
+        b.classList.toggle('active', b === btn));
+      render();
+    });
+  });
+}
+
+function render() {
+  let rows = allFlights.filter(f => f.route === state.route && f.flight_date === state.date);
+
+  if (state.flightSearch) {
+    rows = rows.filter(f => String(f.flight_no || '').includes(state.flightSearch));
+  }
+  if (state.airlines.size > 0) {
+    rows = rows.filter(f => state.airlines.has(f.airline));
+  }
+  if (state.cabins.size > 0) {
+    rows = rows.filter(f => state.cabins.has(normalizeCabin(f.cabin)));
+  }
+
+  if (state.sort === 'price_asc') {
+    rows.sort((a, b) => toPriceNumber(a.adult_price) - toPriceNumber(b.adult_price));
+  } else if (state.sort === 'price_desc') {
+    rows.sort((a, b) => toPriceNumber(b.adult_price) - toPriceNumber(a.adult_price));
+  } else {
+    rows.sort((a, b) => (a.dep_time || '').localeCompare(b.dep_time || ''));
+  }
+
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  rows.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f.airline || ''}</td>
+      <td><span class="flight-cell">${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span></td>
+      <td>${f.dep_time || ''}</td>
+      <td>${f.seller || ''}</td>
+      <td class="price">${f.adult_price || ''}</td>`;
+    tr.onclick = () => openHistoryModal(f);
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
+  document.getElementById('resultsTable').style.display = rows.length ? 'table' : 'none';
+  document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+}
+
+// ===========================================================
+// نمودار ساده‌ی روند قیمت (SVG سبک بدون کتابخانه)
+// ===========================================================
+function buildSparkline(points, width, height) {
+  if (points.length < 2) {
+    return '<div style="text-align:center;color:#999;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
+  }
+  const prices = points.map(p => p.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = (max - min) || 1;
+  const padX = 10, padY = 12;
+  const innerW = width - padX * 2;
+  const innerH = height - padY * 2;
+  const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
+
+  const coords = points.map((p, i) => {
+    const x = padX + i * stepX;
+    const y = padY + innerH - ((p.price - min) / range) * innerH;
+    return [x, y];
+  });
+
+  const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
+  const rising = prices[prices.length - 1] > prices[0];
+  const flat = prices[prices.length - 1] === prices[0];
+  const stroke = flat ? '#999' : (rising ? '#d9455f' : '#1a7a3d');
+
+  const dots = coords.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${stroke}" />`).join('');
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;">
+    <path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />
+    ${dots}
+  </svg>`;
+}
+
+// ===========================================================
+// میانگین متحرک (rolling average) — لایه‌ی ۴: برای حذف نویز از روند ایرلاین
+// window=3 یعنی هر نقطه، میانگین خودش و ۲ نقطه‌ی قبلیه
+// ===========================================================
+function rollingAverage(points, windowSize) {
+  return points.map((p, i) => {
+    const start = Math.max(0, i - windowSize + 1);
+    const slice = points.slice(start, i + 1);
+    const avg = slice.reduce((sum, x) => sum + x.price, 0) / slice.length;
+    return { captured_at: p.captured_at, price: Math.round(avg) };
+  });
+}
+
+// نشان روند ساده (بالا/پایین/بدون تغییر) بین اولین و آخرین نقطه، با برچسب دلخواه
+function trendBadgeHtml(points, label) {
+  if (points.length < 2) {
+    return `<span class="trend-badge flat">${label}: داده‌ی کافی نیست</span>`;
+  }
+  const first = points[0].price;
+  const last = points[points.length - 1].price;
+  if (last > first) {
+    return `<span class="trend-badge up">📈 ${label} — ${formatPriceShort(last - first)}+</span>`;
+  } else if (last < first) {
+    return `<span class="trend-badge down">📉 ${label} — ${formatPriceShort(first - last)}-</span>`;
+  }
+  return `<span class="trend-badge flat">➖ ${label}: بدون تغییر</span>`;
+}
+
+// ===========================================================
+// مودال تاریخچه‌ی قیمت یک پرواز
+// ===========================================================
+function openHistoryModal(f) {
+  const cabinKey = normalizeCabin(f.cabin);
+  const points = allHistory
+    .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
+                 h.flight_no === f.flight_no && h.airline === f.airline &&
+                 normalizeCabin(h.cabin) === cabinKey)
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+
+  let trendHtml;
+  if (points.length >= 2) {
+    const first = points[0].price;
+    const last = points[points.length - 1].price;
+    if (last > first) {
+      trendHtml = `<span class="trend-badge up">📈 روند افزایشی — ${formatPriceShort(last - first)}+ نسبت به اولین ثبت</span>`;
+    } else if (last < first) {
+      trendHtml = `<span class="trend-badge down">📉 روند کاهشی — ${formatPriceShort(first - last)}- نسبت به اولین ثبت</span>`;
+    } else {
+      trendHtml = `<span class="trend-badge flat">➖ بدون تغییر</span>`;
+    }
+  } else {
+    trendHtml = `<span class="trend-badge flat">فقط یک بار ثبت شده — هنوز تاریخچه‌ای نیست</span>`;
+  }
+
+  const chartHtml = buildSparkline(points, 280, 100);
+
+  // لایه‌ی ۳ — روند میانگین کل مسیر+تاریخ (نه فقط این پرواز)
+  const routePoints = allRouteTrend
+    .filter(r => r.route === f.route && r.flight_date === f.flight_date &&
+                 normalizeCabin(r.cabin) === cabinKey)
+    .map(r => ({ captured_at: r.captured_at, price: r.avg_price }))
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+  const routeTrendHtml = trendBadgeHtml(routePoints, 'میانگین کل مسیر');
+  const routeChartHtml = buildSparkline(routePoints, 280, 70);
+
+  // لایه‌ی ۴ — روند ایرلاین (میانگین متحرک روی همه‌ی تاریخ‌های زیر رصد آن ایرلاین)
+  const airlineRaw = allAirlineTrend
+    .filter(r => r.route === f.route && r.airline === f.airline &&
+                 normalizeCabin(r.cabin) === cabinKey)
+    .map(r => ({ captured_at: r.captured_at, price: r.avg_price }))
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+  const airlinePoints = rollingAverage(airlineRaw, 3);
+  const airlineTrendHtml = trendBadgeHtml(airlinePoints, `روند ایرلاین ${f.airline || ''} (میانگین متحرک)`);
+  const airlineChartHtml = buildSparkline(airlinePoints, 280, 70);
+
+  let listHtml = '';
+  const reversed = [...points].reverse();
+  reversed.forEach((p, idx) => {
+    const chronoIdx = points.length - 1 - idx;
+    const prev = points[chronoIdx - 1];
+    let deltaHtml = '<span style="color:#bbb;">—</span>';
+    if (prev) {
+      const diff = p.price - prev.price;
+      if (diff > 0) deltaHtml = `<span style="color:#d9455f;">▲ ${formatPriceShort(diff)}</span>`;
+      else if (diff < 0) deltaHtml = `<span style="color:#1a7a3d;">▼ ${formatPriceShort(Math.abs(diff))}</span>`;
+      else deltaHtml = '<span style="color:#bbb;">بدون تغییر</span>';
+    }
+    listHtml += `<div class="history-item">
+      <span class="history-date"><bdi style="direction:ltr">${p.captured_at || ''}</bdi></span>
+      <span class="history-price">${formatPriceShort(p.price)}</span>
+      <span class="history-delta">${deltaHtml}</span>
+    </div>`;
+  });
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
+          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''} · ${cabinBadge(f.cabin)}</div>
+        </div>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-trend">${trendHtml}</div>
+      <div class="modal-chart">${chartHtml}</div>
+
+      <div class="modal-section-title">میانگین کل مسیر (این تاریخ، همه‌ی پروازها)</div>
+      <div class="modal-trend">${routeTrendHtml}</div>
+      <div class="modal-chart">${routeChartHtml}</div>
+
+      <div class="modal-section-title">روند ایرلاین (میانگین متحرک روی کل تاریخ‌های زیر رصد)</div>
+      <div class="modal-trend">${airlineTrendHtml}</div>
+      <div class="modal-chart">${airlineChartHtml}</div>
+
+      <div class="history-list">
+        ${listHtml || '<div style="text-align:center;color:#999;padding:16px;">تاریخچه‌ای ثبت نشده</div>'}
+      </div>
+    </div>`;
+
+  overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
+}
+
+load();
+</script>
+</body>
+</html>
