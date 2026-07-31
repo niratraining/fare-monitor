@@ -282,14 +282,48 @@ def run_snapshot():
         return
 
     # ترتیب رو رندوم می‌کنیم تا همیشه یه الگوی ثابت (مثلاً همیشه اول
-    # مسیر تهران-استانبول) تکرار نشه
-    random.shuffle(due)
+    # مسیر تهران-استانبول) تکرار نشه، اما این رندوم‌سازی فقط باید *داخل*
+    # هر لایه‌ی DTD باشه، نه بین لایه‌ها؛ وگرنه وقتی due زیاد از MAX_TARGETS_PER_RUN
+    # بشه (چند مسیر فعال با بازه‌ی تاریخی چندروزه خیلی راحت رد می‌شه)، پروازهای
+    # لایه‌ی نزدیک (هر ۲ساعته) با شانس مساوی با لایه‌ی دور (هر ۱۲ساعته) تو
+    # قرعه‌کشی می‌افتن بیرون و ممکنه چند دور پشت‌سرهم اصلاً رصد نشن — دقیقاً
+    # همون چیزی که باعث می‌شه یه تاریخ نزدیک با وجود قول «هر ۲ ساعت»، عملاً
+    # خیلی کمتر از این آپدیت بشه.
+    def _dtd_days(flight_date_str):
+        try:
+            flight_date = datetime.strptime(flight_date_str, "%Y-%m-%d")
+        except ValueError:
+            return 9999
+        return (flight_date - datetime.utcnow()).days
+
+    def _tier_rank(flight_date_str):
+        dtd = _dtd_days(flight_date_str)
+        if dtd <= 2:
+            return 0  # نزدیک — باید همیشه اول پردازش بشه
+        if dtd <= 7:
+            return 1
+        return 2  # دور — اگه due خیلی زیاد بود، اول همینا حذف می‌شن
+
+    random.shuffle(due)  # رندوم‌سازی برای انصاف بین مسیرهای هم‌لایه
+
+    # مورد فوری (force_route/force_date) باید همیشه واقعاً اول بمونه، حتی اگه
+    # لایه‌ش دورتر از بقیه باشه؛ برای همین جداش می‌کنیم، بقیه رو بر اساس لایه
+    # مرتب می‌کنیم، بعد دوباره می‌چسبونیمش جلو
+    forced_item = None
+    if is_forced and due and due[0]["route"] == force_route and due[0]["flight_date"] == force_date:
+        forced_item = due.pop(0)
+
+    due.sort(key=lambda item: _tier_rank(item["flight_date"]))  # sort پایدار: ترتیب رندوم داخل هر لایه حفظ می‌شه
+
+    if forced_item is not None:
+        due.insert(0, forced_item)
 
     # سقف تعداد درخواست در هر اجرا؛ بقیه می‌مونن برای اجرای بعدی
-    # (چون due بر اساس DTD دوباره محاسبه می‌شه، چیزی گم نمی‌شه)
+    # (چون due بر اساس DTD دوباره محاسبه می‌شه، چیزی گم نمی‌شه — فقط حالا
+    # اگه چیزی جا بمونه، همیشه از لایه‌ی دورتره، نه لایه‌ی نزدیک)
     if len(due) > MAX_TARGETS_PER_RUN:
         print(f"{len(due)} پرواز نوبتشونه؛ فقط {MAX_TARGETS_PER_RUN} تا رو "
-              f"این اجرا انجام می‌دیم و بقیه می‌مونن برای اجرای بعدی")
+              f"این اجرا انجام می‌دیم (لایه‌ی نزدیک همیشه اول) و بقیه می‌مونن برای اجرای بعدی")
         due = due[:MAX_TARGETS_PER_RUN]
 
     captured_at = datetime.now().isoformat(timespec="minutes")
