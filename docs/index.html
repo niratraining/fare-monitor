@@ -72,6 +72,17 @@
     box-shadow: 0 0 0 3px rgba(110,231,167,0.18);
     flex: none;
   }
+  .meta-time {
+    font-weight: 800;
+    color: #ffffff;
+    direction: ltr;
+    display: inline-block;
+    letter-spacing: .01em;
+  }
+  .meta-sep {
+    color: rgba(255,255,255,0.28);
+    font-weight: 400;
+  }
   .manage-routes-link {
     font-size: 11px;
     font-weight: 700;
@@ -746,28 +757,18 @@
     font-size: 11px; color: #948da8; font-weight: 600;
   }
 
-  .fc-time { flex: none; text-align: left; }
-  .fc-time-value {
-    display: block;
-    font-size: 16.5px;
-    font-weight: 800;
-    color: #221f2e;
-    direction: ltr;
-  }
-  .fc-time-label { font-size: 10px; color: #a49bc2; font-weight: 600; }
-
-  .fc-route-sub {
+  .fc-dep-row {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: 11.5px;
     color: #a49bc2;
     font-weight: 600;
-    margin-top: 7px;
+    margin-top: 8px;
     padding-right: 48px;
   }
-  .fc-route-sub-icon { flex: none; font-size: 10px; transform: rotate(180deg) scaleY(-1); opacity: .8; }
-  .fc-route-sub-dot { margin: 0 2px; color: #d8d3ea; }
+  .fc-dep-row bdi { font-size: 13px; font-weight: 800; color: #221f2e; margin-right: 2px; }
+  .fc-dep-row-icon { flex: none; font-size: 10px; opacity: .8; }
 
   /* خط برش‌خورده‌ی بلیط با دو دایره‌ی کنج، شبیه بلیط پرواز واقعی */
   .fc-stub-row {
@@ -801,7 +802,6 @@
   .fc-price { display: flex; align-items: baseline; gap: 4px; }
   .fc-price-value { font-size: 15.5px; font-weight: 800; color: #1a7a3d; direction: ltr; }
   .fc-price-currency { font-size: 10.5px; color: #9aa89f; font-weight: 600; }
-  .fc-seats-low { font-size: 9.5px; font-weight: 700; color: #d9455f; }
 
   .modal-overlay {
     position: fixed;
@@ -894,7 +894,15 @@
     border-bottom: 1px solid #f2f2f2;
     font-size: 12.5px;
   }
-  .history-date { color: #777; flex: 1.3; }
+  .history-date {
+    color: #777;
+    flex: 1.3;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .history-date .hd-date { font-size: 10.5px; color: #a49bc2; font-weight: 600; }
+  .history-date .hd-time { font-size: 13px; color: #221f2e; font-weight: 800; direction: ltr; }
   .history-price { font-weight: bold; flex: 1; text-align: center; }
   .history-delta { flex: 1; text-align: left; font-weight: bold; }
 </style>
@@ -1105,6 +1113,23 @@ function formatDateCard(dateStr) {
   return { weekday, label };
 }
 
+// ---- تبدیل یک رشته‌ی زمان ایزو (مثل «2026-07-31T18:47») به تاریخ و ساعت شمسی برای نمایش ----
+// خروجی جدا برای تاریخ و ساعت، تا هرجا لازم بود (هدر، تاریخچه‌ی قیمت) هرکدوم جدا چیده بشن
+function toJalaliDateTime(isoStr) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(isoStr || '');
+  if (!m) return null;
+  const gy = +m[1], gmo = +m[2], gd = +m[3], hh = +m[4], mi = +m[5];
+  const weekday = WEEKDAYS_FA[new Date(gy, gmo - 1, gd).getDay()];
+  const [jy, jmo, jd] = gregorianToJalali(gy, gmo, gd);
+  return {
+    weekday,
+    day: jd,
+    dateLabel: `${toFaDigits(jd)} ${JALALI_MONTHS[jmo - 1]} ${toFaDigits(jy)}`,
+    dateLabelShort: `${toFaDigits(jd)} ${JALALI_MONTHS[jmo - 1]}`,
+    timeLabel: `${toFaDigits(String(hh).padStart(2, '0'))}:${toFaDigits(String(mi).padStart(2, '0'))}`,
+  };
+}
+
 function toPriceNumber(str) {
   if (!str) return Infinity;
   const n = parseInt(String(str).replace(/[^0-9]/g, ''), 10);
@@ -1114,25 +1139,6 @@ function toPriceNumber(str) {
 function formatPriceShort(n) {
   if (!isFinite(n)) return '—';
   return n.toLocaleString('en-US');
-}
-
-// ---- مدت پرواز از روی ساعت حرکت و رسیدن (فرض عبور از نیمه‌شب در صورت منفی‌شدن اختلاف) ----
-function formatDuration(dep, arr) {
-  const dm = /^(\d{1,2}):(\d{2})/.exec(dep || '');
-  const am = /^(\d{1,2}):(\d{2})/.exec(arr || '');
-  if (!dm || !am) return null;
-  let mins = (parseInt(am[1], 10) * 60 + parseInt(am[2], 10)) - (parseInt(dm[1], 10) * 60 + parseInt(dm[2], 10));
-  if (mins < 0) mins += 24 * 60;
-  if (mins <= 0) return null;
-  const h = Math.floor(mins / 60), m = mins % 60;
-  return (h > 0 ? toFaDigits(h) + 'س ' : '') + (m > 0 ? toFaDigits(m) + 'د' : '');
-}
-
-// ---- تعداد صندلی باقی‌مانده، وقتی خیلی کمه به‌عنوان نشونه‌ی کمبود نشون داده می‌شه ----
-function getLowSeatBadge(f) {
-  const n = Math.floor(parseFloat(f.seat_count));
-  if (!isFinite(n) || n <= 0 || n > 4) return '';
-  return `<span class="fc-seats-low">${toFaDigits(n)} صندلی باقی‌مونده</span>`;
 }
 
 // ---- تاریخچه‌ی قیمت یک پرواز مشخص، مرتب‌شده بر اساس زمان ثبت (پایه‌ی مشترک برای نشان تغییر، اسپارک‌لاین و مودال) ----
@@ -1183,8 +1189,9 @@ async function load() {
       allHistory = [];
     }
 
-    document.getElementById('meta').innerHTML = data.generated_at
-      ? 'آخرین به‌روزرسانی: <bdi style="direction:ltr">' + data.generated_at + '</bdi>'
+    const generatedDt = toJalaliDateTime(data.generated_at);
+    document.getElementById('meta').innerHTML = generatedDt
+      ? `به‌روزرسانی <span class="meta-time">${generatedDt.timeLabel}</span><span class="meta-sep">·</span><span>${generatedDt.dateLabel}</span>`
       : 'هنوز اجرایی ثبت نشده';
 
     document.getElementById('loading').style.display = 'none';
@@ -1639,8 +1646,6 @@ function buildChangeBadge(change) {
 // ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
 function buildFlightCard(f, change) {
   const sparkHtml = buildSparkline(getHistoryPoints(f), 54, 26, { mini: true });
-  const duration = formatDuration(f.dep_time, f.arr_time);
-  const seatsLowHtml = getLowSeatBadge(f);
   const card = document.createElement('div');
   card.className = 'flight-card';
   card.innerHTML = `
@@ -1656,14 +1661,10 @@ function buildFlightCard(f, change) {
           <span class="fc-flight-no">پرواز ${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span>
         </span>
       </div>
-      <div class="fc-time">
-        <span class="fc-time-value"><bdi>${f.dep_time || ''}</bdi></span>
-        <span class="fc-time-label">ساعت حرکت</span>
-      </div>
     </div>
-    ${f.arr_time ? `<div class="fc-route-sub">
-      <span class="fc-route-sub-icon">✈</span>
-      رسیدن <bdi style="direction:ltr">${f.arr_time}</bdi>${duration ? `<span class="fc-route-sub-dot">·</span>مدت ${duration}` : ''}
+    ${f.dep_time ? `<div class="fc-dep-row">
+      <span class="fc-dep-row-icon">✈</span>
+      ساعت حرکت <bdi style="direction:ltr">${f.dep_time}</bdi>
     </div>` : ''}
     <div class="fc-stub-row"></div>
     <div class="fc-bottom">
@@ -1681,7 +1682,6 @@ function buildFlightCard(f, change) {
             <span class="fc-price-value">${f.adult_price || ''}</span>
             <span class="fc-price-currency">تومان</span>
           </div>
-          ${seatsLowHtml}
         </div>
       </div>
     </div>`;
@@ -1775,8 +1775,12 @@ function openHistoryModal(f) {
       else if (diff < 0) deltaHtml = `<span style="color:#1a7a3d;">▼ ${formatPriceShort(Math.abs(diff))}</span>`;
       else deltaHtml = '<span style="color:#bbb;">بدون تغییر</span>';
     }
+    const dt = toJalaliDateTime(p.captured_at);
+    const dateHtml = dt
+      ? `<span class="hd-date">${dt.dateLabelShort}</span><span class="hd-time">${dt.timeLabel}</span>`
+      : `<bdi style="direction:ltr">${p.captured_at || ''}</bdi>`;
     listHtml += `<div class="history-item">
-      <span class="history-date"><bdi style="direction:ltr">${p.captured_at || ''}</bdi></span>
+      <span class="history-date">${dateHtml}</span>
       <span class="history-price">${formatPriceShort(p.price)}</span>
       <span class="history-delta">${deltaHtml}</span>
     </div>`;
