@@ -156,7 +156,7 @@ async function handleExportData(env) {
 // ===========================================================
 async function handleExportHistory(env) {
   const { results } = await env.DB.prepare(
-    `SELECT route, flight_date, flight_no, airline, cabin, captured_at, adult_price
+    `SELECT route, flight_date, flight_no, airline, cabin, seller, captured_at, adult_price
      FROM fare_snapshots`
   ).all();
 
@@ -164,9 +164,11 @@ async function handleExportHistory(env) {
   for (const r of results) {
     const price = priceNum(r.adult_price);
     if (price === null) continue;
-    // cabin تو کلید هست چون یه پرواز می‌تونه هم‌زمان اکونومی و بیزنس/فرست داشته باشه؛
-    // بدون این، قیمت ارزون‌تر (معمولاً اکونومی) قیمت کلاس‌های دیگه رو تو تاریخچه پاک می‌کرد.
-    const key = [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.captured_at].join("|");
+    // cabin و seller هر دو تو کلید هستن: یه پرواز هم‌زمان اکونومی/بیزنس داره،
+    // و هر فروشنده هم روند قیمت جدای خودش رو داره. بدون seller تو کلید،
+    // ارزون‌ترین فروشنده قیمت بقیه‌ی فروشنده‌ها رو تو تاریخچه پاک می‌کرد
+    // (باگ: افزایش نرخ یه فروشنده گرون‌تر اصلاً تو تاریخچه دیده نمی‌شد).
+    const key = [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.seller, r.captured_at].join("|");
     const existing = grouped.get(key);
     if (!existing || price < existing.price) {
       grouped.set(key, {
@@ -175,6 +177,7 @@ async function handleExportHistory(env) {
         flight_no: r.flight_no,
         airline: r.airline,
         cabin: r.cabin,
+        seller: r.seller,
         captured_at: r.captured_at,
         price,
       });
@@ -182,8 +185,8 @@ async function handleExportHistory(env) {
   }
 
   const history = [...grouped.values()].sort((a, b) =>
-    (a.route + a.flight_date + a.flight_no + a.cabin + a.captured_at).localeCompare(
-      b.route + b.flight_date + b.flight_no + b.cabin + b.captured_at
+    (a.route + a.flight_date + a.flight_no + a.cabin + a.seller + a.captured_at).localeCompare(
+      b.route + b.flight_date + b.flight_no + b.cabin + b.seller + b.captured_at
     )
   );
 
