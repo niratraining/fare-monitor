@@ -7,8 +7,10 @@
  * Routes:
  *   POST /due            -> کدوم (route, flight_date) ها الان باید رصد بشن
  *   POST /ingest          -> ثبت یک اسنپ‌شات (چند پرواز از یک route+date)
- *   GET  /export/data     -> آخرین وضعیت هر پرواز (معادل قبلی data.json)
- *   GET  /export/history  -> تاریخچه‌ی کامل قیمت هر پرواز (معادل history.json)
+ *   GET  /export/data          -> آخرین وضعیت هر پرواز (معادل قبلی data.json)
+ *   GET  /export/history       -> تاریخچه‌ی کامل قیمت هر پرواز (معادل history.json)
+ *   GET  /export/route-trend   -> میانگین قیمت کل مسیر+تاریخ در هر لحظه‌ی رصد (لایه‌ی ۳)
+ *   GET  /export/airline-trend -> میانگین قیمت هر ایرلاین در هر لحظه‌ی رصد، برای رسم میانگین متحرک (لایه‌ی ۴)
  *
  * همه‌ی endpoint ها با هدر زیر محافظت می‌شن:
  *   Authorization: Bearer <INGEST_SECRET>
@@ -37,6 +39,30 @@ function priceNum(s) {
   if (!s) return null;
   const digits = String(s).replace(/[^0-9]/g, "");
   return digits ? parseInt(digits, 10) : null;
+}
+
+// روزهای مونده به پرواز، نسبت به لحظه‌ی رصد (dtd = days to departure)
+// این فیلد پایه‌ی هر مدل پیش‌بینی آینده‌ست: "هرچی به پرواز نزدیک‌تر، قیمت چطور تغییر می‌کنه؟"
+function dtdDays(flightDate, capturedAt) {
+  const fd = new Date(flightDate + "T00:00:00Z");
+  const ca = new Date(capturedAt);
+  if (isNaN(fd) || isNaN(ca)) return null;
+  return Math.floor((fd - ca) / 86400000);
+}
+
+// از چند ردیف هم‌کلید (مثلاً چند فروشنده‌ی یک پرواز)، فقط ارزون‌ترین رو نگه می‌داره
+function cheapestPerKey(rows, keyFn) {
+  const grouped = new Map();
+  for (const r of rows) {
+    const price = priceNum(r.adult_price);
+    if (price === null) continue;
+    const key = keyFn(r);
+    const existing = grouped.get(key);
+    if (!existing || price < existing.price) {
+      grouped.set(key, { ...r, price });
+    }
+  }
+  return [...grouped.values()];
 }
 
 // ===========================================================
@@ -160,28 +186,25 @@ async function handleExportHistory(env) {
      FROM fare_snapshots`
   ).all();
 
-  const grouped = new Map();
-  for (const r of results) {
-    const price = priceNum(r.adult_price);
-    if (price === null) continue;
-    // cabin تو کلید هست چون یه پرواز می‌تونه هم‌زمان اکونومی و بیزنس/فرست داشته باشه؛
-    // بدون این، قیمت ارزون‌تر (معمولاً اکونومی) قیمت کلاس‌های دیگه رو تو تاریخچه پاک می‌کرد.
-    const key = [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.captured_at].join("|");
-    const existing = grouped.get(key);
-    if (!existing || price < existing.price) {
-      grouped.set(key, {
-        route: r.route,
-        flight_date: r.flight_date,
-        flight_no: r.flight_no,
-        airline: r.airline,
-        cabin: r.cabin,
-        captured_at: r.captured_at,
-        price,
-      });
-    }
-  }
+  // cabin تو کلید هست چون یه پرواز می‌تونه هم‌زمان اکونومی و بیزنس/فرست داشته باشه؛
+  // بدون این، قیمت ارزون‌تر (معمولاً اکونومی) قیمت کلاس‌های دیگه رو تو تاریخچه پاک می‌کرد.
+  const deduped = cheapestPerKey(
+    results,
+    (r) => [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.captured_at].join("|")
+  );
 
-  const history = [...grouped.values()].sort((a, b) =>
+  const history = deduped
+    .map((r) => ({
+      route: r.route,
+      flight_date: r.flight_date,
+      flight_no: r.flight_no,
+      airline: r.airline,
+      cabin: r.cabin,
+      captured_at: r.captured_at,
+      price: r.price,
+      dtd_days: dtdDays(r.flight_date, r.captured_at),
+    }))
+    .sort((a, b) =>
     (a.route + a.flight_date + a.flight_no + a.cabin + a.captured_at).localeCompare(
       b.route + b.flight_date + b.flight_no + b.cabin + b.captured_at
     )
@@ -190,6 +213,117 @@ async function handleExportHistory(env) {
   return json({
     generated_at: new Date().toISOString().slice(0, 16),
     history,
+  });
+}
+
+// ===========================================================
+// GET /export/route-trend — لایه‌ی ۳: روند کل مسیر+تاریخ (نه یک پرواز خاص)
+// در هر لحظه‌ی رصد، میانگین ارزون‌ترین قیمت همه‌ی پروازهای موجود اون
+// route+flight_date+cabin رو حساب می‌کنه -> یه "شاخص قیمت مسیر"
+// ===========================================================
+async function handleExportRouteTrend(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT route, flight_date, flight_no, cabin, captured_at, adult_price
+     FROM fare_snapshots`
+  ).all();
+
+  // قدم ۱: ارزون‌ترین قیمت هر پرواز در هر لحظه‌ی رصد (بین فروشنده‌های مختلف)
+  const perFlight = cheapestPerKey(
+    results,
+    (r) => [r.route, r.flight_date, r.flight_no, r.cabin, r.captured_at].join("|")
+  );
+
+  // قدم ۲: میانگین‌گیری روی همه‌ی پروازهای یک route+flight_date+cabin، در همون لحظه‌ی رصد
+  const groups = new Map();
+  for (const r of perFlight) {
+    const key = [r.route, r.flight_date, r.cabin, r.captured_at].join("|");
+    if (!groups.has(key)) {
+      groups.set(key, {
+        route: r.route,
+        flight_date: r.flight_date,
+        cabin: r.cabin,
+        captured_at: r.captured_at,
+        prices: [],
+      });
+    }
+    groups.get(key).prices.push(r.price);
+  }
+
+  const trend = [...groups.values()]
+    .map((g) => ({
+      route: g.route,
+      flight_date: g.flight_date,
+      cabin: g.cabin,
+      captured_at: g.captured_at,
+      avg_price: Math.round(g.prices.reduce((a, b) => a + b, 0) / g.prices.length),
+      min_price: Math.min(...g.prices),
+      flight_count: g.prices.length,
+      dtd_days: dtdDays(g.flight_date, g.captured_at),
+    }))
+    .sort((a, b) =>
+      (a.route + a.flight_date + a.cabin + a.captured_at).localeCompare(
+        b.route + b.flight_date + b.cabin + b.captured_at
+      )
+    );
+
+  return json({
+    generated_at: new Date().toISOString().slice(0, 16),
+    route_trend: trend,
+  });
+}
+
+// ===========================================================
+// GET /export/airline-trend — لایه‌ی ۴: روند یک ایرلاین (نه یک پرواز خاص)
+// در هر لحظه‌ی رصد، میانگین ارزون‌ترین قیمتِ همه‌ی پروازهای همون ایرلاین
+// روی یک مسیر (در همه‌ی تاریخ‌های زیر رصد) حساب می‌شه. میانگین متحرک
+// (rolling average) رو عمداً این‌جا نمی‌سازیم — فرانت‌اند با پنجره‌ی
+// دلخواه (مثلاً ۳ یا ۷ نقطه) روی همین نقاط خام حسابش می‌کنه، چون پنجره‌ی
+// مناسب به حجم داده بستگی داره و بهتره قابل‌تغییر بمونه.
+// ===========================================================
+async function handleExportAirlineTrend(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT route, flight_date, flight_no, airline, cabin, captured_at, adult_price
+     FROM fare_snapshots`
+  ).all();
+
+  const perFlight = cheapestPerKey(
+    results,
+    (r) => [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.captured_at].join("|")
+  );
+
+  const groups = new Map();
+  for (const r of perFlight) {
+    const key = [r.route, r.airline, r.cabin, r.captured_at].join("|");
+    if (!groups.has(key)) {
+      groups.set(key, {
+        route: r.route,
+        airline: r.airline,
+        cabin: r.cabin,
+        captured_at: r.captured_at,
+        prices: [],
+      });
+    }
+    groups.get(key).prices.push(r.price);
+  }
+
+  const trend = [...groups.values()]
+    .map((g) => ({
+      route: g.route,
+      airline: g.airline,
+      cabin: g.cabin,
+      captured_at: g.captured_at,
+      avg_price: Math.round(g.prices.reduce((a, b) => a + b, 0) / g.prices.length),
+      sample_size: g.prices.length,
+    }))
+    .sort((a, b) =>
+      (a.route + a.airline + a.cabin + a.captured_at).localeCompare(
+        b.route + b.airline + b.cabin + b.captured_at
+      )
+    );
+
+  return json({
+    generated_at: new Date().toISOString().slice(0, 16),
+    airline_trend: trend,
   });
 }
 
@@ -267,6 +401,10 @@ export default {
       resp = await handleExportData(env);
     } else if (url.pathname === "/export/history" && request.method === "GET") {
       resp = await handleExportHistory(env);
+    } else if (url.pathname === "/export/route-trend" && request.method === "GET") {
+      resp = await handleExportRouteTrend(env);
+    } else if (url.pathname === "/export/airline-trend" && request.method === "GET") {
+      resp = await handleExportAirlineTrend(env);
     } else if (url.pathname === "/routes" && request.method === "GET") {
       resp = await handleRoutesList(env);
     } else if (url.pathname === "/routes" && request.method === "POST") {
