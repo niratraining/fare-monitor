@@ -432,113 +432,28 @@
   }
 
   main { padding: 12px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12.5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  th, td {
+    padding: 7px 6px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+  }
+  th { background: #eee; }
+  tr:last-child td { border-bottom: none; }
+  .price { font-weight: bold; color: #1a7a3d; }
   #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
   .result-count { font-size: 12px; color: #777; margin: 8px 2px; }
 
-  /* --- کارت‌های مدرن پرواز (جایگزین جدول قدیمی) --- */
-  .flight-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .flight-card {
-    position: relative;
-    background: white;
-    border: 1px solid #f0eef7;
-    border-radius: 16px;
-    padding: 13px 14px 12px 16px;
-    box-shadow: 0 2px 12px rgba(43, 32, 74, 0.06);
-    cursor: pointer;
-    overflow: hidden;
-    transition: transform .12s ease, box-shadow .12s ease;
-  }
-  .flight-card::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: 4px;
-    background: linear-gradient(180deg, #4b3f72, #ff4d8d);
-  }
-  .flight-card:active {
-    transform: scale(0.985);
-    box-shadow: 0 1px 4px rgba(43, 32, 74, 0.08);
-  }
-
-  .fc-row1 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .fc-airline {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-width: 0;
-  }
-  .fc-logo, .fc-seller-logo {
-    flex: none;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f3fb;
-    border: 1px solid #ece8f7;
-  }
-  .fc-logo { width: 34px; height: 34px; border-radius: 50%; }
-  .fc-logo img, .fc-seller-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .fc-logo-fallback, .fc-seller-logo-fb {
-    display: none;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: 800;
-    color: white;
-  }
-  .fc-airline-text { min-width: 0; display: flex; flex-direction: column; }
-  .fc-airline-name {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: #221f2e;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .fc-flight-no { font-size: 11px; color: #9a92b8; margin-top: 1px; }
-  .fc-badges { flex: none; display: flex; align-items: center; gap: 6px; }
-
-  .fc-row2 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 0;
-    padding: 9px 10px;
-    background: #f9f8fc;
-    border-radius: 12px;
-  }
-  .fc-time { flex: none; font-size: 15px; font-weight: 800; color: #4b3f72; }
-  .fc-route-viz { flex: 1; display: flex; align-items: center; gap: 4px; color: #c9c2e8; direction: ltr; }
-  .fc-route-dot { flex: none; width: 5px; height: 5px; border-radius: 50%; background: #c9c2e8; }
-  .fc-route-dash { flex: 1; height: 1px; background: repeating-linear-gradient(90deg, #d8d3ea 0 4px, transparent 4px 8px); }
-  .fc-route-plane { flex: none; width: 14px; height: 14px; color: #ff4d8d; transform: rotate(90deg); }
-
-  .fc-row3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .fc-seller { display: flex; align-items: center; gap: 7px; min-width: 0; }
-  .fc-seller-logo { width: 22px; height: 22px; border-radius: 7px; }
-  .fc-seller-logo-fb { font-size: 10px; }
-  .fc-seller-name {
-    font-size: 11.5px;
-    color: #8a81a8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
-  }
-  .fc-price { flex: none; display: flex; flex-direction: column; align-items: flex-end; }
-  .fc-price-val { font-size: 16.5px; font-weight: 900; color: #1a7a3d; }
-  .fc-price-unit { font-size: 10px; color: #9a92b8; margin-top: -1px; }
+  tbody tr { cursor: pointer; }
+  tbody tr:active { background: #f7f4ff; }
 
   .modal-overlay {
     position: fixed;
@@ -695,7 +610,18 @@
   <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
   <div class="result-count" id="resultCount"></div>
   <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
-  <div class="flight-list" id="resultsList" style="display:none;"></div>
+  <table id="resultsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ایرلاین</th>
+        <th>پرواز</th>
+        <th>ساعت</th>
+        <th>فروشنده</th>
+        <th>قیمت</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
 </main>
 
 <script>
@@ -741,22 +667,6 @@ function slugifyAirline(name) {
 }
 function airlineLogoSrc(name) {
   return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.png`;
-}
-
-// ---- لوگوی فروشنده‌ها: هر فروشنده رو اینجا به مسیر فایل لوگو وصل کن ----
-// مثال: 'علی‌بابا': 'logos/sellers/alibaba.png'
-const SELLER_LOGOS = {};
-function sellerLogoSrc(name) {
-  return SELLER_LOGOS[name] || `logos/sellers/${slugifyAirline(name)}.png`;
-}
-
-// ---- رنگ ثابت برای هر اسم (وقتی لوگو موجود نیست، آواتار حرفی رنگی می‌سازیم) ----
-const AVATAR_COLORS = ['#4b3f72', '#ff4d8d', '#1a7a3d', '#d9455f', '#946200', '#2d2447', '#5b3f7a', '#0e7490', '#a21caf', '#b45309'];
-function colorFromString(str) {
-  const s = String(str || '');
-  let hash = 0;
-  for (let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
 const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
@@ -1105,56 +1015,22 @@ function render() {
     rows.sort((a, b) => (a.dep_time || '').localeCompare(b.dep_time || ''));
   }
 
-  const list = document.getElementById('resultsList');
-  list.innerHTML = '';
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
   rows.forEach(f => {
-    const airline = f.airline || 'نامشخص';
-    const seller = f.seller || 'فروشنده نامشخص';
-    const card = document.createElement('div');
-    card.className = 'flight-card';
-    card.innerHTML = `
-      <div class="fc-row1">
-        <div class="fc-airline">
-          <span class="fc-logo">
-            <img src="${airlineLogoSrc(airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <span class="fc-logo-fallback" style="background:${colorFromString(airline)}">${airline.charAt(0)}</span>
-          </span>
-          <span class="fc-airline-text">
-            <span class="fc-airline-name">${airline}</span>
-            <span class="fc-flight-no">پرواز ${f.flight_no || '—'}</span>
-          </span>
-        </div>
-        <div class="fc-badges">${cabinBadgeIfNotEconomy(f.cabin)}</div>
-      </div>
-      <div class="fc-row2">
-        <span class="fc-time">${f.dep_time || '—'}</span>
-        <span class="fc-route-viz">
-          <span class="fc-route-dot"></span>
-          <span class="fc-route-dash"></span>
-          <svg class="fc-route-plane" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12l-8-3V4.5c0-.83-.67-1.5-1.5-1.5S11 3.67 11 4.5V9l-8 3v2l8-2.5V16l-2 1.5V19l3.5-1 3.5 1v-1.5L14 16v-4.5l8 2.5v-2z"/></svg>
-          <span class="fc-route-dash"></span>
-          <span class="fc-route-dot"></span>
-        </span>
-      </div>
-      <div class="fc-row3">
-        <span class="fc-seller">
-          <span class="fc-seller-logo">
-            <img src="${sellerLogoSrc(seller)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <span class="fc-seller-logo-fb" style="background:${colorFromString(seller)}">${seller.charAt(0)}</span>
-          </span>
-          <span class="fc-seller-name">${seller}</span>
-        </span>
-        <span class="fc-price">
-          <span class="fc-price-val">${f.adult_price || '—'}</span>
-          <span class="fc-price-unit">تومان</span>
-        </span>
-      </div>`;
-    card.onclick = () => openHistoryModal(f);
-    list.appendChild(card);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f.airline || ''}</td>
+      <td><span class="flight-cell">${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span></td>
+      <td>${f.dep_time || ''}</td>
+      <td>${f.seller || ''}</td>
+      <td class="price">${f.adult_price || ''}</td>`;
+    tr.onclick = () => openHistoryModal(f);
+    tbody.appendChild(tr);
   });
 
   document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
-  list.style.display = rows.length ? 'flex' : 'none';
+  document.getElementById('resultsTable').style.display = rows.length ? 'table' : 'none';
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
 }
 
@@ -1201,7 +1077,8 @@ function openHistoryModal(f) {
   const points = allHistory
     .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
                  h.flight_no === f.flight_no && h.airline === f.airline &&
-                 normalizeCabin(h.cabin) === cabinKey)
+                 normalizeCabin(h.cabin) === cabinKey &&
+                 (h.seller || '') === (f.seller || ''))
     .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
 
   let trendHtml;
@@ -1249,7 +1126,7 @@ function openHistoryModal(f) {
       <div class="modal-header">
         <div>
           <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
-          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''} · ${cabinBadge(f.cabin)}</div>
+          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''} · ${cabinBadge(f.cabin)}${f.seller ? ' · ' + f.seller : ''}</div>
         </div>
         <button class="modal-close">✕</button>
       </div>
