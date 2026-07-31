@@ -3,31 +3,52 @@ Fare Monitor — رصد نرخ پرواز تهران↔استانبول
 با استفاده از endpoint واقعی موبایل سپهر۳۶۰ که با DevTools پیدا شد.
 
 ===========================================================
+معماری (نسخه‌ی جدید)
+===========================================================
+دیگه دیتابیس محلی (fares.db) نداریم. تمام اسنپ‌شات‌های قیمت روی
+Cloudflare D1 نگه داشته می‌شن، از طریق یه Worker (worker.js) که سه کار
+می‌کنه:
+  1) می‌گه کدوم پروازها الان "نوبتشونه" (بر اساس DTD و آخرین رصد)
+  2) اسنپ‌شات‌های جدید رو ذخیره می‌کنه
+  3) دو تا JSON خروجی (برای پنل) رو تولید می‌کنه
+
+این اسکریپت فقط: کاندیدها رو به Worker می‌ده -> لیست "نوبت‌دارها" رو
+می‌گیره -> برای همونا از سپهر۳۶۰ قیمت می‌گیره -> به Worker می‌فرسته ->
+در آخر دو فایل docs/data.json و docs/history.json رو از Worker می‌گیره
+و می‌نویسه (این دوتا فایل کوچیک، همون چیزیه که باید commit بشه).
+
+===========================================================
+متغیرهای محیطی لازم (به‌عنوان GitHub Secrets ست کن)
+===========================================================
+    CF_WORKER_URL       مثلا https://fare-monitor-api.username.workers.dev
+    CF_INGEST_SECRET    همون secret ای که رو Worker هم ست کردی
+
+===========================================================
 نصب پیش‌نیاز
 ===========================================================
     pip install requests
 
-===========================================================
-زمان‌بندی هر ۶ ساعت (لینوکس/مک — cron)
-===========================================================
-    crontab -e
-    0 */6 * * * /usr/bin/python3 /path/to/fare_monitor.py >> /path/to/fare_monitor.log 2>&1
-
-روی ویندوز: Task Scheduler با تریگر "هر ۶ ساعت".
+زمان‌بندی: هر ۲ ساعت (چون ریزترین لایه‌ی رصد هر ۲ ساعته)؛
+خودِ Worker تصمیم می‌گیره کدوم پروازها الان واقعاً نیاز به رصد دارن.
 """
 
-import sqlite3
 import time
 import json
 import os
-import re
 from datetime import datetime, timedelta
 
 import requests
 
-DB_PATH = "fares.db"
 DOCS_JSON_PATH = os.path.join("docs", "data.json")
 DOCS_HISTORY_JSON_PATH = os.path.join("docs", "history.json")
+
+WORKER_URL = os.environ.get("CF_WORKER_URL", "").rstrip("/")
+CF_SECRET = os.environ.get("CF_INGEST_SECRET", "")
+
+CF_HEADERS = {
+    "Authorization": f"Bearer {CF_SECRET}",
+    "Content-Type": "application/json",
+}
 
 # ---- بازه‌ی تاریخ میلادی مورد نظر برای رصد ----
 START_DATE = "2026-08-01"
@@ -102,8 +123,17 @@ def to_jalali_str(date_str):
     return f"{jy:04d}-{jm:02d}-{jd:02d}"
 
 
+def daterange(start, end):
+    d0 = datetime.strptime(start, "%Y-%m-%d")
+    d1 = datetime.strptime(end, "%Y-%m-%d")
+    cur = d0
+    while cur <= d1:
+        yield cur.strftime("%Y-%m-%d")
+        cur += timedelta(days=1)
+
+
 # ===========================================================
-# فراخوانی API
+# فراخوانی API سپهر۳۶۰
 # ===========================================================
 def fetch_via_api(origin, destination, date_str_greg, session):
     jalali_date = to_jalali_str(date_str_greg)
@@ -130,7 +160,6 @@ def fetch_via_api(origin, destination, date_str_greg, session):
         if not rp:
             continue  # این یه ردیف تبلیغاتیه (tabligh)، پرواز واقعی نیست
 
-        # این فیلدها مال خودِ پروازن (سطح radifParvazi)، مشترک بین همه‌ی فروشنده‌هاش
         airline = rp.get("airlineNameFa", "")
         flight_no = rp.get("cleanFlightNumber", "")
         dep_time = rp.get("zamanKhorojAzMabda", "")
@@ -139,7 +168,6 @@ def fetch_via_api(origin, destination, date_str_greg, session):
         cabin = rp.get("cabinType", "")
 
         for entry in rp.get("radifParvaziEntekhabForoshandeList", []):
-            # ممکنه پرواز چارتری باشه (parvazCharteri) یا از طریق وب‌سرویس ایرلاین (parvazWebservice)
             pc = entry.get("parvazCharteri") or entry.get("parvazWebservice")
             if not pc:
                 continue
@@ -161,165 +189,88 @@ def fetch_via_api(origin, destination, date_str_greg, session):
 
 
 # ===========================================================
-# دیتابیس
+# ارتباط با Cloudflare Worker
 # ===========================================================
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS fare_snapshots (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            route TEXT,
-            flight_date TEXT,
-            airline TEXT,
-            flight_no TEXT,
-            dep_time TEXT,
-            arr_time TEXT,
-            airplane TEXT,
-            cabin TEXT,
-            adult_price TEXT,
-            child_price TEXT,
-            infant_price TEXT,
-            seller TEXT,
-            seat_count TEXT,
-            captured_at TEXT
-        )
-    """)
-    conn.commit()
-    return conn
+def get_due_targets(session):
+    candidates = [
+        {"route": route["label"], "flight_date": date_str}
+        for route in ROUTES
+        for date_str in daterange(START_DATE, END_DATE)
+    ]
+    resp = session.post(
+        f"{WORKER_URL}/due", headers=CF_HEADERS,
+        json={"candidates": candidates}, timeout=20
+    )
+    resp.raise_for_status()
+    return resp.json().get("due", [])
 
 
-def daterange(start, end):
-    d0 = datetime.strptime(start, "%Y-%m-%d")
-    d1 = datetime.strptime(end, "%Y-%m-%d")
-    cur = d0
-    while cur <= d1:
-        yield cur.strftime("%Y-%m-%d")
-        cur += timedelta(days=1)
+def ingest_snapshot(session, route_label, date_str, flights, captured_at):
+    payload = {
+        "route": route_label,
+        "flight_date": date_str,
+        "captured_at": captured_at,
+        "flights": flights,
+    }
+    resp = session.post(f"{WORKER_URL}/ingest", headers=CF_HEADERS, json=payload, timeout=20)
+    resp.raise_for_status()
+
+
+def export_json(session, kind, out_path):
+    resp = session.get(f"{WORKER_URL}/export/{kind}", headers=CF_HEADERS, timeout=30)
+    resp.raise_for_status()
+    data = resp.json()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    return data
 
 
 # ===========================================================
 # اجرای اصلی
 # ===========================================================
 def run_snapshot():
-    conn = init_db()
     session = requests.Session()
+    route_map = {r["label"]: r for r in ROUTES}
+
+    due = get_due_targets(session)
+    if not due:
+        print("هیچ پروازی الان نوبتش نرسیده — رد شدن از این اجرا")
+        return
+
     captured_at = datetime.now().isoformat(timespec="minutes")
 
-    for route in ROUTES:
-        for date_str in daterange(START_DATE, END_DATE):
-            try:
-                flights = fetch_via_api(route["origin"], route["destination"], date_str, session)
-            except Exception as e:
-                print(f"خطا در {route['label']} - {date_str}: {e}")
-                continue
-
-            for f in flights:
-                conn.execute(
-                    """INSERT INTO fare_snapshots
-                       (route, flight_date, airline, flight_no, dep_time, arr_time, airplane, cabin,
-                        adult_price, child_price, infant_price, seller, seat_count, captured_at)
-                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                    (route["label"], date_str, f["airline"], f["flight_no"], f["dep_time"], f["arr_time"],
-                     f["airplane"], f["cabin"], f["adult_price"], f["child_price"], f["infant_price"],
-                     f["seller"], f["seat_count"], captured_at)
-                )
-            conn.commit()
-            print(f"✓ {route['label']} — {date_str} — {len(flights)} پرواز ذخیره شد ({captured_at})")
-
-            time.sleep(DELAY_BETWEEN_REQUESTS_SEC)
-
-    conn.close()
-
-
-# ===========================================================
-# خروجی JSON برای پنل وب (docs/data.json)
-# فقط آخرین اسنپ‌شات هر مسیر+تاریخ رو می‌ذاره، نه کل تاریخچه،
-# که فایل خیلی بزرگ نشه و پنل سریع لود بشه.
-# ===========================================================
-def export_latest_json():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-
-    rows = conn.execute("""
-        SELECT f.*
-        FROM fare_snapshots f
-        INNER JOIN (
-            SELECT route, flight_date, MAX(captured_at) AS max_captured
-            FROM fare_snapshots
-            GROUP BY route, flight_date
-        ) latest
-        ON f.route = latest.route
-           AND f.flight_date = latest.flight_date
-           AND f.captured_at = latest.max_captured
-        ORDER BY f.route, f.flight_date, f.dep_time
-    """).fetchall()
-
-    result = {
-        "generated_at": datetime.now().isoformat(timespec="minutes"),
-        "flights": [dict(r) for r in rows],
-    }
-
-    os.makedirs(os.path.dirname(DOCS_JSON_PATH), exist_ok=True)
-    with open(DOCS_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
-
-    conn.close()
-    print(f"✓ docs/data.json به‌روزرسانی شد ({len(rows)} ردیف)")
-
-
-# ===========================================================
-# خروجی JSON تاریخچه‌ی کامل قیمت هر پرواز (برای نمودار روند در پنل)
-# به ازای هر (route, flight_date, flight_no, airline, captured_at) یک نقطه،
-# با ارزان‌ترین قیمت بین فروشنده‌های همون اسنپ‌شات.
-# ===========================================================
-def export_history_json():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    rows = conn.execute("""
-        SELECT route, flight_date, flight_no, airline, captured_at, adult_price
-        FROM fare_snapshots
-    """).fetchall()
-    conn.close()
-
-    def price_num(s):
-        digits = re.sub(r"[^0-9]", "", str(s or ""))
-        return int(digits) if digits else None
-
-    grouped = {}
-    for r in rows:
-        price = price_num(r["adult_price"])
-        if price is None:
+    for item in due:
+        route_label = item["route"]
+        date_str = item["flight_date"]
+        route = route_map.get(route_label)
+        if not route:
             continue
-        key = (r["route"], r["flight_date"], r["flight_no"], r["airline"], r["captured_at"])
-        if key not in grouped or price < grouped[key]:
-            grouped[key] = price
+        try:
+            flights = fetch_via_api(route["origin"], route["destination"], date_str, session)
+        except Exception as e:
+            print(f"خطا در {route_label} - {date_str}: {e}")
+            continue
 
-    history = [
-        {
-            "route": k[0],
-            "flight_date": k[1],
-            "flight_no": k[2],
-            "airline": k[3],
-            "captured_at": k[4],
-            "price": v,
-        }
-        for k, v in grouped.items()
-    ]
-    history.sort(key=lambda h: (h["route"], h["flight_date"], h["flight_no"], h["captured_at"]))
+        try:
+            ingest_snapshot(session, route_label, date_str, flights, captured_at)
+        except Exception as e:
+            print(f"خطا در ثبت {route_label} - {date_str} روی Cloudflare: {e}")
+            continue
 
-    result = {
-        "generated_at": datetime.now().isoformat(timespec="minutes"),
-        "history": history,
-    }
-
-    os.makedirs(os.path.dirname(DOCS_HISTORY_JSON_PATH), exist_ok=True)
-    with open(DOCS_HISTORY_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
-
-    print(f"✓ docs/history.json به‌روزرسانی شد ({len(history)} نقطه‌ی قیمتی)")
+        print(f"✓ {route_label} — {date_str} — {len(flights)} پرواز ثبت شد ({captured_at})")
+        time.sleep(DELAY_BETWEEN_REQUESTS_SEC)
 
 
 if __name__ == "__main__":
+    if not WORKER_URL or not CF_SECRET:
+        raise SystemExit("متغیرهای CF_WORKER_URL و CF_INGEST_SECRET ست نشدن.")
+
     run_snapshot()
-    export_latest_json()
-    export_history_json()
+
+    session = requests.Session()
+    data = export_json(session, "data", DOCS_JSON_PATH)
+    print(f"✓ docs/data.json به‌روزرسانی شد ({len(data.get('flights', []))} ردیف)")
+
+    history = export_json(session, "history", DOCS_HISTORY_JSON_PATH)
+    print(f"✓ docs/history.json به‌روزرسانی شد ({len(history.get('history', []))} نقطه‌ی قیمتی)")
