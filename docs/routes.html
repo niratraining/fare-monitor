@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدیریت مسیرها — رصد نرخ پرواز</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Tahoma, Vazirmatn, sans-serif; background: #f4f5f7; margin: 0; padding: 0 0 24px; color: #222; }
+  header { background: #4b3f72; color: white; padding: 14px 16px; }
+  h1 { font-size: 16px; margin: 0; }
+  a.back { color: #d8d3ea; font-size: 12px; float: left; text-decoration: none; }
+  main { padding: 12px; max-width: 640px; margin: 0 auto; }
+  .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .card h2 { font-size: 13px; margin: 0 0 10px; color: #4b3f72; }
+  label { font-size: 12px; color: #555; display: block; margin-bottom: 3px; }
+  input { width: 100%; padding: 7px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+  .row2 { display: flex; gap: 8px; }
+  .row2 > div { flex: 1; }
+  button { border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
+  .btn-main { background: #4b3f72; color: white; width: 100%; }
+  .btn-danger { background: #fde8ea; color: #d9455f; }
+  .btn-small { padding: 5px 10px; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { padding: 7px 4px; text-align: right; border-bottom: 1px solid #eee; }
+  th { color: #777; font-weight: normal; }
+  .muted { color: #999; }
+  .badge { border-radius: 10px; padding: 2px 8px; font-size: 11px; }
+  .badge.on { background: #e6f4ea; color: #1a7a3d; }
+  .badge.off { background: #f0f0f0; color: #999; }
+  .msg { font-size: 12px; padding: 8px; border-radius: 6px; margin-bottom: 10px; display: none; }
+  .msg.ok { background: #e6f4ea; color: #1a7a3d; display: block; }
+  .msg.err { background: #fde8ea; color: #d9455f; display: block; }
+  #gate input { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>مدیریت مسیرها <a class="back" href="index.html">→ بازگشت به پنل</a></h1>
+</header>
+
+<main>
+  <div class="card" id="gate">
+    <h2>اتصال به Worker</h2>
+    <label>آدرس Worker</label>
+    <input id="workerUrl" placeholder="https://fare-monitor-api.username.workers.dev">
+    <label>INGEST_SECRET</label>
+    <input id="secret" type="password">
+    <button class="btn-main" onclick="saveGate()">اتصال و ذخیره در این مرورگر</button>
+    <div class="msg" id="gateMsg"></div>
+  </div>
+
+  <div id="appArea" style="display:none;">
+    <div class="msg" id="msg"></div>
+
+    <div class="card">
+      <h2>افزودن / ویرایش مسیر</h2>
+      <input type="hidden" id="editId">
+      <label>عنوان مسیر (مثلاً تهران-دبی)</label>
+      <input id="fLabel">
+      <div class="row2">
+        <div><label>کد ایاتا مبدأ (با کاما)</label><input id="fOrigin" placeholder="THR,IKA,PYK"></div>
+        <div><label>کد ایاتا مقصد (با کاما)</label><input id="fDest" placeholder="SHJ,DWC,DXB"></div>
+      </div>
+      <div class="row2">
+        <div><label>از تاریخ (میلادی YYYY-MM-DD)</label><input id="fStart" placeholder="2026-08-01"></div>
+        <div><label>تا تاریخ (میلادی YYYY-MM-DD)</label><input id="fEnd" placeholder="2026-08-11"></div>
+      </div>
+      <button class="btn-main" onclick="submitRoute()">ذخیره مسیر</button>
+    </div>
+
+    <div class="card">
+      <h2>مسیرهای موجود</h2>
+      <table>
+        <thead><tr><th>مسیر</th><th>بازه</th><th>وضعیت</th><th></th></tr></thead>
+        <tbody id="routesBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+let WORKER_URL = localStorage.getItem('fm_worker_url') || 'https://fare-monitor-api.nirahelp.workers.dev';
+let SECRET = localStorage.getItem('fm_secret') || 'Sp89001671800@';
+
+function headers() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SECRET };
+}
+
+function showMsg(el, text, ok) {
+  el.textContent = text;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+}
+
+async function saveGate() {
+  WORKER_URL = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
+  SECRET = document.getElementById('secret').value.trim();
+  const gateMsg = document.getElementById('gateMsg');
+  try {
+    const res = await fetch(WORKER_URL + '/routes', { headers: headers() });
+    if (!res.ok) throw new Error('پاسخ ناموفق: ' + res.status);
+    localStorage.setItem('fm_worker_url', WORKER_URL);
+    localStorage.setItem('fm_secret', SECRET);
+    document.getElementById('appArea').style.display = 'block';
+    showMsg(gateMsg, 'وصل شد ✓', true);
+    loadRoutes();
+  } catch (e) {
+    showMsg(gateMsg, 'خطا در اتصال — آدرس یا Secret رو چک کن', false);
+  }
+}
+
+async function loadRoutes() {
+  const res = await fetch(WORKER_URL + '/routes', { headers: headers() });
+  const data = await res.json();
+  const tbody = document.getElementById('routesBody');
+  tbody.innerHTML = '';
+  (data.routes || []).forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.label}<div class="muted">${r.origin} ← ${r.destination}</div></td>
+      <td class="muted"><bdi style="direction:ltr">${r.start_date}</bdi><br><bdi style="direction:ltr">${r.end_date}</bdi></td>
+      <td><span class="badge ${r.active ? 'on' : 'off'}">${r.active ? 'فعال' : 'غیرفعال'}</span></td>
+      <td>
+        <button class="btn-small" onclick='editRoute(${JSON.stringify(r)})'>ویرایش</button>
+        <button class="btn-small" onclick="toggleRoute(${r.id}, ${r.active ? 0 : 1})">${r.active ? 'غیرفعال کن' : 'فعال کن'}</button>
+        <button class="btn-small btn-danger" onclick="deleteRoute(${r.id})">حذف</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function editRoute(r) {
+  document.getElementById('editId').value = r.id;
+  document.getElementById('fLabel').value = r.label;
+  document.getElementById('fOrigin').value = r.origin;
+  document.getElementById('fDest').value = r.destination;
+  document.getElementById('fStart').value = r.start_date;
+  document.getElementById('fEnd').value = r.end_date;
+  window.scrollTo(0, 0);
+}
+
+async function submitRoute() {
+  const msg = document.getElementById('msg');
+  const body = {
+    id: document.getElementById('editId').value || undefined,
+    label: document.getElementById('fLabel').value.trim(),
+    origin: document.getElementById('fOrigin').value.trim(),
+    destination: document.getElementById('fDest').value.trim(),
+    start_date: document.getElementById('fStart').value.trim(),
+    end_date: document.getElementById('fEnd').value.trim(),
+  };
+  if (!body.label || !body.origin || !body.destination || !body.start_date || !body.end_date) {
+    showMsg(msg, 'همه‌ی فیلدها لازمه', false);
+    return;
+  }
+  const res = await fetch(WORKER_URL + '/routes', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  if (res.ok) {
+    showMsg(msg, 'ذخیره شد ✓', true);
+    ['editId','fLabel','fOrigin','fDest','fStart','fEnd'].forEach(id => document.getElementById(id).value = '');
+    loadRoutes();
+  } else {
+    showMsg(msg, 'خطا در ذخیره', false);
+  }
+}
+
+async function toggleRoute(id, active) {
+  const r = (await (await fetch(WORKER_URL + '/routes', { headers: headers() })).json()).routes.find(x => x.id === id);
+  await fetch(WORKER_URL + '/routes', { method: 'POST', headers: headers(), body: JSON.stringify({ ...r, active }) });
+  loadRoutes();
+}
+
+async function deleteRoute(id) {
+  if (!confirm('این مسیر حذف بشه؟ (تاریخچه‌ی قیمت‌های قبلیش دست‌نخورده می‌مونه)')) return;
+  await fetch(WORKER_URL + '/routes', { method: 'DELETE', headers: headers(), body: JSON.stringify({ id }) });
+  loadRoutes();
+}
+
+if (WORKER_URL && SECRET) {
+  document.getElementById('workerUrl').value = WORKER_URL;
+  document.getElementById('secret').value = SECRET;
+  saveGate();
+}
+</script>
+</body>
+</html>
