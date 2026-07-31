@@ -638,7 +638,6 @@
 
   main { padding: 12px; }
   #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
-  .result-count { font-size: 12px; color: #777; margin: 8px 2px; }
 
   /* --- کارت پرواز به‌سبک بلیط بوردینگ‌پس --- */
   .results-list { display: flex; flex-direction: column; gap: 12px; }
@@ -806,9 +805,9 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(20,14,36,0.5);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
+    background: rgba(18,12,32,0.55);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -818,15 +817,27 @@
   .modal-overlay.closing { animation: overlayFadeOut .18s ease forwards; }
   @keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+  /* --- کارت مودال: هویت بصری مستقل، هماهنگ با رنگ برند اما رسمی‌تر و خاص‌تر از بقیه‌ی UI --- */
   .modal-card {
-    background: white;
+    position: relative;
+    background: #fdfcff;
     width: 100%;
     max-width: 480px;
-    border-radius: 20px 20px 0 0;
-    padding: 10px 16px 16px;
-    max-height: 84vh;
+    border-radius: 24px 24px 0 0;
+    padding: 12px 18px 22px;
+    max-height: 88vh;
     overflow-y: auto;
     animation: sheetUp .32s cubic-bezier(.16,1,.3,1);
+    box-shadow: 0 -18px 50px rgba(28,18,54,0.22);
+  }
+  .modal-card::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; left: 0;
+    height: 3px;
+    border-radius: 24px 24px 0 0;
+    background: linear-gradient(90deg, #4b3f72, #8b5fbf 45%, #d9455f);
   }
   .modal-overlay.closing .modal-card { animation: sheetDown .18s cubic-bezier(.4,0,1,1) forwards; }
   @keyframes sheetUp {
@@ -838,74 +849,199 @@
     to { transform: translateY(100%); }
   }
   .sheet-handle {
-    width: 36px;
+    width: 38px;
     height: 4px;
     border-radius: 3px;
     background: #e6e1f2;
-    margin: 2px auto 12px;
+    margin: 8px auto 14px;
   }
+
+  /* --- هدر: آواتار ایرلاین + عنوان + برچسب‌های متادیتا --- */
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 16px;
   }
-  .modal-title { font-size: 15px; font-weight: bold; }
   .modal-sub { font-size: 12px; color: #888; margin-top: 2px; }
+  .modal-avatar {
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: linear-gradient(150deg, #4b3f72, #7c4f9c);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(75,63,114,0.35);
+  }
+  .modal-header-main { flex: 1; min-width: 0; }
+  .modal-title { font-size: 15.5px; font-weight: 800; color: #1c1730; }
+  .modal-title .modal-flightno { color: #7a6da8; font-weight: 700; direction: ltr; display: inline-block; }
+  .modal-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 7px;
+  }
+  .modal-chip {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #6b5f95;
+    background: #f1eef9;
+    border: 1px solid #e6e1f5;
+    border-radius: 7px;
+    padding: 3px 8px;
+  }
   .modal-close {
     border: none;
-    background: #f0f0f0;
-    width: 28px;
-    height: 28px;
+    background: #f0eef5;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    font-size: 14px;
-    color: #555;
+    font-size: 13px;
+    color: #55507a;
     cursor: pointer;
     flex: none;
+    transition: background .15s ease;
   }
-  .modal-trend { margin-bottom: 10px; }
+  .modal-close:active { background: #e4e0f0; }
+
+  /* --- ردیف آمار: کمترین / بیشترین / آخرین قیمت --- */
+  .modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .modal-stat {
+    background: #f7f6fb;
+    border: 1px solid #efedf7;
+    border-radius: 12px;
+    padding: 9px 6px;
+    text-align: center;
+  }
+  .modal-stat-label { font-size: 10px; color: #948bb8; font-weight: 700; margin-bottom: 3px; }
+  .modal-stat-value { font-size: 13.5px; font-weight: 800; color: #1c1730; direction: ltr; }
+  .modal-stat.is-current { background: linear-gradient(150deg, #4b3f72, #6a4a8e); border-color: transparent; }
+  .modal-stat.is-current .modal-stat-label { color: #cfc6e8; }
+  .modal-stat.is-current .modal-stat-value { color: #fff; }
+
+  /* --- نشان روند کلی --- */
+  .modal-trend { margin-bottom: 12px; }
   .trend-badge {
-    display: inline-block;
-    font-size: 12.5px;
-    font-weight: bold;
-    padding: 5px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 12px;
     border-radius: 20px;
+    letter-spacing: -.01em;
   }
-  .trend-badge.up { background: #fde8ea; color: #d9455f; }
-  .trend-badge.down { background: #e6f4ea; color: #1a7a3d; }
-  .trend-badge.flat { background: #f0f0f0; color: #777; }
-  .modal-chart {
-    background: #fafafa;
-    border-radius: 10px;
-    padding: 8px 4px;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: center;
+  .trend-badge.up { background: linear-gradient(120deg, #fde8ea, #fcdde3); color: #b8324a; }
+  .trend-badge.down { background: linear-gradient(120deg, #e6f4ea, #dcf1e3); color: #15693a; }
+  .trend-badge.flat { background: #f0eef5; color: #6b6285; }
+
+  /* --- نمودار: بخش مجزا با عنوان و برچسب بازه‌ی قیمت --- */
+  .modal-chart-section {
+    background: #fbfaff;
+    border: 1px solid #f0edf9;
+    border-radius: 16px;
+    padding: 12px 12px 6px;
+    margin-bottom: 14px;
   }
-  .history-list {
-    border-top: 1px solid #eee;
-  }
-  .history-item {
+  .modal-chart-title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    padding: 9px 2px;
-    border-bottom: 1px solid #f2f2f2;
-    font-size: 12.5px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #8478a8;
+    margin-bottom: 6px;
   }
+  .modal-chart-title .range-hint { color: #b7aed6; font-weight: 700; direction: ltr; }
+  .modal-chart {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* --- تایم‌لاین تاریخچه: خط عمودی متصل‌کننده + نقاط رنگی --- */
+  .history-section-title {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #948bb8;
+    margin: 4px 2px 8px;
+  }
+  .history-list {
+    position: relative;
+    padding-right: 4px;
+  }
+  .history-list::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    right: 15px;
+    width: 2px;
+    background: linear-gradient(180deg, #e9e5f5, #f4f2fa);
+  }
+  .history-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 4px 9px 2px;
+  }
+  .history-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cfc7e5;
+    border: 2px solid #fdfcff;
+    box-shadow: 0 0 0 2px #ede9f7;
+    z-index: 1;
+    margin-right: 11px;
+  }
+  .history-dot.up { background: #d9455f; box-shadow: 0 0 0 2px #fde3e7; }
+  .history-dot.down { background: #1a7a3d; box-shadow: 0 0 0 2px #e2f2e7; }
   .history-date {
-    color: #777;
-    flex: 1.3;
+    color: #8b83ac;
+    flex: 1.15;
     display: flex;
     flex-direction: column;
     gap: 1px;
   }
-  .history-date .hd-date { font-size: 10.5px; color: #a49bc2; font-weight: 600; }
+  .history-date .hd-date { font-size: 10px; color: #a49bc2; font-weight: 700; }
   .history-date .hd-time { font-size: 13px; color: #221f2e; font-weight: 800; direction: ltr; }
-  .history-price { font-weight: bold; flex: 1; text-align: center; }
-  .history-delta { flex: 1; text-align: left; font-weight: bold; }
+  .history-price { font-weight: 800; flex: 1; text-align: center; font-size: 13.5px; color: #1c1730; direction: ltr; }
+  .history-delta {
+    flex: 1;
+    text-align: left;
+    font-weight: 800;
+    font-size: 11.5px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .history-delta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    direction: ltr;
+  }
+  .history-delta-chip.up { background: #fdeef0; color: #c23955; }
+  .history-delta-chip.down { background: #e9f6ee; color: #187a40; }
+  .history-delta-chip.flat { background: #f2f1f6; color: #a29cb9; }
+  .history-item.is-latest .history-price { color: #4b3f72; }
 </style>
+
 </head>
 <body>
 
@@ -1008,8 +1144,6 @@
     <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:60%;"></div><div class="sk-line" style="width:40%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
   </div>
   <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
-  <div class="result-count" id="resultCount"></div>
-  <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
   <div class="results-list" id="resultsList" style="display:none;"></div>
 </main>
 
@@ -1619,7 +1753,6 @@ function render() {
     list.appendChild(card);
   });
 
-  document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
   list.style.display = rows.length ? 'flex' : 'none';
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
   updateFilterBadge();
@@ -1703,7 +1836,7 @@ function buildSparkline(points, width, height, opts) {
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   const range = (max - min) || 1;
-  const padX = mini ? 3 : 10, padY = mini ? 4 : 12;
+  const padX = mini ? 3 : 14, padY = mini ? 4 : 16;
   const innerW = width - padX * 2;
   const innerH = height - padY * 2;
   const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
@@ -1717,7 +1850,7 @@ function buildSparkline(points, width, height, opts) {
   const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
   const rising = prices[prices.length - 1] > prices[0];
   const flat = prices[prices.length - 1] === prices[0];
-  const stroke = flat ? '#999' : (rising ? '#d9455f' : '#1a7a3d');
+  const stroke = flat ? '#8b83ac' : (rising ? '#d9455f' : '#1a7a3d');
 
   if (mini) {
     // نسخه‌ی کوچیک برای کنار هر ردیف: بدون نقطه‌های تکی، با یه سایه‌ی کم‌رنگ زیر خط و یه نقطه فقط روی آخرین مقدار
@@ -1732,11 +1865,39 @@ function buildSparkline(points, width, height, opts) {
     </svg>`;
   }
 
-  const dots = coords.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${stroke}" />`).join('');
+  // نسخه‌ی بزرگ (داخل مودال تاریخچه): خطوط راهنمای افقی، ناحیه‌ی گرادیانی زیر
+  // خط، حلقه‌ی توخالی روی نقطه‌ی کمترین/بیشترین قیمت، و نقطه‌ی توپر روی آخرین رصد
+  const gid = 'sparkGrad' + Math.random().toString(36).slice(2, 8);
+  const last = coords[coords.length - 1];
+  const baseline = height - padY;
+  const areaD = pathD +
+    ` L${last[0].toFixed(1)},${baseline.toFixed(1)} L${coords[0][0].toFixed(1)},${baseline.toFixed(1)} Z`;
 
-  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;">
-    <path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />
-    ${dots}
+  const gridLines = [0.25, 0.5, 0.75].map(fr => {
+    const y = (padY + innerH * fr).toFixed(1);
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#ece7f7" stroke-width="1" stroke-dasharray="3,4" />`;
+  }).join('');
+
+  const maxIdx = prices.indexOf(max);
+  const minIdx = prices.indexOf(min);
+  const extremaMarkers = coords.map(([x, y], i) => {
+    if (i !== maxIdx && i !== minIdx) return '';
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="#fff" stroke="${stroke}" stroke-width="2" />`;
+  }).join('');
+  const lastDot = `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="4.2" fill="${stroke}" stroke="#fff" stroke-width="2" />`;
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;display:block;">
+    <defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${stroke}" stop-opacity="0.24" />
+        <stop offset="100%" stop-color="${stroke}" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <path d="${areaD}" fill="url(#${gid})" stroke="none" />
+    <path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+    ${extremaMarkers}
+    ${lastDot}
   </svg>`;
 }
 
@@ -1745,46 +1906,62 @@ function buildSparkline(points, width, height, opts) {
 // ===========================================================
 function openHistoryModal(f) {
   const points = getHistoryPoints(f);
+  const prices = points.map(p => p.price);
+  const minPrice = prices.length ? Math.min(...prices) : null;
+  const maxPrice = prices.length ? Math.max(...prices) : null;
+  const currentPrice = prices.length ? prices[prices.length - 1] : null;
 
   let trendHtml;
   if (points.length >= 2) {
     const first = points[0].price;
     const last = points[points.length - 1].price;
     if (last > first) {
-      trendHtml = `<span class="trend-badge up">📈 روند افزایشی — ${formatPriceShort(last - first)}+ نسبت به اولین ثبت</span>`;
+      const pct = first ? Math.round(((last - first) / first) * 100) : 0;
+      trendHtml = `<span class="trend-badge up">📈 روند افزایشی — ${formatPriceShort(last - first)}+ (٪${toFaDigits(pct)}) نسبت به اولین ثبت</span>`;
     } else if (last < first) {
-      trendHtml = `<span class="trend-badge down">📉 روند کاهشی — ${formatPriceShort(first - last)}- نسبت به اولین ثبت</span>`;
+      const pct = first ? Math.round(((first - last) / first) * 100) : 0;
+      trendHtml = `<span class="trend-badge down">📉 روند کاهشی — ${formatPriceShort(first - last)}- (٪${toFaDigits(pct)}) نسبت به اولین ثبت</span>`;
     } else {
-      trendHtml = `<span class="trend-badge flat">➖ بدون تغییر</span>`;
+      trendHtml = `<span class="trend-badge flat">➖ بدون تغییر نسبت به اولین ثبت</span>`;
     }
   } else {
     trendHtml = `<span class="trend-badge flat">فقط یک بار ثبت شده — هنوز تاریخچه‌ای نیست</span>`;
   }
 
-  const chartHtml = buildSparkline(points, 280, 100);
+  const chartHtml = buildSparkline(points, 300, 130);
 
   let listHtml = '';
   const reversed = [...points].reverse();
   reversed.forEach((p, idx) => {
     const chronoIdx = points.length - 1 - idx;
     const prev = points[chronoIdx - 1];
-    let deltaHtml = '<span style="color:#bbb;">—</span>';
+    let dotCls = 'flat';
+    let deltaHtml = '<span class="history-delta-chip flat">—</span>';
     if (prev) {
       const diff = p.price - prev.price;
-      if (diff > 0) deltaHtml = `<span style="color:#d9455f;">▲ ${formatPriceShort(diff)}</span>`;
-      else if (diff < 0) deltaHtml = `<span style="color:#1a7a3d;">▼ ${formatPriceShort(Math.abs(diff))}</span>`;
-      else deltaHtml = '<span style="color:#bbb;">بدون تغییر</span>';
+      if (diff > 0) { dotCls = 'up'; deltaHtml = `<span class="history-delta-chip up">▲ ${formatPriceShort(diff)}</span>`; }
+      else if (diff < 0) { dotCls = 'down'; deltaHtml = `<span class="history-delta-chip down">▼ ${formatPriceShort(Math.abs(diff))}</span>`; }
+      else deltaHtml = '<span class="history-delta-chip flat">بدون تغییر</span>';
     }
     const dt = toJalaliDateTime(p.captured_at);
     const dateHtml = dt
       ? `<span class="hd-date">${dt.dateLabelShort}</span><span class="hd-time">${dt.timeLabel}</span>`
       : `<bdi style="direction:ltr">${p.captured_at || ''}</bdi>`;
-    listHtml += `<div class="history-item">
+    const isLatest = idx === 0;
+    listHtml += `<div class="history-item${isLatest ? ' is-latest' : ''}">
+      <span class="history-dot ${dotCls}"></span>
       <span class="history-date">${dateHtml}</span>
       <span class="history-price">${formatPriceShort(p.price)}</span>
       <span class="history-delta">${deltaHtml}</span>
     </div>`;
   });
+
+  const airlineInitial = (f.airline || '؟').trim().charAt(0);
+  let dateChip = '';
+  if (f.flight_date) {
+    const d = formatDateCard(f.flight_date);
+    dateChip = `${d.weekday} ${d.label}`;
+  }
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -1794,16 +1971,47 @@ function openHistoryModal(f) {
     <div class="modal-card">
       <div class="sheet-handle"></div>
       <div class="modal-header">
-        <div>
-          <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
-          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''} · ${cabinBadge(f.cabin)}${f.seller ? ' · ' + f.seller : ''}</div>
+        <div class="modal-avatar">${airlineInitial}</div>
+        <div class="modal-header-main">
+          <div class="modal-title">${f.airline || ''} <bdi class="modal-flightno">#${f.flight_no || ''}</bdi></div>
+          <div class="modal-meta-row">
+            ${f.route ? `<span class="modal-chip">${f.route}</span>` : ''}
+            ${dateChip ? `<span class="modal-chip">${dateChip}</span>` : ''}
+            ${cabinBadge(f.cabin)}
+            ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
+          </div>
         </div>
         <button class="modal-close">✕</button>
       </div>
+
+      <div class="modal-stats">
+        <div class="modal-stat">
+          <div class="modal-stat-label">کمترین</div>
+          <div class="modal-stat-value">${minPrice !== null ? formatPriceShort(minPrice) : '—'}</div>
+        </div>
+        <div class="modal-stat">
+          <div class="modal-stat-label">بیشترین</div>
+          <div class="modal-stat-value">${maxPrice !== null ? formatPriceShort(maxPrice) : '—'}</div>
+        </div>
+        <div class="modal-stat is-current">
+          <div class="modal-stat-label">آخرین قیمت</div>
+          <div class="modal-stat-value">${currentPrice !== null ? formatPriceShort(currentPrice) : '—'}</div>
+        </div>
+      </div>
+
       <div class="modal-trend">${trendHtml}</div>
-      <div class="modal-chart">${chartHtml}</div>
+
+      <div class="modal-chart-section">
+        <div class="modal-chart-title">
+          <span>روند قیمت در طول زمان</span>
+          ${minPrice !== null && maxPrice !== null ? `<bdi class="range-hint">${formatPriceShort(minPrice)}–${formatPriceShort(maxPrice)}</bdi>` : ''}
+        </div>
+        <div class="modal-chart">${chartHtml}</div>
+      </div>
+
+      <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
       <div class="history-list">
-        ${listHtml || '<div style="text-align:center;color:#999;padding:16px;">تاریخچه‌ای ثبت نشده</div>'}
+        ${listHtml || '<div style="text-align:center;color:#a89fc4;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
       </div>
     </div>`;
 
