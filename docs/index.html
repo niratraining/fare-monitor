@@ -516,6 +516,12 @@
     display: flex;
     justify-content: center;
   }
+  .modal-section-title {
+    font-size: 12px;
+    color: #888;
+    margin: 14px 2px 6px;
+    font-weight: 600;
+  }
   .history-list {
     border-top: 1px solid #eee;
   }
@@ -627,6 +633,8 @@
 <script>
 let allFlights = [];
 let allHistory = [];
+let allRouteTrend = [];
+let allAirlineTrend = [];
 let state = {
   route: null,
   date: null,
@@ -734,6 +742,22 @@ async function load() {
       allHistory = histData.history || [];
     } catch (e2) {
       allHistory = [];
+    }
+
+    // این دوتا هم مثل history.json ممکنه اولین اجرا هنوز تولید نشده باشن
+    try {
+      const rtRes = await fetch('route-trend.json?t=' + Date.now());
+      const rtData = await rtRes.json();
+      allRouteTrend = rtData.route_trend || [];
+    } catch (e3) {
+      allRouteTrend = [];
+    }
+    try {
+      const atRes = await fetch('airline-trend.json?t=' + Date.now());
+      const atData = await atRes.json();
+      allAirlineTrend = atData.airline_trend || [];
+    } catch (e4) {
+      allAirlineTrend = [];
     }
 
     document.getElementById('meta').innerHTML = data.generated_at
@@ -1070,6 +1094,34 @@ function buildSparkline(points, width, height) {
 }
 
 // ===========================================================
+// میانگین متحرک (rolling average) — لایه‌ی ۴: برای حذف نویز از روند ایرلاین
+// window=3 یعنی هر نقطه، میانگین خودش و ۲ نقطه‌ی قبلیه
+// ===========================================================
+function rollingAverage(points, windowSize) {
+  return points.map((p, i) => {
+    const start = Math.max(0, i - windowSize + 1);
+    const slice = points.slice(start, i + 1);
+    const avg = slice.reduce((sum, x) => sum + x.price, 0) / slice.length;
+    return { captured_at: p.captured_at, price: Math.round(avg) };
+  });
+}
+
+// نشان روند ساده (بالا/پایین/بدون تغییر) بین اولین و آخرین نقطه، با برچسب دلخواه
+function trendBadgeHtml(points, label) {
+  if (points.length < 2) {
+    return `<span class="trend-badge flat">${label}: داده‌ی کافی نیست</span>`;
+  }
+  const first = points[0].price;
+  const last = points[points.length - 1].price;
+  if (last > first) {
+    return `<span class="trend-badge up">📈 ${label} — ${formatPriceShort(last - first)}+</span>`;
+  } else if (last < first) {
+    return `<span class="trend-badge down">📉 ${label} — ${formatPriceShort(first - last)}-</span>`;
+  }
+  return `<span class="trend-badge flat">➖ ${label}: بدون تغییر</span>`;
+}
+
+// ===========================================================
 // مودال تاریخچه‌ی قیمت یک پرواز
 // ===========================================================
 function openHistoryModal(f) {
@@ -1096,6 +1148,25 @@ function openHistoryModal(f) {
   }
 
   const chartHtml = buildSparkline(points, 280, 100);
+
+  // لایه‌ی ۳ — روند میانگین کل مسیر+تاریخ (نه فقط این پرواز)
+  const routePoints = allRouteTrend
+    .filter(r => r.route === f.route && r.flight_date === f.flight_date &&
+                 normalizeCabin(r.cabin) === cabinKey)
+    .map(r => ({ captured_at: r.captured_at, price: r.avg_price }))
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+  const routeTrendHtml = trendBadgeHtml(routePoints, 'میانگین کل مسیر');
+  const routeChartHtml = buildSparkline(routePoints, 280, 70);
+
+  // لایه‌ی ۴ — روند ایرلاین (میانگین متحرک روی همه‌ی تاریخ‌های زیر رصد آن ایرلاین)
+  const airlineRaw = allAirlineTrend
+    .filter(r => r.route === f.route && r.airline === f.airline &&
+                 normalizeCabin(r.cabin) === cabinKey)
+    .map(r => ({ captured_at: r.captured_at, price: r.avg_price }))
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+  const airlinePoints = rollingAverage(airlineRaw, 3);
+  const airlineTrendHtml = trendBadgeHtml(airlinePoints, `روند ایرلاین ${f.airline || ''} (میانگین متحرک)`);
+  const airlineChartHtml = buildSparkline(airlinePoints, 280, 70);
 
   let listHtml = '';
   const reversed = [...points].reverse();
@@ -1131,6 +1202,15 @@ function openHistoryModal(f) {
       </div>
       <div class="modal-trend">${trendHtml}</div>
       <div class="modal-chart">${chartHtml}</div>
+
+      <div class="modal-section-title">میانگین کل مسیر (این تاریخ، همه‌ی پروازها)</div>
+      <div class="modal-trend">${routeTrendHtml}</div>
+      <div class="modal-chart">${routeChartHtml}</div>
+
+      <div class="modal-section-title">روند ایرلاین (میانگین متحرک روی کل تاریخ‌های زیر رصد)</div>
+      <div class="modal-trend">${airlineTrendHtml}</div>
+      <div class="modal-chart">${airlineChartHtml}</div>
+
       <div class="history-list">
         ${listHtml || '<div style="text-align:center;color:#999;padding:16px;">تاریخچه‌ای ثبت نشده</div>'}
       </div>
