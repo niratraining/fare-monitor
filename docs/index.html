@@ -1136,14 +1136,27 @@ function getLowSeatBadge(f) {
 }
 
 // ---- تاریخچه‌ی قیمت یک پرواز مشخص، مرتب‌شده بر اساس زمان ثبت (پایه‌ی مشترک برای نشان تغییر، اسپارک‌لاین و مودال) ----
+// هر رصد (هر ۲/۶/۱۲ ساعت) یک ردیف خام تو history.json ثبت می‌شه، حتی وقتی
+// قیمت هیچ تغییری نکرده — چون این دیتا برای «آخرین وضعیت» هم لازمه.
+// اما برای منطق تغییر قیمت (نشان افزایش/کاهش، اسپارک‌لاین، مودال) فقط
+// نقطه‌هایی که واقعاً قیمتشون فرق کرده اهمیت دارن؛ ردیف‌های پشت‌سرهم با
+// قیمت یکسان اینجا فشرده می‌شن به یک نقطه (اولین باری که اون قیمت دیده شده)
+// تا «بدون تغییر» به‌عنوان یک اتفاق جدا ثبت نشه.
 function getHistoryPoints(f) {
   const cabinKey = normalizeCabin(f.cabin);
-  return allHistory
+  const raw = allHistory
     .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
                  h.flight_no === f.flight_no && h.airline === f.airline &&
                  normalizeCabin(h.cabin) === cabinKey &&
                  (h.seller || '') === (f.seller || ''))
     .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+
+  const points = [];
+  for (const h of raw) {
+    const prev = points[points.length - 1];
+    if (!prev || prev.price !== h.price) points.push(h);
+  }
+  return points;
 }
 
 // ---- تغییر نرخ یک پرواز نسبت به آخرین ثبت قبلی (برای نمایش افزایش/کاهش، نه رتبه‌بندی ارزان/گران) ----
@@ -1252,6 +1265,7 @@ function trySwapRoute() {
   state.route = reverse.raw;
   updateRouteFields();
   buildDateCards();
+  buildMoversList();
   render();
 }
 
@@ -1336,6 +1350,7 @@ function openRoutePicker(type) {
     closeSheet(overlay);
     updateRouteFields();
     buildDateCards();
+    buildMoversList();
     render();
   }
 
@@ -1418,6 +1433,7 @@ function buildDateCards() {
       state.date = d;
       document.querySelectorAll('.date-card').forEach(c =>
         c.classList.toggle('active', c.dataset.date === d));
+      buildMoversList();
       render();
     };
     el.appendChild(card);
@@ -1515,10 +1531,13 @@ function updateFilterBadge() {
 function computeMovers(limit) {
   limit = limit || 10;
   const items = [];
-  allFlights.forEach(f => {
-    const change = getLatestChange(f);
-    if (change && change.diff !== 0) items.push({ f, change });
-  });
+  // فقط پروازهای همون مسیر + همون تاریخ فعال (تب تاریخ انتخاب‌شده)، نه کل تاریخ‌ها با هم قاطی
+  allFlights
+    .filter(f => f.route === state.route && f.flight_date === state.date)
+    .forEach(f => {
+      const change = getLatestChange(f);
+      if (change && change.diff !== 0) items.push({ f, change });
+    });
   items.sort((a, b) => Math.abs(b.change.diff) - Math.abs(a.change.diff));
   return items.slice(0, limit);
 }
@@ -1526,7 +1545,13 @@ function computeMovers(limit) {
 function buildMoversList() {
   const section = document.getElementById('moversSection');
   const list = document.getElementById('moversList');
+  const titleEl = document.querySelector('#moversToggle .movers-title');
   const items = computeMovers(10);
+
+  if (titleEl && state.date) {
+    const { weekday, label } = formatDateCard(state.date);
+    titleEl.textContent = `🔥 پرتغییرترین پروازهای ${weekday} ${label}`;
+  }
 
   if (items.length === 0) {
     section.style.display = 'none';
