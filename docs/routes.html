@@ -77,6 +77,30 @@
         <tbody id="routesBody"></tbody>
       </table>
     </div>
+
+    <div class="card">
+      <h2>دریافت فوری (بدون صبر برای نوبت)</h2>
+      <div class="muted" style="font-size:11.5px; margin-bottom:8px;">
+        این کار همون منطق فاصله‌ی رصد رو برای بقیه‌ی پروازها دست نمی‌زنه؛ فقط
+        همین یک مسیر+تاریخ رو همین الان، اول صف Workflow می‌ذاره.
+      </div>
+      <label>مسیر</label>
+      <select id="fzRoute"></select>
+      <label>تاریخ پرواز (میلادی YYYY-MM-DD)</label>
+      <input id="fzDate" placeholder="2026-08-05">
+      <button class="btn-main" onclick="forceRun()">ارسال درخواست فوری</button>
+      <div class="msg" id="fzMsg"></div>
+
+      <div style="margin-top:14px; border-top:1px solid #eee; padding-top:10px;">
+        <label>ریپازیتوری گیت‌هاب (owner/repo)</label>
+        <input id="ghRepo" placeholder="username/fare-monitor">
+        <label>برنچ (ref)</label>
+        <input id="ghRef" placeholder="main" value="main">
+        <label>GitHub Token (اسکوپ workflow یا actions:write)</label>
+        <input id="ghToken" type="password">
+        <button class="btn-small" onclick="saveGhConfig()">ذخیره‌ی این تنظیمات در مرورگر</button>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -133,7 +157,75 @@ async function loadRoutes() {
       </td>`;
     tbody.appendChild(tr);
   });
+  fillForceRouteSelect(data.routes || []);
 }
+
+// ===========================================================
+// دریافت فوری: دیسپچ مستقیم Workflow گیت‌هاب برای یک مسیر+تاریخ خاص،
+// بدون تغییر منطق فاصله‌ی رصد برای بقیه‌ی پروازها (اون منطق تو fare_monitor.py
+// و worker.js دست‌نخورده می‌مونه؛ فقط این یکی مورد اول صف قرار می‌گیره)
+// ===========================================================
+let GH_REPO = localStorage.getItem('fm_gh_repo') || '';
+let GH_REF = localStorage.getItem('fm_gh_ref') || 'main';
+let GH_TOKEN = localStorage.getItem('fm_gh_token') || '';
+
+function fillForceRouteSelect(routes) {
+  const sel = document.getElementById('fzRoute');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  routes.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.label;
+    opt.textContent = `${r.label} (${r.start_date} → ${r.end_date})`;
+    sel.appendChild(opt);
+  });
+  if (prev) sel.value = prev;
+}
+
+function saveGhConfig() {
+  GH_REPO = document.getElementById('ghRepo').value.trim().replace(/^\/|\/$/g, '');
+  GH_REF = document.getElementById('ghRef').value.trim() || 'main';
+  GH_TOKEN = document.getElementById('ghToken').value.trim();
+  localStorage.setItem('fm_gh_repo', GH_REPO);
+  localStorage.setItem('fm_gh_ref', GH_REF);
+  localStorage.setItem('fm_gh_token', GH_TOKEN);
+  showMsg(document.getElementById('fzMsg'), 'تنظیمات گیت‌هاب ذخیره شد ✓', true);
+}
+
+async function forceRun() {
+  const fzMsg = document.getElementById('fzMsg');
+  const route = document.getElementById('fzRoute').value;
+  const date = document.getElementById('fzDate').value.trim();
+  if (!route) { showMsg(fzMsg, 'اول یه مسیر تعریف کن', false); return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { showMsg(fzMsg, 'تاریخ باید به فرمت YYYY-MM-DD باشه', false); return; }
+  if (!GH_REPO || !GH_TOKEN) { showMsg(fzMsg, 'اول تنظیمات گیت‌هاب (ریپازیتوری و توکن) رو ذخیره کن', false); return; }
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/actions/workflows/fare-monitor.yml/dispatches`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + GH_TOKEN,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ref: GH_REF, inputs: { force_route: route, force_date: date } }),
+    });
+    if (res.status === 204) {
+      showMsg(fzMsg, `درخواست فوری ارسال شد ✓ (${route} — ${date}) — طی حدود یک دقیقه تو تب Actions اجرا می‌شه`, true);
+    } else {
+      let detail = '';
+      try { detail = (await res.json()).message || ''; } catch (e2) {}
+      throw new Error(`HTTP ${res.status}${detail ? ' — ' + detail : ''}`);
+    }
+  } catch (e) {
+    showMsg(fzMsg, 'خطا در دیسپچ: ' + (e.message || 'network') +
+      ' — توکن باید اسکوپ workflow (یا actions:write برای فایل‌گرین‌تر) داشته باشه', false);
+  }
+}
+
+if (GH_REPO) document.getElementById('ghRepo').value = GH_REPO;
+if (GH_REF) document.getElementById('ghRef').value = GH_REF;
+if (GH_TOKEN) document.getElementById('ghToken').value = GH_TOKEN;
 
 function editRoute(r) {
   document.getElementById('editId').value = r.id;
