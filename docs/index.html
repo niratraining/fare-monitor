@@ -1439,10 +1439,13 @@ function buildDateCards() {
     el.appendChild(card);
   });
 
-  // اسکرول خودکار به کارت انتخاب‌شده
+  // اسکرول خودکار به کارت انتخاب‌شده — فقط افقی، داخل همون نوار تاریخ‌ها
+  // (بدون block:'nearest'، مرورگر سعی می‌کنه کارت رو عمودی هم وسط صفحه بیاره
+  // و کل صفحه رو اسکرول می‌ده؛ همین باعث می‌شد موقع لود اول، باکس
+  // «پرتغییرترین پروازها» زیر هدر sticky بره)
   requestAnimationFrame(() => {
     const active = el.querySelector('.date-card.active');
-    if (active) active.scrollIntoView({ inline: 'center', behavior: 'instant' });
+    if (active) active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' });
   });
 }
 
