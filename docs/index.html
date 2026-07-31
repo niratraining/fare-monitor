@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رصد نرخ پرواز تهران-استانبول</title>
+<style>
+  body {
+    font-family: Tahoma, Vazirmatn, sans-serif;
+    background: #f4f5f7;
+    margin: 0;
+    padding: 16px;
+    color: #222;
+  }
+  h1 { font-size: 18px; margin-bottom: 4px; }
+  .meta { color: #666; font-size: 13px; margin-bottom: 16px; }
+  .route-group { margin-bottom: 24px; }
+  .route-title {
+    background: #4b3f72;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px 8px 0 0;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 6px 8px;
+    text-align: right;
+    border-bottom: 1px solid #eee;
+  }
+  th { background: #eee; }
+  tr:last-child td { border-bottom: none; }
+  .date-header td {
+    background: #f0eef7;
+    font-weight: bold;
+  }
+  .price { font-weight: bold; color: #1a7a3d; }
+  #loading { text-align: center; padding: 40px; color: #888; }
+</style>
+</head>
+<body>
+  <h1>رصد نرخ پرواز تهران ↔ استانبول</h1>
+  <div class="meta" id="meta">در حال بارگذاری...</div>
+  <div id="loading">در حال دریافت داده...</div>
+  <div id="content"></div>
 
+<script>
+async function load() {
+  try {
+    const res = await fetch('data.json?t=' + Date.now());
+    const data = await res.json();
+    document.getElementById('meta').textContent =
+      'آخرین به‌روزرسانی: ' + data.generated_at;
+    document.getElementById('loading').style.display = 'none';
+
+    const byRoute = {};
+    for (const f of data.flights) {
+      if (!byRoute[f.route]) byRoute[f.route] = {};
+      if (!byRoute[f.route][f.flight_date]) byRoute[f.route][f.flight_date] = [];
+      byRoute[f.route][f.flight_date].push(f);
+    }
+
+    const content = document.getElementById('content');
+    for (const route of Object.keys(byRoute)) {
+      const group = document.createElement('div');
+      group.className = 'route-group';
+      group.innerHTML = `<div class="route-title">${route}</div>`;
+
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <tr>
+          <th>تاریخ</th>
+          <th>ایرلاین</th>
+          <th>پرواز</th>
+          <th>ساعت</th>
+          <th>فروشنده</th>
+          <th>قیمت بزرگسال</th>
+        </tr>`;
+
+      const dates = Object.keys(byRoute[route]).sort();
+      for (const date of dates) {
+        const rows = byRoute[route][date].sort((a, b) =>
+          (a.dep_time || '').localeCompare(b.dep_time || ''));
+        for (const f of rows) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${date}</td>
+            <td>${f.airline || ''}</td>
+            <td>${f.flight_no || ''}</td>
+            <td>${f.dep_time || ''}</td>
+            <td>${f.seller || ''}</td>
+            <td class="price">${f.adult_price || ''}</td>`;
+          table.appendChild(tr);
+        }
+      }
+      group.appendChild(table);
+      content.appendChild(group);
+    }
+  } catch (e) {
+    document.getElementById('loading').textContent =
+      'هنوز داده‌ای موجود نیست — منتظر بمون تا اولین اجرای Action تموم بشه.';
+  }
+}
+load();
+</script>
+</body>
+</html>
