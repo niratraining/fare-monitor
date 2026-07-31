@@ -99,14 +99,19 @@ async function saveGate() {
   const gateMsg = document.getElementById('gateMsg');
   try {
     const res = await fetch(WORKER_URL + '/routes', { headers: headers() });
-    if (!res.ok) throw new Error('پاسخ ناموفق: ' + res.status);
+    if (!res.ok) {
+      let detail = '';
+      try { detail = (await res.json()).error || ''; } catch (e2) {}
+      throw new Error(`HTTP ${res.status}${detail ? ' — ' + detail : ''}`);
+    }
     localStorage.setItem('fm_worker_url', WORKER_URL);
     localStorage.setItem('fm_secret', SECRET);
     document.getElementById('appArea').style.display = 'block';
     showMsg(gateMsg, 'وصل شد ✓', true);
     loadRoutes();
   } catch (e) {
-    showMsg(gateMsg, 'خطا در اتصال — آدرس یا Secret رو چک کن', false);
+    showMsg(gateMsg, 'خطا در اتصال: ' + (e.message || 'network') +
+      ' — اگه 401 بود Secret اشتباهه، اگه 404 یا Failed to fetch بود یعنی Worker با نسخه‌ی جدید دیپلوی نشده یا schema.sql رو D1 اجرا نشده', false);
   }
 }
 

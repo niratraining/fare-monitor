@@ -137,6 +137,19 @@
     border-color: #4b3f72;
   }
 
+  .cabin-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: bold;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .cabin-economy { background: #f0f0f0; color: #888; }
+  .cabin-premium { background: #fde2ea; color: #d9455f; }
+  .cabin-business { background: #fde2ea; color: #d9455f; }
+  .cabin-first { background: #ffe9b3; color: #946200; }
+
   main { padding: 12px; }
   table {
     width: 100%;
@@ -268,6 +281,10 @@
     <label style="margin-top:4px;">ایرلاین</label>
     <div class="airline-chips" id="airlineChips"></div>
   </div>
+  <div class="filter-row" style="align-items:flex-start;">
+    <label style="margin-top:4px;">کلاس پرواز</label>
+    <div class="airline-chips" id="cabinChips"></div>
+  </div>
 </div>
 
 <main>
@@ -281,6 +298,7 @@
         <th>ایرلاین</th>
         <th>پرواز</th>
         <th>ساعت</th>
+        <th>کلاس</th>
         <th>فروشنده</th>
         <th>قیمت</th>
       </tr>
@@ -298,7 +316,27 @@ let state = {
   flightSearch: '',
   sort: 'price_asc',
   airlines: new Set(),
+  cabins: new Set(),
 };
+
+// ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
+const CABIN_META = {
+  economy:  { label: 'اکونومی',          cls: 'cabin-economy' },
+  premium:  { label: 'پریمیوم اکونومی', cls: 'cabin-premium' },
+  business: { label: 'بیزنس',            cls: 'cabin-business' },
+  first:    { label: 'فرست',             cls: 'cabin-first' },
+};
+function normalizeCabin(raw) {
+  const key = String(raw || '').toLowerCase();
+  if (key.includes('first')) return 'first';
+  if (key.includes('business')) return 'business';
+  if (key.includes('premium')) return 'premium';
+  return 'economy';
+}
+function cabinBadge(raw) {
+  const meta = CABIN_META[normalizeCabin(raw)];
+  return `<span class="cabin-badge ${meta.cls}">${meta.label}</span>`;
+}
 
 const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
 const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
@@ -381,6 +419,7 @@ async function load() {
     buildRouteToggle();
     buildDateCards();
     buildAirlineChips();
+    buildCabinChips();
     bindControls();
     render();
 
@@ -467,6 +506,25 @@ function buildAirlineChips() {
   });
 }
 
+function buildCabinChips() {
+  const cabinKeys = [...new Set(allFlights.map(f => normalizeCabin(f.cabin)))];
+  cabinKeys.sort((a, b) => Object.keys(CABIN_META).indexOf(a) - Object.keys(CABIN_META).indexOf(b));
+  const el = document.getElementById('cabinChips');
+  el.innerHTML = '';
+  cabinKeys.forEach(key => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = CABIN_META[key].label;
+    chip.onclick = () => {
+      if (state.cabins.has(key)) state.cabins.delete(key);
+      else state.cabins.add(key);
+      chip.classList.toggle('active');
+      render();
+    };
+    el.appendChild(chip);
+  });
+}
+
 function bindControls() {
   document.getElementById('flightSearch').addEventListener('input', (e) => {
     state.flightSearch = e.target.value.trim();
@@ -487,6 +545,9 @@ function render() {
   if (state.airlines.size > 0) {
     rows = rows.filter(f => state.airlines.has(f.airline));
   }
+  if (state.cabins.size > 0) {
+    rows = rows.filter(f => state.cabins.has(normalizeCabin(f.cabin)));
+  }
 
   if (state.sort === 'price_asc') {
     rows.sort((a, b) => toPriceNumber(a.adult_price) - toPriceNumber(b.adult_price));
@@ -504,6 +565,7 @@ function render() {
       <td>${f.airline || ''}</td>
       <td>${f.flight_no || ''}</td>
       <td>${f.dep_time || ''}</td>
+      <td>${cabinBadge(f.cabin)}</td>
       <td>${f.seller || ''}</td>
       <td class="price">${f.adult_price || ''}</td>`;
     tr.onclick = () => openHistoryModal(f);
@@ -554,9 +616,11 @@ function buildSparkline(points, width, height) {
 // مودال تاریخچه‌ی قیمت یک پرواز
 // ===========================================================
 function openHistoryModal(f) {
+  const cabinKey = normalizeCabin(f.cabin);
   const points = allHistory
     .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
-                 h.flight_no === f.flight_no && h.airline === f.airline)
+                 h.flight_no === f.flight_no && h.airline === f.airline &&
+                 normalizeCabin(h.cabin) === cabinKey)
     .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
 
   let trendHtml;
@@ -604,7 +668,7 @@ function openHistoryModal(f) {
       <div class="modal-header">
         <div>
           <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
-          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''}</div>
+          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''} · ${cabinBadge(f.cabin)}</div>
         </div>
         <button class="modal-close">✕</button>
       </div>
