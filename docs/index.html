@@ -432,28 +432,118 @@
   }
 
   main { padding: 12px; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    font-size: 12.5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-  th, td {
-    padding: 7px 6px;
-    text-align: right;
-    border-bottom: 1px solid #eee;
-  }
-  th { background: #eee; }
-  tr:last-child td { border-bottom: none; }
-  .price { font-weight: bold; color: #1a7a3d; }
   #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
   .result-count { font-size: 12px; color: #777; margin: 8px 2px; }
 
-  tbody tr { cursor: pointer; }
-  tbody tr:active { background: #f7f4ff; }
+  /* --- کارت پرواز به‌سبک بلیط بوردینگ‌پس --- */
+  .results-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .flight-card {
+    position: relative;
+    background: white;
+    border-radius: 18px;
+    padding: 14px 16px 13px;
+    box-shadow: 0 3px 14px rgba(43,32,74,0.08);
+    border: 1px solid #f1eef8;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .flight-card:active { transform: scale(0.98); background: #faf9fd; }
+  .flight-card.is-cheapest {
+    border-color: #cdf0da;
+    box-shadow: 0 4px 18px rgba(26,122,61,0.14);
+  }
+
+  .fc-ribbon {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    background: linear-gradient(135deg, #1a7a3d, #33b06b);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    padding: 4px 10px 4px 12px;
+    border-radius: 8px 0 0 8px;
+    box-shadow: 0 2px 8px rgba(26,122,61,0.35);
+  }
+
+  .fc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .fc-airline { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .fc-logo {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f9f8fc;
+    border: 1px solid #ececf3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .fc-logo.fc-logo-sm { width: 24px; height: 24px; }
+  .fc-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .fc-logo-fallback {
+    display: none;
+    width: 100%; height: 100%;
+    align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+    color: #7a6da8;
+    background: #ece8f7;
+  }
+  .fc-logo-sm .fc-logo-fallback { font-size: 10.5px; }
+
+  .fc-airline-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .fc-airline-name {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #221f2e;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .fc-flight-no {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #948da8; font-weight: 600;
+  }
+
+  .fc-time { flex: none; text-align: left; }
+  .fc-time-value {
+    display: block;
+    font-size: 16.5px;
+    font-weight: 800;
+    color: #221f2e;
+    direction: ltr;
+  }
+  .fc-time-label { font-size: 10px; color: #a49bc2; font-weight: 600; }
+
+  /* خط برش‌خورده‌ی بلیط با دو دایره‌ی کنج، شبیه بلیط پرواز واقعی */
+  .fc-stub-row {
+    position: relative;
+    height: 0;
+    margin: 12px -16px;
+    border-top: 1.5px dashed #e6e1f2;
+  }
+  .fc-stub-row::before,
+  .fc-stub-row::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #f2f1f7;
+  }
+  .fc-stub-row::before { left: -8px; }
+  .fc-stub-row::after { right: -8px; }
+
+  .fc-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .fc-seller { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .fc-seller-name {
+    font-size: 12px; font-weight: 600; color: #7a6da8;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .fc-price { flex: none; text-align: left; display: flex; align-items: baseline; gap: 4px; }
+  .fc-price-value { font-size: 15.5px; font-weight: 800; color: #1a7a3d; direction: ltr; }
+  .fc-price-currency { font-size: 10.5px; color: #9aa89f; font-weight: 600; }
 
   .modal-overlay {
     position: fixed;
@@ -610,18 +700,7 @@
   <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
   <div class="result-count" id="resultCount"></div>
   <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
-  <table id="resultsTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>ایرلاین</th>
-        <th>پرواز</th>
-        <th>ساعت</th>
-        <th>فروشنده</th>
-        <th>قیمت</th>
-      </tr>
-    </thead>
-    <tbody id="resultsBody"></tbody>
-  </table>
+  <div class="results-list" id="resultsList" style="display:none;"></div>
 </main>
 
 <script>
@@ -667,6 +746,13 @@ function slugifyAirline(name) {
 }
 function airlineLogoSrc(name) {
   return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.png`;
+}
+
+// ---- لوگوی فروشنده‌ها: هر فروشنده رو اینجا به مسیر فایل لوگو وصل کن ----
+// مثال: 'اسنپ تریپ': 'logos/sellers/snapptrip.png'
+const SELLER_LOGOS = {};
+function sellerLogoSrc(name) {
+  return SELLER_LOGOS[name] || `logos/sellers/${slugifyAirline(name)}.png`;
 }
 
 const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
@@ -1015,23 +1101,56 @@ function render() {
     rows.sort((a, b) => (a.dep_time || '').localeCompare(b.dep_time || ''));
   }
 
-  const tbody = document.getElementById('resultsBody');
-  tbody.innerHTML = '';
+  const list = document.getElementById('resultsList');
+  list.innerHTML = '';
+  const cheapest = rows.length ? Math.min(...rows.map(f => toPriceNumber(f.adult_price))) : null;
   rows.forEach(f => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${f.airline || ''}</td>
-      <td><span class="flight-cell">${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span></td>
-      <td>${f.dep_time || ''}</td>
-      <td>${f.seller || ''}</td>
-      <td class="price">${f.adult_price || ''}</td>`;
-    tr.onclick = () => openHistoryModal(f);
-    tbody.appendChild(tr);
+    list.appendChild(buildFlightCard(f, cheapest !== null && toPriceNumber(f.adult_price) === cheapest));
   });
 
   document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
-  document.getElementById('resultsTable').style.display = rows.length ? 'table' : 'none';
+  list.style.display = rows.length ? 'flex' : 'none';
   document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+}
+
+// ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
+function buildFlightCard(f, isCheapest) {
+  const card = document.createElement('div');
+  card.className = 'flight-card' + (isCheapest ? ' is-cheapest' : '');
+  card.innerHTML = `
+    ${isCheapest ? '<span class="fc-ribbon">ارزان‌ترین</span>' : ''}
+    <div class="fc-top">
+      <div class="fc-airline">
+        <span class="fc-logo">
+          <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="fc-logo-fallback">${(f.airline || '؟').charAt(0)}</span>
+        </span>
+        <span class="fc-airline-info">
+          <span class="fc-airline-name">${f.airline || ''}</span>
+          <span class="fc-flight-no">پرواز ${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span>
+        </span>
+      </div>
+      <div class="fc-time">
+        <span class="fc-time-value"><bdi>${f.dep_time || ''}</bdi></span>
+        <span class="fc-time-label">ساعت حرکت</span>
+      </div>
+    </div>
+    <div class="fc-stub-row"></div>
+    <div class="fc-bottom">
+      <div class="fc-seller">
+        <span class="fc-logo fc-logo-sm">
+          <img src="${sellerLogoSrc(f.seller)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <span class="fc-logo-fallback">${(f.seller || '؟').charAt(0)}</span>
+        </span>
+        <span class="fc-seller-name">${f.seller || 'نامشخص'}</span>
+      </div>
+      <div class="fc-price">
+        <span class="fc-price-value">${f.adult_price || ''}</span>
+        <span class="fc-price-currency">تومان</span>
+      </div>
+    </div>`;
+  card.onclick = () => openHistoryModal(f);
+  return card;
 }
 
 // ===========================================================
