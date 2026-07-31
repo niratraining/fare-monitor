@@ -46,6 +46,8 @@ import requests
 
 DOCS_JSON_PATH = os.path.join("docs", "data.json")
 DOCS_HISTORY_JSON_PATH = os.path.join("docs", "history.json")
+DOCS_ROUTE_TREND_JSON_PATH = os.path.join("docs", "route-trend.json")
+DOCS_AIRLINE_TREND_JSON_PATH = os.path.join("docs", "airline-trend.json")
 
 WORKER_URL = os.environ.get("CF_WORKER_URL", "").rstrip("/")
 CF_SECRET = os.environ.get("CF_INGEST_SECRET", "")
@@ -308,3 +310,9 @@ if __name__ == "__main__":
 
     history = export_json(session, "history", DOCS_HISTORY_JSON_PATH)
     print(f"✓ docs/history.json به‌روزرسانی شد ({len(history.get('history', []))} نقطه‌ی قیمتی)")
+
+    route_trend = export_json(session, "route-trend", DOCS_ROUTE_TREND_JSON_PATH)
+    print(f"✓ docs/route-trend.json به‌روزرسانی شد ({len(route_trend.get('route_trend', []))} نقطه‌ی میانگین مسیر)")
+
+    airline_trend = export_json(session, "airline-trend", DOCS_AIRLINE_TREND_JSON_PATH)
+    print(f"✓ docs/airline-trend.json به‌روزرسانی شد ({len(airline_trend.get('airline_trend', []))} نقطه‌ی میانگین ایرلاین)")
