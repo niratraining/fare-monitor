@@ -1,0 +1,8 @@
+name = "fare-monitor-api"
+main = "worker.js"
+compatibility_date = "2026-07-31"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fare-monitor-db"
+database_id = "682160e1-47e4-41e1-ac5c-ef5a2f76d180"
