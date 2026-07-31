@@ -6,31 +6,31 @@
 <title>مدیریت مسیرها — رصد نرخ پرواز</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: Tahoma, Vazirmatn, sans-serif; background: #c0dbe7; margin: 0; padding: 0 0 24px; color: #222; }
-  header { background: #4594b5; color: white; padding: 14px 16px; }
+  body { font-family: Tahoma, Vazirmatn, sans-serif; background: #eaecef; margin: 0; padding: 0 0 24px; color: #222222; }
+  header { background: #76b1ca; color: #16303b; padding: 14px 16px; }
   h1 { font-size: 16px; margin: 0; }
-  a.back { color: #aed1e0; font-size: 12px; float: left; text-decoration: none; }
+  a.back { color: #16303b; font-size: 12px; float: left; text-decoration: none; }
   main { padding: 12px; max-width: 640px; margin: 0 auto; }
-  .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .card h2 { font-size: 13px; margin: 0 0 10px; color: #4594b5; }
-  label { font-size: 12px; color: #555; display: block; margin-bottom: 3px; }
-  input { width: 100%; padding: 7px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
+  .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+  .card h2 { font-size: 13px; margin: 0 0 10px; color: #16303b; }
+  label { font-size: 12px; color: #555555; display: block; margin-bottom: 3px; }
+  input { width: 100%; padding: 7px 8px; border: 1px solid #dddddd; border-radius: 6px; font-size: 13px; margin-bottom: 8px; }
   .row2 { display: flex; gap: 8px; }
   .row2 > div { flex: 1; }
   button { border: none; border-radius: 6px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
-  .btn-main { background: #4594b5; color: white; width: 100%; }
-  .btn-danger { background: #fde8ea; color: #d9455f; }
+  .btn-main { background: #debd50; color: #16303b; width: 100%; font-weight: 700; }
+  .btn-danger { background: #fbeaec; color: #ce505f; }
   .btn-small { padding: 5px 10px; font-size: 12px; }
   table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  th, td { padding: 7px 4px; text-align: right; border-bottom: 1px solid #eee; }
-  th { color: #777; font-weight: normal; }
-  .muted { color: #999; }
+  th, td { padding: 7px 4px; text-align: right; border-bottom: 1px solid #eeeeee; }
+  th { color: #777777; font-weight: normal; }
+  .muted { color: #999999; }
   .badge { border-radius: 10px; padding: 2px 8px; font-size: 11px; }
-  .badge.on { background: #e6f4ea; color: #1a7a3d; }
-  .badge.off { background: #f0f0f0; color: #999; }
+  .badge.on { background: #e7f3ed; color: #1d6544; }
+  .badge.off { background: #f0f0f0; color: #999999; }
   .msg { font-size: 12px; padding: 8px; border-radius: 6px; margin-bottom: 10px; display: none; }
-  .msg.ok { background: #e6f4ea; color: #1a7a3d; display: block; }
-  .msg.err { background: #fde8ea; color: #d9455f; display: block; }
+  .msg.ok { background: #e7f3ed; color: #1d6544; display: block; }
+  .msg.err { background: #fbeaec; color: #ce505f; display: block; }
   #gate input { margin-bottom: 6px; }
 </style>
 </head>
@@ -91,7 +91,7 @@
       <button class="btn-main" onclick="forceRun()">ارسال درخواست فوری</button>
       <div class="msg" id="fzMsg"></div>
 
-      <div style="margin-top:14px; border-top:1px solid #eee; padding-top:10px;">
+      <div style="margin-top:14px; border-top:1px solid #eeeeee; padding-top:10px;">
         <label>ریپازیتوری گیت‌هاب (owner/repo)</label>
         <input id="ghRepo" placeholder="username/fare-monitor">
         <label>برنچ (ref)</label>

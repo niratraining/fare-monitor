@@ -12,36 +12,24 @@
   body {
     font-family: 'Vazirmatn', Tahoma, sans-serif;
     font-feature-settings: "ss01" on, "cv01" on;
-    background: #bfdbe6;
+    background: #e9ebef;
     margin: 0;
     padding: 0 0 28px 0;
-    color: #347089;
+    color: #1e2f4a;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* --- هدر / هیرو: گرادیان چندلایه + هاله‌های نوری + بافت گرین ظریف --- */
+  /* --- هدر: رنگ خالص آبی آرامش‌بخش از تصویر --- */
   header {
     position: sticky;
     top: 0;
     z-index: 10;
     overflow: hidden;
-    background:
-      radial-gradient(95% 130% at 105% -10%, rgba(119,178,203,0.45) 0%, transparent 52%),
-      linear-gradient(165deg, #4a8ba3 0%, #5fa0b8 46%, #77b2cb 100%);
-    color: white;
+    background: #76b1ca;
+    color: #16303b;
     padding: 20px 16px 18px;
     border-radius: 0 0 26px 26px;
-    box-shadow: 0 16px 36px rgba(48,103,127,0.38);
-  }
-  header::before {
-    /* بافت گرین: به‌جای گرادیان صاف، سطح یه حس متریال و پرمیوم می‌گیره */
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: .35;
-    mix-blend-mode: overlay;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    box-shadow: 0 16px 36px rgba(10, 12, 17, 0.18);
   }
   .header-inner {
     position: relative;
@@ -67,6 +55,7 @@
     display: flex;
     align-items: center;
     gap: 9px;
+    color: #16303b;
   }
   h1 .hero-icon {
     display: inline-flex;
@@ -75,13 +64,11 @@
     width: 31px;
     height: 31px;
     border-radius: 11px;
-    background: linear-gradient(145deg, #d4b95c, #aa8e2d);
-    box-shadow: 0 5px 14px rgba(170,142,45,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+    background: #debd50;
     font-size: 15px;
-    transform: rotate(-8deg);
   }
   .meta {
-    color: #aed1e0;
+    color: #2c4a58;
     font-size: 11.5px;
     font-weight: 500;
     display: flex;
@@ -93,59 +80,54 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #6ee7a7;
+    background: #debd50;
     flex: none;
     animation: livePulse 2.2s ease-out infinite;
   }
   @keyframes livePulse {
-    0% { box-shadow: 0 0 0 0 rgba(110,231,167,0.55); }
-    70% { box-shadow: 0 0 0 7px rgba(110,231,167,0); }
-    100% { box-shadow: 0 0 0 0 rgba(110,231,167,0); }
+    0%, 100% { opacity: 1; }
+    50% { opacity: .45; }
   }
   .meta-time {
     font-weight: 800;
-    color: #ffffff;
+    color: #16303b;
     direction: ltr;
     display: inline-block;
     letter-spacing: .01em;
     font-variant-numeric: tabular-nums;
   }
   .meta-sep {
-    color: rgba(255,255,255,0.28);
+    color: rgba(22, 48, 59, 0.35);
     font-weight: 400;
   }
   .manage-routes-link {
     font-size: 11px;
     font-weight: 700;
-    color: #ffffff;
+    color: #16303b;
     text-decoration: none;
-    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08));
-    border: 1px solid rgba(255,255,255,0.22);
+    background: #ffffff;
+    border: 1px solid rgba(22, 48, 59, 0.15);
     padding: 7px 12px;
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
     white-space: nowrap;
-    box-shadow: 0 3px 10px rgba(48,103,127,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
     transition: background .15s ease, transform .15s ease;
   }
-  .manage-routes-link:active { background: rgba(255,255,255,0.26); transform: scale(.96); }
+  .manage-routes-link:active { background: #e7f0f3; transform: scale(.96); }
 
-  /* --- انتخاب‌گر مدرن مبدأ / مقصد: کارت شیشه‌ای با عمق --- */
+  /* --- انتخاب‌گر مبدأ / مقصد: کارت سفید تخت --- */
   .route-picker {
     display: flex;
     align-items: stretch;
     gap: 6px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-    border: 1px solid rgba(255,255,255,0.22);
+    background: #ffffff;
+    border: 1px solid rgba(22, 48, 59, 0.1);
     border-radius: 22px;
     padding: 7px;
     margin-bottom: 14px;
     position: relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 10px 26px rgba(48,102,125,0.28), inset 0 1px 0 rgba(255,255,255,0.2);
   }
   .route-field {
     flex: 1;
@@ -154,7 +136,7 @@
     flex-direction: column;
     background: transparent;
     border: none;
-    color: white;
+    color: #16303b;
     text-align: right;
     padding: 9px 13px;
     border-radius: 15px;
@@ -162,7 +144,7 @@
     transition: background .15s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  .route-field:active { background: rgba(255,255,255,0.14); }
+  .route-field:active { background: #e7f0f3; }
   .route-field-label {
     display: flex;
     align-items: center;
@@ -170,7 +152,7 @@
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .03em;
-    color: #a7cddd;
+    color: #5c7683;
     margin-bottom: 4px;
   }
   .route-field-icon {
@@ -181,8 +163,8 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: rgba(209,181,83,0.2);
-    color: #cfb24a;
+    background: #f5ecd2;
+    color: #8d731b;
   }
   .route-field-icon svg { width: 62%; height: 62%; display: block; }
   .route-field-value {
@@ -200,19 +182,18 @@
     height: 42px;
     align-self: center;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.55);
-    background: linear-gradient(150deg, #d4b95c, #aa8e2d);
-    color: white;
+    border: 2px solid #ffffff;
+    background: #debd50;
+    color: #16303b;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(170,142,45,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
     transition: transform .2s ease, background .2s ease, opacity .2s ease;
   }
   .route-swap svg { width: 17px; height: 17px; display: block; transition: transform .3s ease; }
   .route-swap.spin svg { transform: rotate(180deg); }
-  .route-swap:disabled { opacity: .3; cursor: not-allowed; box-shadow: none; }
+  .route-swap:disabled { opacity: .3; cursor: not-allowed; }
   .route-swap:not(:disabled):active { transform: scale(0.9); }
 
   /* --- شیت انتخاب مبدأ/مقصد --- */
@@ -222,9 +203,9 @@
     border: 1px solid #e5e5e5;
     border-radius: 10px;
     font-size: 13.5px;
-    background: #c2dde8;
+    background: #eaecef;
   }
-  .picker-search:focus { outline: none; border-color: #4594b5; background: white; }
+  .picker-search:focus { outline: none; border-color: #76b1ca; background: white; }
   .picker-search-clear {
     position: absolute;
     top: 50%;
@@ -234,8 +215,8 @@
     height: 20px;
     border-radius: 50%;
     border: none;
-    background: #b7d6e3;
-    color: #6babc6;
+    background: #e7eaed;
+    color: #465874;
     font-size: 10px;
     display: flex;
     align-items: center;
@@ -244,24 +225,24 @@
     padding: 0;
   }
   .picker-recent { margin-top: 8px; }
-  .picker-recent-label { font-size: 10.5px; font-weight: 700; color: #88bbd1; margin-bottom: 6px; }
+  .picker-recent-label { font-size: 10.5px; font-weight: 700; color: #44546f; margin-bottom: 6px; }
   .picker-recent-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
   .picker-recent-chip {
     font-size: 11.5px;
     font-weight: 600;
-    color: #4594b5;
-    background: #bedae6;
+    color: #16303b;
+    background: #e7f0f3;
     border-radius: 14px;
     padding: 5px 11px;
     cursor: pointer;
   }
-  .picker-recent-chip:active { background: #b4d5e3; }
+  .picker-recent-chip:active { background: #d7e6ec; }
   .picker-item-text mark {
     background: transparent;
-    color: #aa8e2d;
+    color: #8d731b;
     font-weight: 800;
   }
-  .picker-list { border-top: 1px solid #eee; margin-top: 6px; }
+  .picker-list { border-top: 1px solid #eeeeee; margin-top: 6px; }
   .picker-item {
     display: flex;
     align-items: center;
@@ -271,24 +252,24 @@
     cursor: pointer;
     border-radius: 8px;
   }
-  .picker-item:active { background: #c4dde8; }
+  .picker-item:active { background: #ebedf0; }
   .picker-item-icon {
     flex: none;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #bedae6;
-    color: #4594b5;
+    background: #e9ebef;
+    color: #16303b;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
   }
   .picker-item-text { flex: 1; font-size: 13.5px; }
-  .picker-item-check { color: #aa8e2d; font-size: 14px; opacity: 0; }
-  .picker-item.selected { background: #f7f1df; }
+  .picker-item-check { color: #8d731b; font-size: 14px; opacity: 0; }
+  .picker-item.selected { background: #ede4d2; }
   .picker-item.selected .picker-item-check { opacity: 1; }
-  .picker-empty { text-align: center; color: #999; padding: 20px; font-size: 13px; }
+  .picker-empty { text-align: center; color: #999999; padding: 20px; font-size: 13px; }
 
   /* --- تقویم کارتی افقی، شبیه سپهر --- */
   .date-cards {
@@ -305,8 +286,8 @@
   .date-card {
     flex: 0 0 auto;
     min-width: 76px;
-    background: rgba(255,255,255,0.09);
-    border: 1.5px solid rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.09);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
     border-radius: 15px;
     padding: 10px 7px;
     text-align: center;
@@ -322,24 +303,24 @@
   }
   .date-card .daynum {
     font-size: 10.5px;
-    color: #a7cddd;
+    color: #e4e6ea;
     margin-bottom: 6px;
   }
   .date-card .cardprice {
     font-size: 11.5px;
     font-weight: 800;
-    color: #dfcb86;
+    color: #8d731b;
     font-variant-numeric: tabular-nums;
   }
   .date-card.active {
-    background: linear-gradient(160deg, #ffffff, #f7f1df);
-    border-color: transparent;
+    background: #ffffff;
+    border-color: #debd50;
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 10px 22px rgba(47,100,122,0.3), 0 0 0 2px rgba(209,181,83,0.55);
+    box-shadow: 0 10px 22px rgba(10, 12, 17, 0.3);
   }
   .date-card.active .weekday,
-  .date-card.active .daynum { color: #4594b5; }
-  .date-card.active .cardprice { color: #1a7a3d; }
+  .date-card.active .daynum { color: #16303b; }
+  .date-card.active .cardprice { color: #1d6544; }
 
   /* --- ویجت پرتغییرترین پروازها (Movers leaderboard) --- */
   .movers-section {
@@ -347,7 +328,7 @@
     margin: 12px 12px 0;
     border-radius: 18px;
     padding: 14px 14px 12px;
-    box-shadow: 0 2px 14px rgba(56,120,147,0.07);
+    box-shadow: 0 2px 14px rgba(10, 12, 17, 0.07);
   }
   .movers-header {
     display: flex;
@@ -360,14 +341,14 @@
   .movers-title {
     font-size: 12.5px;
     font-weight: 800;
-    color: #438fb0;
+    color: #4a5d7b;
     display: flex;
     align-items: center;
     gap: 5px;
   }
   .movers-toggle-icon {
     font-size: 11px;
-    color: #88bbd1;
+    color: #44546f;
     transition: transform .2s ease;
   }
   .movers-section.collapsed .movers-toggle-icon { transform: rotate(-90deg); }
@@ -385,25 +366,25 @@
     flex: 0 0 auto;
     min-width: 130px;
     max-width: 150px;
-    background: #c4dde8;
-    border: 1px solid #bcd9e5;
+    background: #ebedf0;
+    border: 1px solid #e9ebee;
     border-radius: 12px;
     padding: 9px 10px;
     cursor: pointer;
     transition: transform .12s ease, background .15s ease;
   }
-  .mover-card:active { transform: scale(0.96); background: #bfdbe7; }
+  .mover-card:active { transform: scale(0.96); background: #e9ecef; }
   .mover-rank {
     display: inline-block;
     font-size: 10px;
     font-weight: 800;
-    color: #98c5d8;
+    color: #42526d;
     margin-bottom: 3px;
   }
   .mover-route {
     font-size: 11.5px;
     font-weight: 700;
-    color: #347089;
+    color: #1e2f4a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -411,7 +392,7 @@
   }
   .mover-flightno {
     font-size: 10px;
-    color: #78b2cb;
+    color: #455672;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -426,11 +407,11 @@
     font-weight: 800;
   }
   .mover-change .fc-change-icon { width: 11px; height: 11px; }
-  .mover-change.up { color: #d9455f; }
-  .mover-change.down { color: #1a7a3d; }
+  .mover-change.up { color: #ce505f; }
+  .mover-change.down { color: #1d6544; }
   .movers-empty {
     font-size: 11.5px;
-    color: #999;
+    color: #999999;
     padding: 10px 2px 2px;
   }
 
@@ -439,7 +420,7 @@
     background: white;
     margin: 10px 12px 0;
     border-radius: 16px;
-    box-shadow: 0 2px 14px rgba(56,120,147,0.07);
+    box-shadow: 0 2px 14px rgba(10, 12, 17, 0.07);
     overflow: hidden;
   }
   .filter-trigger {
@@ -457,14 +438,14 @@
     gap: 6px;
     font-size: 12px;
     font-weight: 700;
-    color: #438fb0;
+    color: #4a5d7b;
   }
   .filter-trigger-label .fi {
     display: inline-flex;
     flex: none;
     width: 13px;
     height: 13px;
-    color: #aa8e2d;
+    color: #8d731b;
   }
   .filter-trigger-label .fi svg { width: 100%; height: 100%; display: block; }
   .filter-trigger-right { display: flex; align-items: center; gap: 8px; }
@@ -474,8 +455,8 @@
     height: 17px;
     padding: 0 5px;
     border-radius: 9px;
-    background: #aa8e2d;
-    color: white;
+    background: #debd50;
+    color: #16303b;
     font-size: 10px;
     font-weight: 800;
     align-items: center;
@@ -484,7 +465,7 @@
   .filter-badge.show { display: inline-flex; }
   .filter-trigger-chevron {
     font-size: 10px;
-    color: #88bbd1;
+    color: #44546f;
     transition: transform .25s ease;
   }
   .filter-drawer.open .filter-trigger-chevron { transform: rotate(180deg); }
@@ -495,7 +476,7 @@
   }
   .filter-drawer.open .filter-drawer-body {
     max-height: 640px;
-    border-top: 1px solid #bfdbe7;
+    border-top: 1px solid #e9ecef;
   }
   .filter-drawer-inner { padding: 12px 14px 13px; }
 
@@ -507,7 +488,7 @@
     gap: 5px;
     font-size: 10.5px;
     font-weight: 700;
-    color: #88bbd1;
+    color: #44546f;
     letter-spacing: .01em;
     margin-bottom: 6px;
   }
@@ -516,7 +497,7 @@
     flex: none;
     width: 12px;
     height: 12px;
-    color: #aa8e2d;
+    color: #8d731b;
   }
   .filter-group-label .fi svg { width: 100%; height: 100%; display: block; }
 
@@ -528,30 +509,30 @@
     transform: translateY(-50%);
     width: 15px;
     height: 15px;
-    color: #98c5d8;
+    color: #42526d;
     pointer-events: none;
   }
   .search-input-wrap .fi svg { width: 100%; height: 100%; display: block; }
   input[type="text"] {
     width: 100%;
     padding: 9px 36px 9px 12px;
-    border: 1.5px solid #bcd9e5;
-    background: #c4dde8;
+    border: 1.5px solid #e9ebee;
+    background: #ebedf0;
     border-radius: 11px;
     font-size: 13px;
     font-family: inherit;
-    color: #347089;
+    color: #1e2f4a;
     transition: border-color .15s ease, background .15s ease;
   }
   input[type="text"]:focus {
     outline: none;
-    border-color: #a6cddd;
+    border-color: #e3e6ea;
     background: white;
   }
 
   .sort-segment {
     display: flex;
-    background: #bfdbe7;
+    background: #e9ecef;
     border-radius: 11px;
     padding: 3px;
     gap: 2px;
@@ -560,7 +541,7 @@
     flex: 1;
     border: none;
     background: transparent;
-    color: #6babc6;
+    color: #465874;
     font-family: inherit;
     font-size: 11.5px;
     font-weight: 600;
@@ -571,9 +552,9 @@
     white-space: nowrap;
   }
   .sort-option.active {
-    background: #4594b5;
-    color: white;
-    box-shadow: 0 2px 8px rgba(69,148,181,0.28);
+    background: #76b1ca;
+    color: #16303b;
+    box-shadow: 0 2px 8px rgba(10, 12, 17, 0.15);
   }
 
   /* ردیف چیپ‌ها به‌صورت اسکرول افقی تا فضای عمودی اشغال نکنه */
@@ -590,23 +571,23 @@
   .chip {
     flex: 0 0 auto;
     white-space: nowrap;
-    border: 1.5px solid #bcd9e5;
+    border: 1.5px solid #e9ebee;
     border-radius: 18px;
     padding: 5px 12px;
     font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
-    background: #c4dde8;
-    color: #438fb0;
+    background: #ebedf0;
+    color: #4a5d7b;
     user-select: none;
     transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
   }
   .chip:active { transform: scale(0.96); }
   .chip.active {
-    background: linear-gradient(135deg, #4594b5, #559fbe);
-    color: white;
+    background: #76b1ca;
+    color: #16303b;
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(69,148,181,0.25);
+    box-shadow: 0 2px 8px rgba(10, 12, 17, 0.25);
   }
 
   /* --- چیپ ایرلاین با جای لوگو (بعداً تصویر جایگذاری می‌شود) --- */
@@ -622,7 +603,7 @@
     height: 20px;
     border-radius: 50%;
     background: white;
-    border: 1px solid #bcd9e5;
+    border: 1px solid #e9ebee;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -642,11 +623,11 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 800;
-    color: #6babc6;
-    background: #bbd8e5;
+    color: #465874;
+    background: #e8ebee;
   }
-  .chip-airline.active .chip-logo { border-color: rgba(255,255,255,0.5); }
-  .chip-airline.active .chip-logo-fallback { background: rgba(255,255,255,0.25); color: white; }
+  .chip-airline.active .chip-logo { border-color: rgba(255, 255, 255, 0.5); }
+  .chip-airline.active .chip-logo-fallback { background: rgba(255, 255, 255, 0.25); color: white; }
 
   /* --- ردیف مشترک: جستجوی شماره پرواز + کلاس پروازی --- */
   .filter-row {
@@ -668,10 +649,10 @@
     border-radius: 8px;
     white-space: nowrap;
   }
-  .cabin-economy { background: #f0f0f0; color: #888; }
-  .cabin-premium { background: #fde2ea; color: #d9455f; }
-  .cabin-business { background: #fde2ea; color: #d9455f; }
-  .cabin-first { background: #efe5c3; color: #75621f; }
+  .cabin-economy { background: #f0f0f0; color: #888888; }
+  .cabin-premium { background: #fbe4e7; color: #ce505f; }
+  .cabin-business { background: #fbe4e7; color: #ce505f; }
+  .cabin-first { background: #e2d5ba; color: #584725; }
 
   .flight-cell {
     display: inline-flex;
@@ -680,7 +661,7 @@
   }
 
   main { padding: 12px; }
-  #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
+  #loading, #empty { text-align: center; padding: 40px 16px; color: #888888; }
 
   /* --- کارت پرواز به‌سبک بلیط بوردینگ‌پس --- */
   .results-list { display: flex; flex-direction: column; gap: 12px; }
@@ -690,8 +671,8 @@
     background: white;
     border-radius: 18px;
     padding: 14px 16px;
-    box-shadow: 0 3px 14px rgba(56,120,147,0.06);
-    border: 1px solid #bfdbe6;
+    box-shadow: 0 3px 14px rgba(10, 12, 17, 0.06);
+    border: 1px solid #e9ebef;
     margin-bottom: 12px;
   }
   .sk-row { display: flex; align-items: center; gap: 10px; }
@@ -699,21 +680,19 @@
     flex: none;
     width: 38px; height: 38px;
     border-radius: 50%;
-    background: linear-gradient(90deg, #bedae6 25%, #b7d6e3 37%, #bedae6 63%);
-    background-size: 400% 100%;
-    animation: skShimmer 1.4s ease infinite;
+    background: #e7eaed;
+    animation: skPulse 1.4s ease infinite;
   }
   .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .sk-line {
     height: 10px;
     border-radius: 6px;
-    background: linear-gradient(90deg, #bedae6 25%, #b7d6e3 37%, #bedae6 63%);
-    background-size: 400% 100%;
-    animation: skShimmer 1.4s ease infinite;
+    background: #e7eaed;
+    animation: skPulse 1.4s ease infinite;
   }
-  @keyframes skShimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
+  @keyframes skPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .55; }
   }
 
   .flight-card {
@@ -721,13 +700,13 @@
     background: white;
     border-radius: 18px;
     padding: 14px 16px 13px;
-    box-shadow: 0 3px 14px rgba(56,120,147,0.08);
-    border: 1px solid #bfdbe6;
+    box-shadow: 0 3px 14px rgba(10, 12, 17, 0.08);
+    border: 1px solid #e9ebef;
     cursor: pointer;
     transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
     animation: cardFadeIn .32s ease backwards;
   }
-  .flight-card:active { transform: scale(0.98); background: #c4dee9; }
+  .flight-card:active { transform: scale(0.98); background: #ebedf0; }
   @keyframes cardFadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
@@ -749,16 +728,16 @@
   }
   .fc-change-icon { width: 13px; height: 13px; flex: none; }
   .fc-change.up {
-    background: linear-gradient(135deg, #b3243f, #d9455f);
-    box-shadow: 0 2px 8px rgba(217,69,95,0.35);
+    background: #a5303e;
+    box-shadow: 0 2px 6px rgba(10, 12, 17, 0.18);
   }
   .fc-change.down {
-    background: linear-gradient(135deg, #1a7a3d, #33b06b);
-    box-shadow: 0 2px 8px rgba(26,122,61,0.35);
+    background: #1d6544;
+    box-shadow: 0 2px 6px rgba(10, 12, 17, 0.18);
   }
   .fc-change.flat {
-    background: linear-gradient(135deg, #65a8c4, #7eb6ce);
-    box-shadow: 0 2px 8px rgba(101,168,196,0.3);
+    background: #445571;
+    box-shadow: 0 2px 8px rgba(10, 12, 17, 0.3);
   }
 
   .fc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -768,8 +747,8 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #c4dde8;
-    border: 1px solid #bcd9e5;
+    background: #ebedf0;
+    border: 1px solid #e9ebee;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -782,8 +761,8 @@
     width: 100%; height: 100%;
     align-items: center; justify-content: center;
     font-size: 14px; font-weight: 800;
-    color: #6babc6;
-    background: #bbd8e5;
+    color: #465874;
+    background: #e8ebee;
   }
   .fc-logo-sm .fc-logo-fallback { font-size: 10.5px; }
 
@@ -791,12 +770,12 @@
   .fc-airline-name {
     font-size: 13.5px;
     font-weight: 800;
-    color: #347089;
+    color: #1e2f4a;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .fc-flight-no {
     display: flex; align-items: center; gap: 5px;
-    font-size: 11px; color: #78b2cb; font-weight: 600;
+    font-size: 11px; color: #455672; font-weight: 600;
   }
 
   .fc-dep-row {
@@ -804,12 +783,12 @@
     align-items: center;
     gap: 5px;
     font-size: 11.5px;
-    color: #88bbd1;
+    color: #44546f;
     font-weight: 600;
     margin-top: 8px;
     padding-right: 48px;
   }
-  .fc-dep-row bdi { font-size: 13px; font-weight: 800; color: #347089; margin-right: 2px; }
+  .fc-dep-row bdi { font-size: 13px; font-weight: 800; color: #1e2f4a; margin-right: 2px; }
   .fc-dep-row-icon { flex: none; font-size: 10px; opacity: .8; }
 
   /* خط برش‌خورده‌ی بلیط با دو دایره‌ی کنج، شبیه بلیط پرواز واقعی */
@@ -817,7 +796,7 @@
     position: relative;
     height: 0;
     margin: 12px -16px;
-    border-top: 1.5px dashed #b7d6e3;
+    border-top: 1.5px dashed #e7eaed;
   }
   .fc-stub-row::before,
   .fc-stub-row::after {
@@ -826,7 +805,7 @@
     top: -8px;
     width: 16px; height: 16px;
     border-radius: 50%;
-    background: #bfdbe6;
+    background: #e9ebef;
   }
   .fc-stub-row::before { left: -8px; }
   .fc-stub-row::after { right: -8px; }
@@ -834,7 +813,7 @@
   .fc-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .fc-seller { display: flex; align-items: center; gap: 7px; min-width: 0; }
   .fc-seller-name {
-    font-size: 12px; font-weight: 600; color: #6babc6;
+    font-size: 12px; font-weight: 600; color: #465874;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .fc-bottom-right { display: flex; align-items: center; gap: 10px; flex: none; }
@@ -842,13 +821,13 @@
   .fc-spark svg { display: block; }
   .fc-price-col { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
   .fc-price { display: flex; align-items: baseline; gap: 4px; }
-  .fc-price-value { font-size: 15.5px; font-weight: 800; color: #1a7a3d; direction: ltr; }
+  .fc-price-value { font-size: 15.5px; font-weight: 800; color: #1d6544; direction: ltr; }
   .fc-price-currency { font-size: 10.5px; color: #9aa89f; font-weight: 600; }
 
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(48,103,126,0.55);
+    background: rgba(27, 43, 68, 0.55);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
     display: flex;
@@ -864,7 +843,7 @@
   /* --- کارت مودال: هویت بصری مستقل، هماهنگ با رنگ برند اما رسمی‌تر و خاص‌تر از بقیه‌ی UI --- */
   .modal-card {
     position: relative;
-    background: #c7dfe9;
+    background: #ebedf0;
     width: 100%;
     max-width: 480px;
     border-radius: 24px 24px 0 0;
@@ -872,7 +851,7 @@
     max-height: 88vh;
     overflow-y: auto;
     animation: sheetUp .32s cubic-bezier(.16,1,.3,1);
-    box-shadow: 0 -18px 50px rgba(51,110,135,0.22);
+    box-shadow: 0 -18px 50px rgba(10, 12, 17, 0.22);
   }
   .modal-card::before {
     content: "";
@@ -880,7 +859,7 @@
     top: 0; right: 0; left: 0;
     height: 3px;
     border-radius: 24px 24px 0 0;
-    background: linear-gradient(90deg, #4594b5, #6eadc8 45%, #d9455f);
+    background: #76b1ca;
   }
   .modal-overlay.closing .modal-card { animation: sheetDown .18s cubic-bezier(.4,0,1,1) forwards; }
   @keyframes sheetUp {
@@ -895,7 +874,7 @@
     width: 38px;
     height: 4px;
     border-radius: 3px;
-    background: #b7d6e3;
+    background: #e7eaed;
     margin: 8px auto 14px;
   }
 
@@ -907,24 +886,24 @@
     gap: 12px;
     margin-bottom: 16px;
   }
-  .modal-sub { font-size: 12px; color: #888; margin-top: 2px; }
+  .modal-sub { font-size: 12px; color: #888888; margin-top: 2px; }
   .modal-avatar {
     flex: none;
     width: 42px;
     height: 42px;
     border-radius: 13px;
-    background: linear-gradient(150deg, #4594b5, #5aa2c0);
-    color: #fff;
+    background: #76b1ca;
+    color: #16303b;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 15px;
     font-weight: 800;
-    box-shadow: 0 4px 12px rgba(69,148,181,0.35);
+    box-shadow: 0 4px 12px rgba(10, 12, 17, 0.35);
   }
   .modal-header-main { flex: 1; min-width: 0; }
-  .modal-title { font-size: 15.5px; font-weight: 800; color: #336e87; }
-  .modal-title .modal-flightno { color: #6babc6; font-weight: 700; direction: ltr; display: inline-block; }
+  .modal-title { font-size: 15.5px; font-weight: 800; color: #1d2e49; }
+  .modal-title .modal-flightno { color: #465874; font-weight: 700; direction: ltr; display: inline-block; }
   .modal-meta-row {
     display: flex;
     flex-wrap: wrap;
@@ -934,25 +913,25 @@
   .modal-chip {
     font-size: 10.5px;
     font-weight: 700;
-    color: #5ea4c1;
-    background: #bfdbe6;
-    border: 1px solid #b7d6e4;
+    color: #485976;
+    background: #e9ebef;
+    border: 1px solid #e8eaee;
     border-radius: 7px;
     padding: 3px 8px;
   }
   .modal-close {
     border: none;
-    background: #bddae6;
+    background: #e9ebef;
     width: 30px;
     height: 30px;
     border-radius: 50%;
     font-size: 13px;
-    color: #4d9abb;
+    color: #495b78;
     cursor: pointer;
     flex: none;
     transition: background .15s ease;
   }
-  .modal-close:active { background: #b5d5e3; }
+  .modal-close:active { background: #e7e9ed; }
 
   /* --- ردیف آمار: کمترین / بیشترین / آخرین قیمت --- */
   .modal-stats {
@@ -962,17 +941,17 @@
     margin-bottom: 14px;
   }
   .modal-stat {
-    background: #c3dde8;
-    border: 1px solid #bedae6;
+    background: #eaecf0;
+    border: 1px solid #e9ebef;
     border-radius: 12px;
     padding: 9px 6px;
     text-align: center;
   }
-  .modal-stat-label { font-size: 10px; color: #7db6ce; font-weight: 700; margin-bottom: 3px; }
-  .modal-stat-value { font-size: 13.5px; font-weight: 800; color: #336e87; direction: ltr; }
-  .modal-stat.is-current { background: linear-gradient(150deg, #4594b5, #539dbd); border-color: transparent; }
-  .modal-stat.is-current .modal-stat-label { color: #a7cdde; }
-  .modal-stat.is-current .modal-stat-value { color: #fff; }
+  .modal-stat-label { font-size: 10px; color: #445671; font-weight: 700; margin-bottom: 3px; }
+  .modal-stat-value { font-size: 13.5px; font-weight: 800; color: #1d2e49; direction: ltr; }
+  .modal-stat.is-current { background: #debd50; border-color: transparent; }
+  .modal-stat.is-current .modal-stat-label { color: #6b5613; }
+  .modal-stat.is-current .modal-stat-value { color: #16303b; }
 
   /* --- نشان روند کلی --- */
   .modal-trend { margin-bottom: 12px; }
@@ -986,14 +965,14 @@
     border-radius: 20px;
     letter-spacing: -.01em;
   }
-  .trend-badge.up { background: linear-gradient(120deg, #fde8ea, #fcdde3); color: #b8324a; }
-  .trend-badge.down { background: linear-gradient(120deg, #e6f4ea, #dcf1e3); color: #15693a; }
-  .trend-badge.flat { background: #bddae6; color: #59a1bf; }
+  .trend-badge.up { background: #fbe4e7; color: #9c2a38; }
+  .trend-badge.down { background: #e3f0e7; color: #195639; }
+  .trend-badge.flat { background: #e9ebef; color: #16303b; }
 
   /* --- نمودار: بخش مجزا با عنوان و برچسب بازه‌ی قیمت --- */
   .modal-chart-section {
-    background: #c6dfe9;
-    border: 1px solid #bedae6;
+    background: #ebedf0;
+    border: 1px solid #e9ebef;
     border-radius: 16px;
     padding: 12px 12px 6px;
     margin-bottom: 14px;
@@ -1004,10 +983,10 @@
     justify-content: space-between;
     font-size: 11px;
     font-weight: 800;
-    color: #6fadc8;
+    color: #465773;
     margin-bottom: 6px;
   }
-  .modal-chart-title .range-hint { color: #97c4d7; font-weight: 700; direction: ltr; }
+  .modal-chart-title .range-hint { color: #42536d; font-weight: 700; direction: ltr; }
   .modal-chart {
     display: flex;
     justify-content: center;
@@ -1017,7 +996,7 @@
   .history-section-title {
     font-size: 11.5px;
     font-weight: 800;
-    color: #7db6ce;
+    color: #445671;
     margin: 4px 2px 8px;
   }
   .history-list {
@@ -1031,7 +1010,7 @@
     bottom: 4px;
     right: 15px;
     width: 2px;
-    background: linear-gradient(180deg, #b9d7e4, #c1dce7);
+    background: #e5e8ec;
   }
   .history-item {
     position: relative;
@@ -1045,24 +1024,24 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #a7cddd;
-    border: 2px solid #c7dfe9;
-    box-shadow: 0 0 0 2px #bcd9e5;
+    background: #e4e6ea;
+    border: 2px solid #ebedf0;
+    box-shadow: 0 0 0 2px #e9ebee;
     z-index: 1;
     margin-right: 11px;
   }
-  .history-dot.up { background: #d9455f; box-shadow: 0 0 0 2px #fde3e7; }
-  .history-dot.down { background: #1a7a3d; box-shadow: 0 0 0 2px #e2f2e7; }
+  .history-dot.up { background: #ce505f; box-shadow: 0 0 0 2px #fbe5e8; }
+  .history-dot.down { background: #1d6544; box-shadow: 0 0 0 2px #e3f1ea; }
   .history-date {
-    color: #75b1ca;
+    color: #455772;
     flex: 1.15;
     display: flex;
     flex-direction: column;
     gap: 1px;
   }
-  .history-date .hd-date { font-size: 10px; color: #88bbd1; font-weight: 700; }
-  .history-date .hd-time { font-size: 13px; color: #347089; font-weight: 800; direction: ltr; }
-  .history-price { font-weight: 800; flex: 1; text-align: center; font-size: 13.5px; color: #336e87; direction: ltr; }
+  .history-date .hd-date { font-size: 10px; color: #44546f; font-weight: 700; }
+  .history-date .hd-time { font-size: 13px; color: #1e2f4a; font-weight: 800; direction: ltr; }
+  .history-price { font-weight: 800; flex: 1; text-align: center; font-size: 13.5px; color: #1d2e49; direction: ltr; }
   .history-delta {
     flex: 1;
     text-align: left;
@@ -1079,10 +1058,10 @@
     border-radius: 8px;
     direction: ltr;
   }
-  .history-delta-chip.up { background: #fdeef0; color: #c23955; }
-  .history-delta-chip.down { background: #e9f6ee; color: #187a40; }
-  .history-delta-chip.flat { background: #bfdbe6; color: #85bad0; }
-  .history-item.is-latest .history-price { color: #4594b5; }
+  .history-delta-chip.up { background: #fceff1; color: #a5303e; }
+  .history-delta-chip.down { background: #eaf5f0; color: #1d6443; }
+  .history-delta-chip.flat { background: #e9ebef; color: #445570; }
+  .history-item.is-latest .history-price { color: #16303b; }
 </style>
 
 </head>
@@ -1875,7 +1854,7 @@ function buildSparkline(points, width, height, opts) {
   const mini = !!opts.mini;
   if (points.length < 2) {
     if (mini) return ''; // توی کارت ردیف، وقتی تاریخچه کافی نیست چیزی نشون نمی‌دیم
-    return '<div style="text-align:center;color:#999;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
+    return '<div style="text-align:center;color:#999999;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
   }
   const prices = points.map(p => p.price);
   const min = Math.min(...prices);
@@ -1895,7 +1874,7 @@ function buildSparkline(points, width, height, opts) {
   const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
   const rising = prices[prices.length - 1] > prices[0];
   const flat = prices[prices.length - 1] === prices[0];
-  const stroke = flat ? '#75b1ca' : (rising ? '#d9455f' : '#1a7a3d');
+  const stroke = flat ? '#455772' : (rising ? '#ce505f' : '#1d6544');
 
   if (mini) {
     // نسخه‌ی کوچیک برای کنار هر ردیف: بدون نقطه‌های تکی، با یه سایه‌ی کم‌رنگ زیر خط و یه نقطه فقط روی آخرین مقدار
@@ -1920,7 +1899,7 @@ function buildSparkline(points, width, height, opts) {
 
   const gridLines = [0.25, 0.5, 0.75].map(fr => {
     const y = (padY + innerH * fr).toFixed(1);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#bbd8e5" stroke-width="1" stroke-dasharray="3,4" />`;
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#e8ebee" stroke-width="1" stroke-dasharray="3,4" />`;
   }).join('');
 
   const maxIdx = prices.indexOf(max);
@@ -2056,7 +2035,7 @@ function openHistoryModal(f) {
 
       <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
       <div class="history-list">
-        ${listHtml || '<div style="text-align:center;color:#8abdd2;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+        ${listHtml || '<div style="text-align:center;color:#43546f;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
       </div>
     </div>`;
 
