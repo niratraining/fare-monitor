@@ -184,11 +184,27 @@ async function handleExportHistory(env) {
     }
   }
 
-  const history = [...grouped.values()].sort((a, b) =>
+  const points = [...grouped.values()].sort((a, b) =>
     (a.route + a.flight_date + a.flight_no + a.cabin + a.seller + a.captured_at).localeCompare(
       b.route + b.flight_date + b.flight_no + b.cabin + b.seller + b.captured_at
     )
   );
+
+  // هر رصد (هر ۲/۶/۱۲ ساعت) یه ردیف خام تو fare_snapshots ثبت می‌شه، حتی اگه
+  // قیمت عوض نشده باشه (چون این جدول برای «آخرین وضعیت» هم استفاده می‌شه).
+  // اما تاریخچه‌ی قیمت فقط باید نقطه‌هایی داشته باشه که واقعاً یه تغییر
+  // (افزایش/کاهش) نسبت به نقطه‌ی قبلی رخ داده؛ رصدهای پشت‌سرهم با قیمت
+  // یکسان اینجا فشرده می‌شن (به‌جز اولین رصد از هر گروه که نقطه‌ی شروعه)
+  // تا «بدون تغییر» به‌عنوان یک تغییر جدا ثبت نشه.
+  const groupKeyOf = (p) => [p.route, p.flight_date, p.flight_no, p.airline, p.cabin, p.seller].join("|");
+  const history = [];
+  const lastPriceByGroup = new Map();
+  for (const p of points) {
+    const gk = groupKeyOf(p);
+    if (lastPriceByGroup.get(gk) === p.price) continue; // بدون تغییر نسبت به آخرین نقطه‌ی ثبت‌شده
+    lastPriceByGroup.set(gk, p.price);
+    history.push(p);
+  }
 
   return json({
     generated_at: new Date().toISOString().slice(0, 16),
