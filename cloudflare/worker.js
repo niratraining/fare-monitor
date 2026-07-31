@@ -191,26 +191,88 @@ async function handleExportHistory(env) {
 }
 
 // ===========================================================
+// /routes — مدیریت مسیرهای تحت رصد (برای پنل ادمین و fare_monitor.py)
+// GET    /routes  -> لیست همه‌ی مسیرها
+// POST   /routes   body: { id?, label, origin, destination, start_date, end_date, active? }
+//        اگه id بدی، آپدیت می‌کنه؛ وگرنه بر اساس label جدید می‌سازه یا آپسرت می‌کنه
+// DELETE /routes   body: { id }
+// ===========================================================
+async function handleRoutesList(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT id, label, origin, destination, start_date, end_date, active FROM routes ORDER BY id`
+  ).all();
+  return json({ routes: results });
+}
+
+async function handleRoutesUpsert(request, env) {
+  const b = await request.json();
+  const { id, label, origin, destination, start_date, end_date } = b;
+  if (!label || !origin || !destination || !start_date || !end_date) {
+    return json({ error: "فیلدهای مسیر ناقصه" }, 400);
+  }
+  const activeVal = b.active === undefined ? 1 : (b.active ? 1 : 0);
+
+  if (id) {
+    await env.DB.prepare(
+      `UPDATE routes SET label=?, origin=?, destination=?, start_date=?, end_date=?, active=? WHERE id=?`
+    ).bind(label, origin, destination, start_date, end_date, activeVal, id).run();
+    return json({ ok: true, id });
+  }
+
+  const res = await env.DB.prepare(
+    `INSERT INTO routes (label, origin, destination, start_date, end_date, active, created_at)
+     VALUES (?,?,?,?,?,?,?)
+     ON CONFLICT(label) DO UPDATE SET origin=excluded.origin, destination=excluded.destination,
+       start_date=excluded.start_date, end_date=excluded.end_date, active=excluded.active`
+  ).bind(label, origin, destination, start_date, end_date, activeVal, new Date().toISOString()).run();
+  return json({ ok: true, id: res.meta.last_row_id });
+}
+
+async function handleRoutesDelete(request, env) {
+  const { id } = await request.json();
+  if (!id) return json({ error: "id لازمه" }, 400);
+  await env.DB.prepare(`DELETE FROM routes WHERE id = ?`).bind(id).run();
+  return json({ ok: true });
+}
+
+function withCORS(resp) {
+  resp.headers.set("Access-Control-Allow-Origin", "*");
+  resp.headers.set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  resp.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  return resp;
+}
+
+// ===========================================================
 export default {
   async fetch(request, env) {
+    if (request.method === "OPTIONS") {
+      return withCORS(new Response(null, { status: 204 }));
+    }
+
     const url = new URL(request.url);
     const auth = request.headers.get("Authorization") || "";
     if (auth !== `Bearer ${env.INGEST_SECRET}`) {
-      return json({ error: "unauthorized" }, 401);
+      return withCORS(json({ error: "unauthorized" }, 401));
     }
 
+    let resp;
     if (url.pathname === "/due" && request.method === "POST") {
-      return handleDue(request, env);
+      resp = await handleDue(request, env);
+    } else if (url.pathname === "/ingest" && request.method === "POST") {
+      resp = await handleIngest(request, env);
+    } else if (url.pathname === "/export/data" && request.method === "GET") {
+      resp = await handleExportData(env);
+    } else if (url.pathname === "/export/history" && request.method === "GET") {
+      resp = await handleExportHistory(env);
+    } else if (url.pathname === "/routes" && request.method === "GET") {
+      resp = await handleRoutesList(env);
+    } else if (url.pathname === "/routes" && request.method === "POST") {
+      resp = await handleRoutesUpsert(request, env);
+    } else if (url.pathname === "/routes" && request.method === "DELETE") {
+      resp = await handleRoutesDelete(request, env);
+    } else {
+      resp = json({ error: "not found" }, 404);
     }
-    if (url.pathname === "/ingest" && request.method === "POST") {
-      return handleIngest(request, env);
-    }
-    if (url.pathname === "/export/data" && request.method === "GET") {
-      return handleExportData(env);
-    }
-    if (url.pathname === "/export/history" && request.method === "GET") {
-      return handleExportHistory(env);
-    }
-    return json({ error: "not found" }, 404);
+    return withCORS(resp);
   },
 };

@@ -28,3 +28,23 @@ CREATE INDEX IF NOT EXISTS idx_snapshots_route_date
 
 CREATE INDEX IF NOT EXISTS idx_snapshots_captured
   ON fare_snapshots (captured_at);
+
+-- مسیرهای تحت رصد. هر مسیر origin/destination (کد ایاتا، چند فرودگاه با کاما)
+-- و بازه‌ی تاریخ خودش رو داره. اضافه/غیرفعال کردن مسیر یعنی یه ردیف
+-- این‌جا، نه تغییر کد پایتون یا Worker.
+CREATE TABLE IF NOT EXISTS routes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  label TEXT UNIQUE NOT NULL,
+  origin TEXT NOT NULL,
+  destination TEXT NOT NULL,
+  start_date TEXT NOT NULL,
+  end_date TEXT NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT
+);
+
+INSERT OR IGNORE INTO routes (label, origin, destination, start_date, end_date, active, created_at) VALUES
+  ('تهران-استانبول', 'THR,IKA,PYK', 'TEQ,SAW,IST', '2026-08-01', '2026-08-11', 1, datetime('now')),
+  ('استانبول-تهران', 'TEQ,SAW,IST', 'THR,IKA,PYK', '2026-08-01', '2026-08-11', 1, datetime('now')),
+  ('تهران-دبی',       'THR,IKA,PYK', 'SHJ,DWC,DXB', '2026-08-01', '2026-08-11', 1, datetime('now')),
+  ('دبی-تهران',       'SHJ,DWC,DXB', 'THR,IKA,PYK', '2026-08-01', '2026-08-11', 1, datetime('now'));
