@@ -2,7 +2,9 @@ name: Fare Monitor
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # هر ۶ ساعت (UTC)
+    # هر ۲ ساعت (UTC) — ریزترین لایه‌ی رصد؛ خودِ Worker تصمیم می‌گیره
+    # کدوم پروازها الان واقعاً نوبتشونه (دور: هر ۱۲ س، متوسط: هر ۶ س، نزدیک: هر ۲ س)
+    - cron: "0 */2 * * *"
   workflow_dispatch: {}      # دکمه‌ی اجرای دستی تو تب Actions
 
 permissions:
@@ -11,6 +13,9 @@ permissions:
 jobs:
   run-monitor:
     runs-on: ubuntu-latest
+    env:
+      CF_WORKER_URL: ${{ secrets.CF_WORKER_URL }}
+      CF_INGEST_SECRET: ${{ secrets.CF_INGEST_SECRET }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -30,6 +35,6 @@ jobs:
         run: |
           git config user.name "fare-monitor-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add fares.db docs/data.json docs/history.json
+          git add docs/data.json docs/history.json
           git diff --cached --quiet || git commit -m "snapshot: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           git push
