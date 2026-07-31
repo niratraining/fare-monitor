@@ -20,12 +20,14 @@ import sqlite3
 import time
 import json
 import os
+import re
 from datetime import datetime, timedelta
 
 import requests
 
 DB_PATH = "fares.db"
 DOCS_JSON_PATH = os.path.join("docs", "data.json")
+DOCS_HISTORY_JSON_PATH = os.path.join("docs", "history.json")
 
 # ---- بازه‌ی تاریخ میلادی مورد نظر برای رصد ----
 START_DATE = "2026-08-01"
@@ -265,6 +267,59 @@ def export_latest_json():
     print(f"✓ docs/data.json به‌روزرسانی شد ({len(rows)} ردیف)")
 
 
+# ===========================================================
+# خروجی JSON تاریخچه‌ی کامل قیمت هر پرواز (برای نمودار روند در پنل)
+# به ازای هر (route, flight_date, flight_no, airline, captured_at) یک نقطه،
+# با ارزان‌ترین قیمت بین فروشنده‌های همون اسنپ‌شات.
+# ===========================================================
+def export_history_json():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute("""
+        SELECT route, flight_date, flight_no, airline, captured_at, adult_price
+        FROM fare_snapshots
+    """).fetchall()
+    conn.close()
+
+    def price_num(s):
+        digits = re.sub(r"[^0-9]", "", str(s or ""))
+        return int(digits) if digits else None
+
+    grouped = {}
+    for r in rows:
+        price = price_num(r["adult_price"])
+        if price is None:
+            continue
+        key = (r["route"], r["flight_date"], r["flight_no"], r["airline"], r["captured_at"])
+        if key not in grouped or price < grouped[key]:
+            grouped[key] = price
+
+    history = [
+        {
+            "route": k[0],
+            "flight_date": k[1],
+            "flight_no": k[2],
+            "airline": k[3],
+            "captured_at": k[4],
+            "price": v,
+        }
+        for k, v in grouped.items()
+    ]
+    history.sort(key=lambda h: (h["route"], h["flight_date"], h["flight_no"], h["captured_at"]))
+
+    result = {
+        "generated_at": datetime.now().isoformat(timespec="minutes"),
+        "history": history,
+    }
+
+    os.makedirs(os.path.dirname(DOCS_HISTORY_JSON_PATH), exist_ok=True)
+    with open(DOCS_HISTORY_JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+
+    print(f"✓ docs/history.json به‌روزرسانی شد ({len(history)} نقطه‌ی قیمتی)")
+
+
 if __name__ == "__main__":
     run_snapshot()
     export_latest_json()
+    export_history_json()
