@@ -5,110 +5,618 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>رصد نرخ پرواز تهران-استانبول</title>
 <style>
+  * { box-sizing: border-box; }
   body {
     font-family: Tahoma, Vazirmatn, sans-serif;
     background: #f4f5f7;
     margin: 0;
-    padding: 16px;
+    padding: 0 0 24px 0;
     color: #222;
   }
-  h1 { font-size: 18px; margin-bottom: 4px; }
-  .meta { color: #666; font-size: 13px; margin-bottom: 16px; }
-  .route-group { margin-bottom: 24px; }
-  .route-title {
+  header {
     background: #4b3f72;
     color: white;
-    padding: 8px 12px;
-    border-radius: 8px 8px 0 0;
-    font-size: 14px;
-    font-weight: bold;
+    padding: 14px 16px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  .meta { color: #d8d3ea; font-size: 12px; margin-bottom: 10px; }
+
+  .route-toggle {
+    display: flex;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .route-toggle button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: white;
+    padding: 8px 4px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .route-toggle button.active {
+    background: white;
+    color: #4b3f72;
+    font-weight: bold;
+    border-radius: 20px;
+  }
+
+  /* --- تقویم کارتی افقی، شبیه سپهر --- */
+  .date-cards {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .date-card {
+    flex: 0 0 auto;
+    min-width: 78px;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 8px 6px;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+  }
+  .date-card .weekday {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+  .date-card .daynum {
+    font-size: 11px;
+    color: #d8d3ea;
+    margin-bottom: 4px;
+  }
+  .date-card .cardprice {
+    font-size: 11.5px;
+    font-weight: bold;
+    color: #ffd166;
+  }
+  .date-card.active {
+    background: white;
+    border-color: #ff4d8d;
+  }
+  .date-card.active .weekday,
+  .date-card.active .daynum { color: #4b3f72; }
+  .date-card.active .cardprice { color: #1a7a3d; }
+
+  .filter-bar {
+    background: white;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .filter-row:last-child { margin-bottom: 0; }
+  .filter-row label { font-size: 12px; color: #555; white-space: nowrap; }
+  input[type="text"] {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  select {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+  }
+  .airline-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    border: 1px solid #ccc;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    background: #f0f0f0;
+    user-select: none;
+  }
+  .chip.active {
+    background: #4b3f72;
+    color: white;
+    border-color: #4b3f72;
+  }
+
+  main { padding: 12px; }
   table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px;
     overflow: hidden;
-    font-size: 13px;
+    font-size: 12.5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
   th, td {
-    padding: 6px 8px;
+    padding: 7px 6px;
     text-align: right;
     border-bottom: 1px solid #eee;
   }
   th { background: #eee; }
   tr:last-child td { border-bottom: none; }
-  .date-header td {
-    background: #f0eef7;
-    font-weight: bold;
-  }
   .price { font-weight: bold; color: #1a7a3d; }
-  #loading { text-align: center; padding: 40px; color: #888; }
+  #loading, #empty { text-align: center; padding: 40px 16px; color: #888; }
+  .result-count { font-size: 12px; color: #777; margin: 8px 2px; }
+
+  tbody tr { cursor: pointer; }
+  tbody tr:active { background: #f7f4ff; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-card {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 16px 16px 0 0;
+    padding: 16px;
+    max-height: 82vh;
+    overflow-y: auto;
+    animation: slideUp .15s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .modal-title { font-size: 15px; font-weight: bold; }
+  .modal-sub { font-size: 12px; color: #888; margin-top: 2px; }
+  .modal-close {
+    border: none;
+    background: #f0f0f0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+    flex: none;
+  }
+  .modal-trend { margin-bottom: 10px; }
+  .trend-badge {
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+  .trend-badge.up { background: #fde8ea; color: #d9455f; }
+  .trend-badge.down { background: #e6f4ea; color: #1a7a3d; }
+  .trend-badge.flat { background: #f0f0f0; color: #777; }
+  .modal-chart {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 8px 4px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+  }
+  .history-list {
+    border-top: 1px solid #eee;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 2px;
+    border-bottom: 1px solid #f2f2f2;
+    font-size: 12.5px;
+  }
+  .history-date { color: #777; flex: 1.3; }
+  .history-price { font-weight: bold; flex: 1; text-align: center; }
+  .history-delta { flex: 1; text-align: left; font-weight: bold; }
 </style>
 </head>
 <body>
+
+<header>
   <h1>رصد نرخ پرواز تهران ↔ استانبول</h1>
   <div class="meta" id="meta">در حال بارگذاری...</div>
+
+  <div class="route-toggle" id="routeToggle"></div>
+  <div class="date-cards" id="dateCards"></div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <label>شماره پرواز</label>
+    <input type="text" id="flightSearch" placeholder="مثلاً 6846" inputmode="numeric">
+  </div>
+  <div class="filter-row">
+    <label>مرتب‌سازی</label>
+    <select id="sortSelect">
+      <option value="price_asc">ارزان‌ترین اول</option>
+      <option value="price_desc">گران‌ترین اول</option>
+      <option value="time_asc">ساعت پرواز</option>
+    </select>
+  </div>
+  <div class="filter-row" style="align-items:flex-start;">
+    <label style="margin-top:4px;">ایرلاین</label>
+    <div class="airline-chips" id="airlineChips"></div>
+  </div>
+</div>
+
+<main>
   <div id="loading">در حال دریافت داده...</div>
-  <div id="content"></div>
+  <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
+  <div class="result-count" id="resultCount"></div>
+  <div style="font-size:11.5px;color:#999;margin:0 2px 8px;">برای دیدن روند تغییر قیمت، روی هر ردیف بزن</div>
+  <table id="resultsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ایرلاین</th>
+        <th>پرواز</th>
+        <th>ساعت</th>
+        <th>فروشنده</th>
+        <th>قیمت</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+</main>
 
 <script>
+let allFlights = [];
+let allHistory = [];
+let state = {
+  route: null,
+  date: null,
+  flightSearch: '',
+  sort: 'price_asc',
+  airlines: new Set(),
+};
+
+const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const FA_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+
+function toFaDigits(n) {
+  return String(n).replace(/[0-9]/g, d => FA_DIGITS[d]);
+}
+
+// تبدیل میلادی به شمسی (همون الگوریتمی که تو fare_monitor.py هم هست)
+function gregorianToJalali(gy, gm, gd) {
+  const g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+  gy = gy - 1600; gm = gm - 1; gd = gd - 1;
+  let g_day_no = 365*gy + Math.floor((gy+3)/4) - Math.floor((gy+99)/100) + Math.floor((gy+399)/400);
+  g_day_no += g_d_m[gm] + gd;
+  if (gm > 1 && ((gy+1600) % 4 === 0 && ((gy+1600) % 100 !== 0 || (gy+1600) % 400 === 0))) g_day_no += 1;
+  let j_day_no = g_day_no - 79;
+  const j_np = Math.floor(j_day_no / 12053);
+  j_day_no %= 12053;
+  let jy = 979 + 33*j_np + 4*Math.floor(j_day_no/1461);
+  j_day_no %= 1461;
+  if (j_day_no >= 366) {
+    jy += Math.floor((j_day_no - 1) / 365);
+    j_day_no = (j_day_no - 1) % 365;
+  }
+  const j_days_in_month = [31,31,31,31,31,31,30,30,30,30,30,29];
+  let jm = 0, jd = j_day_no;
+  for (; jm < 11; jm++) {
+    if (jd < j_days_in_month[jm]) break;
+    jd -= j_days_in_month[jm];
+  }
+  return [jy, jm + 1, jd + 1];
+}
+
+function formatDateCard(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const weekday = WEEKDAYS_FA[d.getDay()];
+  const [jy, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  const label = toFaDigits(jd) + ' ' + JALALI_MONTHS[jm-1];
+  return { weekday, label };
+}
+
+function toPriceNumber(str) {
+  if (!str) return Infinity;
+  const n = parseInt(String(str).replace(/[^0-9]/g, ''), 10);
+  return isNaN(n) ? Infinity : n;
+}
+
+function formatPriceShort(n) {
+  if (!isFinite(n)) return '—';
+  return n.toLocaleString('en-US');
+}
+
 async function load() {
   try {
     const res = await fetch('data.json?t=' + Date.now());
     const data = await res.json();
-    document.getElementById('meta').textContent =
-      'آخرین به‌روزرسانی: ' + data.generated_at;
+    allFlights = data.flights || [];
+
+    // history.json ممکنه هنوز تولید نشده باشه (مثلاً اولین اجرا)، پس خطاش نباید کل پنل رو خراب کنه
+    try {
+      const histRes = await fetch('history.json?t=' + Date.now());
+      const histData = await histRes.json();
+      allHistory = histData.history || [];
+    } catch (e2) {
+      allHistory = [];
+    }
+
+    document.getElementById('meta').innerHTML = data.generated_at
+      ? 'آخرین به‌روزرسانی: <bdi style="direction:ltr">' + data.generated_at + '</bdi>'
+      : 'هنوز اجرایی ثبت نشده';
+
     document.getElementById('loading').style.display = 'none';
 
-    const byRoute = {};
-    for (const f of data.flights) {
-      if (!byRoute[f.route]) byRoute[f.route] = {};
-      if (!byRoute[f.route][f.flight_date]) byRoute[f.route][f.flight_date] = [];
-      byRoute[f.route][f.flight_date].push(f);
+    if (allFlights.length === 0) {
+      document.getElementById('empty').style.display = 'block';
+      return;
     }
 
-    const content = document.getElementById('content');
-    for (const route of Object.keys(byRoute)) {
-      const group = document.createElement('div');
-      group.className = 'route-group';
-      group.innerHTML = `<div class="route-title">${route}</div>`;
+    buildRouteToggle();
+    buildDateCards();
+    buildAirlineChips();
+    bindControls();
+    render();
 
-      const table = document.createElement('table');
-      table.innerHTML = `
-        <tr>
-          <th>تاریخ</th>
-          <th>ایرلاین</th>
-          <th>پرواز</th>
-          <th>ساعت</th>
-          <th>فروشنده</th>
-          <th>قیمت بزرگسال</th>
-        </tr>`;
-
-      const dates = Object.keys(byRoute[route]).sort();
-      for (const date of dates) {
-        const rows = byRoute[route][date].sort((a, b) =>
-          (a.dep_time || '').localeCompare(b.dep_time || ''));
-        for (const f of rows) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${date}</td>
-            <td>${f.airline || ''}</td>
-            <td>${f.flight_no || ''}</td>
-            <td>${f.dep_time || ''}</td>
-            <td>${f.seller || ''}</td>
-            <td class="price">${f.adult_price || ''}</td>`;
-          table.appendChild(tr);
-        }
-      }
-      group.appendChild(table);
-      content.appendChild(group);
-    }
   } catch (e) {
     document.getElementById('loading').textContent =
       'هنوز داده‌ای موجود نیست — منتظر بمون تا اولین اجرای Action تموم بشه.';
   }
 }
+
+function buildRouteToggle() {
+  const routes = [...new Set(allFlights.map(f => f.route))];
+  state.route = routes[0];
+  const el = document.getElementById('routeToggle');
+  el.innerHTML = '';
+  routes.forEach(r => {
+    const btn = document.createElement('button');
+    btn.textContent = r;
+    btn.className = (r === state.route) ? 'active' : '';
+    btn.onclick = () => { state.route = r; buildDateCards(); render(); highlightRoute(); };
+    el.appendChild(btn);
+  });
+}
+
+function highlightRoute() {
+  document.querySelectorAll('#routeToggle button').forEach(b => {
+    b.classList.toggle('active', b.textContent === state.route);
+  });
+}
+
+function buildDateCards() {
+  const dates = [...new Set(
+    allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
+  )].sort();
+  state.date = dates[0] || null;
+
+  const el = document.getElementById('dateCards');
+  el.innerHTML = '';
+  dates.forEach(d => {
+    const minPrice = Math.min(
+      ...allFlights
+        .filter(f => f.route === state.route && f.flight_date === d)
+        .map(f => toPriceNumber(f.adult_price))
+    );
+    const { weekday, label } = formatDateCard(d);
+
+    const card = document.createElement('div');
+    card.className = 'date-card' + (d === state.date ? ' active' : '');
+    card.dataset.date = d;
+    card.innerHTML = `
+      <div class="weekday">${weekday}</div>
+      <div class="daynum">${label}</div>
+      <div class="cardprice">${formatPriceShort(minPrice)}</div>`;
+    card.onclick = () => {
+      state.date = d;
+      document.querySelectorAll('.date-card').forEach(c =>
+        c.classList.toggle('active', c.dataset.date === d));
+      render();
+    };
+    el.appendChild(card);
+  });
+
+  // اسکرول خودکار به کارت انتخاب‌شده
+  requestAnimationFrame(() => {
+    const active = el.querySelector('.date-card.active');
+    if (active) active.scrollIntoView({ inline: 'center', behavior: 'instant' });
+  });
+}
+
+function buildAirlineChips() {
+  const airlines = [...new Set(allFlights.map(f => f.airline).filter(Boolean))].sort();
+  const el = document.getElementById('airlineChips');
+  el.innerHTML = '';
+  airlines.forEach(a => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = a;
+    chip.onclick = () => {
+      if (state.airlines.has(a)) state.airlines.delete(a);
+      else state.airlines.add(a);
+      chip.classList.toggle('active');
+      render();
+    };
+    el.appendChild(chip);
+  });
+}
+
+function bindControls() {
+  document.getElementById('flightSearch').addEventListener('input', (e) => {
+    state.flightSearch = e.target.value.trim();
+    render();
+  });
+  document.getElementById('sortSelect').addEventListener('change', (e) => {
+    state.sort = e.target.value;
+    render();
+  });
+}
+
+function render() {
+  let rows = allFlights.filter(f => f.route === state.route && f.flight_date === state.date);
+
+  if (state.flightSearch) {
+    rows = rows.filter(f => String(f.flight_no || '').includes(state.flightSearch));
+  }
+  if (state.airlines.size > 0) {
+    rows = rows.filter(f => state.airlines.has(f.airline));
+  }
+
+  if (state.sort === 'price_asc') {
+    rows.sort((a, b) => toPriceNumber(a.adult_price) - toPriceNumber(b.adult_price));
+  } else if (state.sort === 'price_desc') {
+    rows.sort((a, b) => toPriceNumber(b.adult_price) - toPriceNumber(a.adult_price));
+  } else {
+    rows.sort((a, b) => (a.dep_time || '').localeCompare(b.dep_time || ''));
+  }
+
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+  rows.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f.airline || ''}</td>
+      <td>${f.flight_no || ''}</td>
+      <td>${f.dep_time || ''}</td>
+      <td>${f.seller || ''}</td>
+      <td class="price">${f.adult_price || ''}</td>`;
+    tr.onclick = () => openHistoryModal(f);
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('resultCount').textContent = rows.length + ' نتیجه یافت شد';
+  document.getElementById('resultsTable').style.display = rows.length ? 'table' : 'none';
+  document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+}
+
+// ===========================================================
+// نمودار ساده‌ی روند قیمت (SVG سبک بدون کتابخانه)
+// ===========================================================
+function buildSparkline(points, width, height) {
+  if (points.length < 2) {
+    return '<div style="text-align:center;color:#999;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
+  }
+  const prices = points.map(p => p.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = (max - min) || 1;
+  const padX = 10, padY = 12;
+  const innerW = width - padX * 2;
+  const innerH = height - padY * 2;
+  const stepX = points.length > 1 ? innerW / (points.length - 1) : 0;
+
+  const coords = points.map((p, i) => {
+    const x = padX + i * stepX;
+    const y = padY + innerH - ((p.price - min) / range) * innerH;
+    return [x, y];
+  });
+
+  const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
+  const rising = prices[prices.length - 1] > prices[0];
+  const flat = prices[prices.length - 1] === prices[0];
+  const stroke = flat ? '#999' : (rising ? '#d9455f' : '#1a7a3d');
+
+  const dots = coords.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${stroke}" />`).join('');
+
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;">
+    <path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />
+    ${dots}
+  </svg>`;
+}
+
+// ===========================================================
+// مودال تاریخچه‌ی قیمت یک پرواز
+// ===========================================================
+function openHistoryModal(f) {
+  const points = allHistory
+    .filter(h => h.route === f.route && h.flight_date === f.flight_date &&
+                 h.flight_no === f.flight_no && h.airline === f.airline)
+    .sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+
+  let trendHtml;
+  if (points.length >= 2) {
+    const first = points[0].price;
+    const last = points[points.length - 1].price;
+    if (last > first) {
+      trendHtml = `<span class="trend-badge up">📈 روند افزایشی — ${formatPriceShort(last - first)}+ نسبت به اولین ثبت</span>`;
+    } else if (last < first) {
+      trendHtml = `<span class="trend-badge down">📉 روند کاهشی — ${formatPriceShort(first - last)}- نسبت به اولین ثبت</span>`;
+    } else {
+      trendHtml = `<span class="trend-badge flat">➖ بدون تغییر</span>`;
+    }
+  } else {
+    trendHtml = `<span class="trend-badge flat">فقط یک بار ثبت شده — هنوز تاریخچه‌ای نیست</span>`;
+  }
+
+  const chartHtml = buildSparkline(points, 280, 100);
+
+  let listHtml = '';
+  const reversed = [...points].reverse();
+  reversed.forEach((p, idx) => {
+    const chronoIdx = points.length - 1 - idx;
+    const prev = points[chronoIdx - 1];
+    let deltaHtml = '<span style="color:#bbb;">—</span>';
+    if (prev) {
+      const diff = p.price - prev.price;
+      if (diff > 0) deltaHtml = `<span style="color:#d9455f;">▲ ${formatPriceShort(diff)}</span>`;
+      else if (diff < 0) deltaHtml = `<span style="color:#1a7a3d;">▼ ${formatPriceShort(Math.abs(diff))}</span>`;
+      else deltaHtml = '<span style="color:#bbb;">بدون تغییر</span>';
+    }
+    listHtml += `<div class="history-item">
+      <span class="history-date"><bdi style="direction:ltr">${p.captured_at || ''}</bdi></span>
+      <span class="history-price">${formatPriceShort(p.price)}</span>
+      <span class="history-delta">${deltaHtml}</span>
+    </div>`;
+  });
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">${f.airline || ''} — پرواز ${f.flight_no || ''}</div>
+          <div class="modal-sub">${f.route || ''} · ${f.flight_date || ''}</div>
+        </div>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-trend">${trendHtml}</div>
+      <div class="modal-chart">${chartHtml}</div>
+      <div class="history-list">
+        ${listHtml || '<div style="text-align:center;color:#999;padding:16px;">تاریخچه‌ای ثبت نشده</div>'}
+      </div>
+    </div>`;
+
+  overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
+}
+
 load();
 </script>
 </body>
