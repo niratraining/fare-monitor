@@ -39,6 +39,7 @@ Cloudflare D1 نگه داشته می‌شن، از طریق یه Worker (worker.
 import time
 import json
 import os
+import random
 from datetime import datetime, timedelta
 
 import requests
@@ -54,7 +55,16 @@ CF_HEADERS = {
     "Content-Type": "application/json",
 }
 
-DELAY_BETWEEN_REQUESTS_SEC = 4
+# به‌جای یه عدد ثابت، یه بازه؛ عدد ثابت خودش یه الگوی قابل شناسایی می‌سازه
+DELAY_MIN_SEC = 3
+DELAY_MAX_SEC = 9
+
+# سقف تعداد درخواست به سپهر۳۶۰ در هر بار اجرا (حتی اگه "due" خیلی بیشتر باشه)
+MAX_TARGETS_PER_RUN = 15
+
+# جیتر شروع: قبل از اولین درخواست، یه مدت رندوم صبر می‌کنیم تا لحظه‌ی
+# دقیق اجرا هر بار فرق کنه (نه دقیقاً سر ساعت‌های زوج)
+STARTUP_JITTER_MAX_SEC = 90
 
 API_URL = "https://api.sepehr360.ir/api/Parvaz/Oneway/B2c/Search/GetNatayejParvaz/Mobile/V2"
 
@@ -235,6 +245,11 @@ def export_json(session, kind, out_path):
 def run_snapshot():
     session = requests.Session()
 
+    # جیتر شروع: تاخیر رندوم قبل از هر کاری، تا زمان دقیق اجرا هر بار فرق کنه
+    startup_delay = random.uniform(0, STARTUP_JITTER_MAX_SEC)
+    print(f"جیتر شروع: {startup_delay:.1f} ثانیه صبر می‌کنیم...")
+    time.sleep(startup_delay)
+
     routes = get_active_routes(session)
     if not routes:
         print("هیچ مسیر فعالی تو جدول routes تعریف نشده — رد شدن از این اجرا")
@@ -245,6 +260,17 @@ def run_snapshot():
     if not due:
         print("هیچ پروازی الان نوبتش نرسیده — رد شدن از این اجرا")
         return
+
+    # ترتیب رو رندوم می‌کنیم تا همیشه یه الگوی ثابت (مثلاً همیشه اول
+    # مسیر تهران-استانبول) تکرار نشه
+    random.shuffle(due)
+
+    # سقف تعداد درخواست در هر اجرا؛ بقیه می‌مونن برای اجرای بعدی
+    # (چون due بر اساس DTD دوباره محاسبه می‌شه، چیزی گم نمی‌شه)
+    if len(due) > MAX_TARGETS_PER_RUN:
+        print(f"{len(due)} پرواز نوبتشونه؛ فقط {MAX_TARGETS_PER_RUN} تا رو "
+              f"این اجرا انجام می‌دیم و بقیه می‌مونن برای اجرای بعدی")
+        due = due[:MAX_TARGETS_PER_RUN]
 
     captured_at = datetime.now().isoformat(timespec="minutes")
 
@@ -267,7 +293,7 @@ def run_snapshot():
             continue
 
         print(f"✓ {route_label} — {date_str} — {len(flights)} پرواز ثبت شد ({captured_at})")
-        time.sleep(DELAY_BETWEEN_REQUESTS_SEC)
+        time.sleep(random.uniform(DELAY_MIN_SEC, DELAY_MAX_SEC))
 
 
 if __name__ == "__main__":
