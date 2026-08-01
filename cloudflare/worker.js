@@ -175,11 +175,19 @@ async function handleDue(request, env) {
     const lastCheckedAt = stateMap.get(`${c.route}|${c.flight_date}`);
 
     let isDue = true;
+    // overdueRatio = چند برابر فاصله‌ی مجاز خودش رد شده. این عدد رو به
+    // پایتون برمی‌گردونیم تا اونجا موقع اولویت‌بندی، به‌جای صرفاً «نزدیک‌تر
+    // بودن روز تقویمی»، «چقدر واقعاً عقب افتاده نسبت به سرعت لازمش»
+    // ملاک باشه — وگرنه لایه‌ی امروز (که تقریباً هر اجرا due می‌شه) همیشه
+    // کل بودجه‌ی MAX_TARGETS_PER_RUN رو می‌بلعه و لایه‌ی فردا هیچ‌وقت
+    // نوبتش نمی‌رسه، حتی وقتی خیلی بیشتر از فاصله‌ی مجازش عقبه.
+    let overdueRatio = 999999; // هیچ‌وقت رصد نشده -> فوری‌ترین حالت ممکن
     if (lastCheckedAt) {
       const hoursSince = (now - new Date(lastCheckedAt)) / 3600000;
       isDue = hoursSince >= interval;
+      overdueRatio = hoursSince / interval;
     }
-    if (isDue) due.push(c);
+    if (isDue) due.push({ ...c, dtd_days: dtdDays, overdue_ratio: overdueRatio });
   }
 
   return json({ due });
