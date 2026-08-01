@@ -165,10 +165,15 @@ async function handleIngest(request, env) {
 }
 
 // ===========================================================
-// GET /export/data — آخرین اسنپ‌شات هر (route, flight_date)
+// GET /export/data — آخرین اسنپ‌شات هر (route, flight_date)، به‌علاوه‌ی
+// پروازهایی که از آخرین رصد همون (route, flight_date) بیرون افتادن —
+// یعنی سپهر دیگه نشونشون نمی‌ده (نرخ‌گذاری/فروششون تموم شده). این‌ها
+// closed:1 می‌گیرن تا تو پنل به‌جای ناپدید شدن، برن تو آرشیو.
+// فقط برای تاریخ‌های امروز/آینده محاسبه می‌شه تا حجم خروجی با گذشت
+// زمان و انباشته‌شدن fare_snapshots بی‌نهایت بزرگ نشه.
 // ===========================================================
 async function handleExportData(env) {
-  const { results } = await env.DB.prepare(
+  const { results: openFlights } = await env.DB.prepare(
     `SELECT f.*
      FROM fare_snapshots f
      INNER JOIN (
@@ -182,9 +187,40 @@ async function handleExportData(env) {
      ORDER BY f.route, f.flight_date, f.dep_time`
   ).all();
 
+  const todayStr = new Date(Date.now() + IRAN_OFFSET_MS).toISOString().slice(0, 10);
+
+  const { results: closedFlights } = await env.DB.prepare(
+    `SELECT f.*
+     FROM fare_snapshots f
+     INNER JOIN (
+       SELECT route, flight_date, flight_no, airline, cabin, seller, MAX(captured_at) AS max_captured
+       FROM fare_snapshots
+       WHERE flight_date >= ?
+       GROUP BY route, flight_date, flight_no, airline, cabin, seller
+     ) lastSeen
+     ON f.route = lastSeen.route AND f.flight_date = lastSeen.flight_date
+        AND f.flight_no = lastSeen.flight_no AND f.airline = lastSeen.airline
+        AND f.cabin = lastSeen.cabin AND f.seller = lastSeen.seller
+        AND f.captured_at = lastSeen.max_captured
+     INNER JOIN (
+       SELECT route, flight_date, MAX(captured_at) AS max_captured
+       FROM fare_snapshots
+       WHERE flight_date >= ?
+       GROUP BY route, flight_date
+     ) latestOfDay
+     ON f.route = latestOfDay.route AND f.flight_date = latestOfDay.flight_date
+     WHERE f.captured_at != latestOfDay.max_captured
+     ORDER BY f.route, f.flight_date, f.dep_time`
+  ).bind(todayStr, todayStr).all();
+
+  const flights = [
+    ...openFlights.map((f) => ({ ...f, closed: 0 })),
+    ...closedFlights.map((f) => ({ ...f, closed: 1 })),
+  ];
+
   return json({
     generated_at: new Date().toISOString().slice(0, 16),
-    flights: results,
+    flights,
   });
 }
 
