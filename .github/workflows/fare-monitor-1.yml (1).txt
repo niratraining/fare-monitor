@@ -1,0 +1,79 @@
+name: Fare Monitor
+
+on:
+  schedule:
+    # هر ۲۰ دقیقه (UTC) — این دیگه «ریزترین لایه‌ی رصد» نیست، فقط یه
+    # ضربان پایه‌ست؛ خودِ Worker بر اساس DTD تصمیم می‌گیره کدوم پروازها
+    # الان واقعاً نوبتشونه (دور: هر ۱۲ س، متوسط: هر ۴ س، نزدیک: هر ۲ س،
+    # خیلی‌نزدیک/امروز-فردا: هر ۱ س).
+    #
+    # چرا ۲۰ دقیقه به‌جای هر ۱ ساعت (که با ریزترین لایه برابر بود)؟
+    # گیت‌هاب اکشن رسماً تضمین نمی‌کنه cron سر زمان دقیق اجرا بشه — تو
+    # ساعت‌های شلوغ ممکنه تأخیر بخوره یا کلاً یک دور رد بشه. وقتی فاصله‌ی
+    # کرون بیرونی دقیقاً برابر ریزترین لایه بود، یک میسِ گیت‌هاب مستقیم
+    # یعنی یک دور کامل رصدِ پروازِ نزدیک از دست رفته. با ۲۰ دقیقه، حتی
+    # اگه ۲-۳ دور پشت‌سرهم گیت‌هاب دیر/میس کنه، بازم داخل همون ۱ ساعتِ
+    # لایه‌ی خیلی‌نزدیک یه فرصت جبران هست.
+    - cron: "*/20 * * * *"
+  workflow_dispatch:          # دکمه‌ی اجرای دستی تو تب Actions (یا از routes.html)
+    inputs:
+      force_route:
+        description: "برچسب مسیر برای رصد فوری (اختیاری — خالی بذار برای اجرای عادی)"
+        required: false
+        default: ""
+      force_date:
+        description: "تاریخ میلادی پرواز YYYY-MM-DD برای رصد فوری (اختیاری)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+# چون حالا هر ۲۰ دقیقه اجرا می‌شه، اگه یه اجرا (به هر دلیلی — کندی
+# سپهر۳۶۰، صف گیت‌هاب) بیشتر از ۲۰ دقیقه طول بکشه، بدون این تنظیم دو
+# اجرا هم‌زمان می‌شدن و روی «git push» یا دیپلوی Cloudflare با هم
+# تصادف می‌کردن. با این تنظیم، اجرای بعدی صبر می‌کنه تا قبلی تموم بشه
+# (لغوش نمی‌کنه، فقط تو صف می‌ذارتش).
+concurrency:
+  group: fare-monitor-run
+  cancel-in-progress: false
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+    env:
+      CF_WORKER_URL: ${{ secrets.CF_WORKER_URL }}
+      CF_INGEST_SECRET: ${{ secrets.CF_INGEST_SECRET }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy Worker (so Cloudflare always runs latest worker.js)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare
+          command: deploy
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run fare monitor
+        env:
+          FORCE_ROUTE: ${{ github.event.inputs.force_route }}
+          FORCE_DATE: ${{ github.event.inputs.force_date }}
+        run: python fare_monitor.py
+
+      - name: Commit and push results
+        run: |
+          git config user.name "fare-monitor-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data.json docs/history.json
+          git diff --cached --quiet || git commit -m "snapshot: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git push
