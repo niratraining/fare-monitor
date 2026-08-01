@@ -2747,6 +2747,8 @@ function buildFlightCard(f, change) {
         <span class="fc-logo">
           <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <span class="fc-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
+        </span>
+        <span class="fc-airline-info">
           <span class="fc-airline-name">${f.airline || ''}</span>
           <span class="fc-flight-no">پرواز ${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span>
         </span>
