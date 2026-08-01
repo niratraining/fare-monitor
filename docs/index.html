@@ -7,10 +7,52 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
 <style>
+  /* --- فونت اختصاصی اعداد: Yekan Bakh FaNum ---
+     این فونت لایسنس‌دار/تجاریه، پس فایل باینری‌ش رو نمی‌شه به‌صورت خودکار تهیه کرد؛
+     باید فایل‌های woff2 رو خودتون در پوشه‌ی ./fonts کنار همین index.html بذارید.
+     با unicode-range فقط روی گلیف‌های رقمی (فارسی و لاتین) فعال می‌شه؛ بقیه‌ی متن
+     همچنان با Vazirmatn رندر می‌شه — بدون نیاز به هیچ تغییری در HTML یا کدهای JS. */
+  @font-face {
+    font-family: 'Yekan Bakh FaNum';
+    src: url('./fonts/YekanBakhFaNum-Regular.woff2') format('woff2'),
+         url('./fonts/YekanBakhFaNum-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0030-0039, U+002C, U+002E, U+066B-066C, U+06F0-06F9;
+  }
+  @font-face {
+    font-family: 'Yekan Bakh FaNum';
+    src: url('./fonts/YekanBakhFaNum-Medium.woff2') format('woff2'),
+         url('./fonts/YekanBakhFaNum-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0030-0039, U+002C, U+002E, U+066B-066C, U+06F0-06F9;
+  }
+  @font-face {
+    font-family: 'Yekan Bakh FaNum';
+    src: url('./fonts/YekanBakhFaNum-Bold.woff2') format('woff2'),
+         url('./fonts/YekanBakhFaNum-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0030-0039, U+002C, U+002E, U+066B-066C, U+06F0-06F9;
+  }
+  @font-face {
+    font-family: 'Yekan Bakh FaNum';
+    src: url('./fonts/YekanBakhFaNum-Heavy.woff2') format('woff2'),
+         url('./fonts/YekanBakhFaNum-Heavy.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0030-0039, U+002C, U+002E, U+066B-066C, U+06F0-06F9;
+  }
+
   :root {
     --ink: #1e1b3a;
     --ink-soft: #5b5480;
-    --ink-muted: #8d85ac;
+    --ink-muted: #777192;
     --line: rgba(40, 28, 90, 0.11);
     --paper: #f1effa;
     --card: #ffffff;
@@ -31,10 +73,10 @@
     --danger: #c4342a;
     --danger-strong: #a32c22;
     --danger-tint: #fcebea;
-    --success: #1e8c50;
+    --success: #1b7e48;
     --success-strong: #146b3d;
     --success-tint: #e7f6ec;
-    --warn: #b9791f;
+    --warn: #946018;
     --warn-tint: #fbf1dd;
     --warn-line: #eedba8;
     --shadow-sm: 0 1px 2px rgba(30, 20, 70, 0.07);
@@ -43,8 +85,9 @@
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-family: 'Yekan Bakh FaNum', 'Vazirmatn', Tahoma, sans-serif;
     font-feature-settings: "ss01" on, "cv01" on;
+    font-variant-numeric: tabular-nums;
     background: var(--paper);
     margin: 0;
     padding: 0 0 28px 0;
@@ -131,7 +174,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: .01em;
     color: var(--brand-coral-strong);
@@ -174,7 +217,7 @@
   }
   .hero-icon svg { display: block; }
   .hero-subtitle {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--ink-muted);
     margin: 0;
@@ -252,45 +295,49 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
-    padding: 11px 12px;
+    padding: 12px;
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     box-shadow: var(--shadow-sm);
     min-width: 0;
   }
   .kpi-icon {
     flex: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .kpi-icon svg { width: 15px; height: 15px; display: block; }
+  .kpi-icon svg { width: 13px; height: 13px; display: block; }
   .kpi-total .kpi-icon { background: var(--accent-tint); color: var(--accent-strong); }
   .kpi-up .kpi-icon { background: var(--danger-tint); color: var(--danger-strong); }
   .kpi-down .kpi-icon { background: var(--success-tint); color: var(--success-strong); }
   .kpi-avg .kpi-icon { background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong)); color: #ffffff; }
-  .kpi-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .kpi-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .kpi-value {
-    font-size: 14.5px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 800;
     color: var(--ink);
     direction: ltr;
-    line-height: 1.2;
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
   }
   .kpi-label {
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--ink-muted);
-    white-space: nowrap;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   /* --- انتخاب‌گر مبدأ / مقصد: نوار کوئری روشن، مطابق الگوی متداول اپ‌های سفر --- */
@@ -324,7 +371,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 9.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: .04em;
     color: var(--ink-muted);
@@ -342,7 +389,7 @@
   .route-field-icon svg { width: 100%; height: 100%; display: block; }
   .route-field-value {
     display: block;
-    font-size: 14.5px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: -.005em;
     white-space: nowrap;
@@ -352,7 +399,7 @@
   }
   .route-swap {
     flex: none;
-    width: 34px;
+    width: 42px;
     align-self: stretch;
     border-radius: 0;
     border: none;
@@ -376,7 +423,7 @@
     padding: 10px 36px 10px 12px;
     border: 1px solid var(--line);
     border-radius: 10px;
-    font-size: 13.5px;
+    font-size: 14px;
     background: var(--paper);
   }
   .picker-search:focus { outline: none; border-color: var(--accent); background: white; }
@@ -399,10 +446,10 @@
     padding: 0;
   }
   .picker-recent { margin-top: 8px; }
-  .picker-recent-label { font-size: 10.5px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+  .picker-recent-label { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
   .picker-recent-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
   .picker-recent-chip {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--accent-strong);
     background: var(--accent-tint);
@@ -439,7 +486,7 @@
     justify-content: center;
     font-size: 14px;
   }
-  .picker-item-text { flex: 1; font-size: 13.5px; }
+  .picker-item-text { flex: 1; font-size: 14px; }
   .picker-item-check { color: var(--accent); font-size: 14px; opacity: 0; }
   .picker-item.selected { background: var(--accent-tint); }
   .picker-item.selected .picker-item-check { opacity: 1; }
@@ -476,7 +523,7 @@
     color: var(--ink);
   }
   .date-card .daynum {
-    font-size: 10.5px;
+    font-size: 11px;
     color: var(--ink-muted);
     margin-bottom: 6px;
   }
@@ -513,7 +560,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .movers-title {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 800;
     color: var(--ink);
     display: flex;
@@ -555,9 +602,11 @@
     font-weight: 800;
     color: var(--ink-soft);
     margin-bottom: 3px;
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
   }
   .mover-route {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--ink);
     white-space: nowrap;
@@ -578,14 +627,14 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 800;
   }
   .mover-change .fc-change-icon { width: 11px; height: 11px; }
   .mover-change.up { color: var(--danger); }
   .mover-change.down { color: var(--success); }
   .movers-empty {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--ink-muted);
     padding: 10px 2px 2px;
   }
@@ -606,7 +655,7 @@
   .fc-position.flat { background: var(--paper); color: var(--ink-soft); }
 
   .position-note {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--ink);
     background: var(--paper);
@@ -633,7 +682,7 @@
     box-shadow: 0 2px 6px rgba(40, 28, 100, 0.22);
   }
   .anomaly-note {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--warn);
     background: var(--warn-tint);
@@ -662,7 +711,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .dtd-title {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 800;
     color: var(--ink);
     display: flex;
@@ -680,7 +729,7 @@
   .dtd-body { padding-top: 10px; }
   .dtd-chart-wrap { width: 100%; }
   .dtd-note {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--ink);
     background: var(--paper);
@@ -707,7 +756,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   .closed-title {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 800;
     color: var(--ink-soft);
     display: flex;
@@ -738,7 +787,7 @@
     align-items: center;
     gap: 4px;
     color: white;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: .01em;
     padding: 4px 12px 4px 10px;
@@ -822,7 +871,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--ink-soft);
     letter-spacing: .01em;
@@ -880,7 +929,7 @@
     background: transparent;
     color: var(--ink-soft);
     font-family: inherit;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
     padding: 7px 5px;
     border-radius: 6px;
@@ -911,7 +960,7 @@
     border: 1px solid var(--line);
     border-radius: 6px;
     padding: 5px 11px;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     background: var(--paper);
@@ -997,7 +1046,38 @@
   }
 
   main { padding: 12px 16px; }
-  #loading, #empty { text-align: center; padding: 40px 16px; color: var(--ink-muted); font-size: 13px; }
+  #loading { text-align: center; padding: 40px 16px; color: var(--ink-muted); font-size: 13px; }
+  #empty { text-align: center; padding: 48px 24px; }
+  .empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-tint);
+    color: var(--accent-strong);
+    margin-bottom: 14px;
+  }
+  .empty-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .empty-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 16px; }
+  .empty-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 18px;
+    border-radius: var(--radius-field);
+    border: 1px solid rgba(91, 79, 224, 0.3);
+    background: var(--accent-tint);
+    color: var(--accent-strong);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .empty-reset:active { background: #e2ddf8; }
 
   /* --- کارت پرواز: قالب گزارشی، فشرده و خوانا --- */
   .results-list { display: flex; flex-direction: column; gap: 10px; }
@@ -1056,7 +1136,7 @@
     align-items: center;
     gap: 4px;
     color: white;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: .01em;
     padding: 4px 10px 4px 12px;
@@ -1102,11 +1182,11 @@
     color: var(--ink-soft);
     background: var(--line);
   }
-  .fc-logo-sm .fc-logo-fallback { font-size: 10.5px; }
+  .fc-logo-sm .fc-logo-fallback { font-size: 11px; }
 
   .fc-airline-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .fc-airline-name {
-    font-size: 13.5px;
+    font-size: 14px;
     font-weight: 800;
     color: var(--ink);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -1120,7 +1200,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--ink-soft);
     font-weight: 600;
     margin-top: 8px;
@@ -1160,7 +1240,7 @@
   .fc-price-col { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
   .fc-price { display: flex; align-items: baseline; gap: 4px; }
   .fc-price-value { font-size: 15px; font-weight: 700; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
-  .fc-price-currency { font-size: 10.5px; color: var(--ink-muted); font-weight: 600; }
+  .fc-price-currency { font-size: 11px; color: var(--ink-muted); font-weight: 600; }
 
   .modal-overlay {
     position: fixed;
@@ -1240,7 +1320,7 @@
     box-shadow: 0 4px 12px rgba(40, 28, 100, 0.32);
   }
   .modal-header-main { flex: 1; min-width: 0; }
-  .modal-title { font-size: 15.5px; font-weight: 800; color: var(--ink); }
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--ink); }
   .modal-title .modal-flightno { color: var(--ink-soft); font-weight: 700; direction: ltr; display: inline-block; }
   .modal-meta-row {
     display: flex;
@@ -1249,7 +1329,7 @@
     margin-top: 7px;
   }
   .modal-chip {
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--ink-soft);
     background: var(--card);
@@ -1260,10 +1340,10 @@
   .modal-close {
     border: none;
     background: var(--card);
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--ink-soft);
     cursor: pointer;
     flex: none;
@@ -1333,7 +1413,7 @@
 
   /* --- تایم‌لاین تاریخچه: خط عمودی متصل‌کننده + نقاط رنگی --- */
   .history-section-title {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 800;
     color: var(--ink-soft);
     margin: 4px 2px 8px;
@@ -1379,13 +1459,13 @@
     gap: 1px;
   }
   .history-date .hd-date { font-size: 10px; color: var(--ink-soft); font-weight: 700; }
-  .history-date .hd-time { font-size: 12.5px; color: var(--ink); font-weight: 700; direction: ltr; }
+  .history-date .hd-time { font-size: 13px; color: var(--ink); font-weight: 700; direction: ltr; }
   .history-price { font-weight: 700; flex: 1; text-align: center; font-size: 13px; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
   .history-delta {
     flex: 1;
     text-align: left;
     font-weight: 800;
-    font-size: 11.5px;
+    font-size: 12px;
     display: flex;
     justify-content: flex-end;
   }
@@ -1548,7 +1628,12 @@
     <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:45%;"></div><div class="sk-line" style="width:30%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
     <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:60%;"></div><div class="sk-line" style="width:40%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
   </div>
-  <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
+  <div id="empty" style="display:none;">
+    <span class="empty-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg></span>
+    <div class="empty-title">هیچ پروازی با این فیلترها پیدا نشد</div>
+    <div class="empty-sub">ممکنه فیلترهای انتخابی خیلی محدودشون کرده باشن</div>
+    <button type="button" class="empty-reset" id="emptyResetBtn">پاک کردن فیلترها</button>
+  </div>
   <div class="results-list" id="resultsList" style="display:none;"></div>
 
   <section class="closed-section collapsed" id="closedSection" style="display:none;">
@@ -1584,6 +1669,9 @@ const ICONS = {
   trendDown: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2.5px"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg>',
   trendFlat: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2.5px"><path d="M2 12h20"/></svg>',
   fire: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2.5px"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>',
+  chart: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>',
+  infoUp: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>',
+  infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
 };
 
 // ---- بستن نرم یک شیت/مودال: قبل از حذف از DOM، انیمیشن اسلاید به پایین رو پخش می‌کنه ----
@@ -1661,6 +1749,30 @@ function slugifyAirline(name) {
 }
 function airlineLogoSrc(name) {
   return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.svg`;
+}
+
+// ---- رنگ ثابت بر اساس نام (ایرلاین/فروشنده): وقتی لوگو موجود نیست، به‌جای یه
+// رنگ یک‌دست خاکستری برای همه، هر اسم یه رنگ پایدار از یه پالت هماهنگ می‌گیره
+// تا کارت‌ها با نگاه اول از هم قابل تشخیص باشن ----
+const FALLBACK_PALETTE = [
+  { bg: '#eeecfb', fg: '#443ac4' },
+  { bg: '#fcebea', fg: '#a32c22' },
+  { bg: '#e7f6ec', fg: '#146b3d' },
+  { bg: '#fbf1dd', fg: '#946018' },
+  { bg: '#e1f5f5', fg: '#0f766e' },
+  { bg: '#e3edfd', fg: '#1d4ed8' },
+  { bg: '#fce7f3', fg: '#be185d' },
+  { bg: '#e5e3fb', fg: '#4338ca' },
+];
+function nameColor(name) {
+  const str = String(name || '؟');
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  return FALLBACK_PALETTE[hash % FALLBACK_PALETTE.length];
+}
+function fallbackAvatarStyle(name) {
+  const c = nameColor(name);
+  return `background:${c.bg};color:${c.fg};`;
 }
 
 // ---- لوگوی فروشنده‌ها: هر فروشنده رو اینجا به مسیر فایل لوگو وصل کن ----
@@ -2089,7 +2201,7 @@ function buildAirlineChips() {
     chip.innerHTML = `
       <span class="chip-logo">
         <img src="${airlineLogoSrc(a)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <span class="chip-logo-fallback">${(a || '؟').charAt(0)}</span>
+        <span class="chip-logo-fallback" style="${fallbackAvatarStyle(a)}">${(a || '؟').charAt(0)}</span>
       </span>
       <span class="chip-airline-name">${a}</span>`;
     chip.onclick = () => {
@@ -2146,6 +2258,26 @@ function bindControls() {
   document.getElementById('filterTrigger').addEventListener('click', () => {
     document.getElementById('filterDrawer').classList.toggle('open');
   });
+  document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
+}
+
+// ---- پاک‌کردن همه‌ی فیلترهای فعال (چیپ‌های ایرلاین/کلاس، جستجوی شماره پرواز، مرتب‌سازی) و رندر دوباره ----
+function resetAllFilters() {
+  state.flightSearch = '';
+  state.airlines.clear();
+  state.cabins.clear();
+  state.sort = 'time_asc';
+
+  const searchInput = document.getElementById('flightSearch');
+  if (searchInput) searchInput.value = '';
+
+  document.querySelectorAll('#airlineChips .chip, #cabinChips .chip')
+    .forEach(c => c.classList.remove('active'));
+
+  document.querySelectorAll('.sort-option').forEach(b =>
+    b.classList.toggle('active', b.dataset.value === 'time_asc'));
+
+  render();
 }
 
 // ---- نشان‌دادن تعداد فیلترهای فعال روی دکمه‌ی کشو، وقتی خودِ کشو بسته‌ست هم معلوم باشه چیزی فیلتر شده ----
@@ -2249,12 +2381,12 @@ function positionNoteHtml(pos) {
   if (!pos) return '';
   const others = toFaDigits(pos.count - 1);
   if (Math.abs(pos.pct) < 2) {
-    return `<div class="position-note">📊 این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+    return `<div class="position-note">${ICONS.chart} این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
   }
   if (pos.pct < 0) {
-    return `<div class="position-note">📊 این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.</div>`;
+    return `<div class="position-note">${ICONS.chart} این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.</div>`;
   }
-  return `<div class="position-note">📊 این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+  return `<div class="position-note">${ICONS.chart} این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
 }
 
 // ===========================================================
@@ -2374,7 +2506,7 @@ function buildDtdChart(series) {
   const maxIdx = prices.indexOf(max);
   const markers = coords.map(([x, y], i) => {
     if (i !== minIdx && i !== maxIdx) return '';
-    const fill = i === minIdx ? '#1e8c50' : '#c4342a';
+    const fill = i === minIdx ? '#1b7e48' : '#c4342a';
     return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="#fff" stroke="${fill}" stroke-width="2" />`;
   }).join('');
 
@@ -2422,9 +2554,9 @@ function buildDtdSection() {
   if (!trend) {
     noteEl.innerHTML = '';
   } else if (trend.diffPct > 5) {
-    noteEl.innerHTML = `🔵 هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانگین ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره.`;
+    noteEl.innerHTML = `${ICONS.infoUp} هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانگین ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره.`;
   } else if (trend.diffPct < -5) {
-    noteEl.innerHTML = `🟢 برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه.`;
+    noteEl.innerHTML = `${ICONS.infoDown} برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه.`;
   } else {
     noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره.`;
   }
@@ -2614,9 +2746,7 @@ function buildFlightCard(f, change) {
       <div class="fc-airline">
         <span class="fc-logo">
           <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <span class="fc-logo-fallback">${(f.airline || '؟').charAt(0)}</span>
-        </span>
-        <span class="fc-airline-info">
+          <span class="fc-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
           <span class="fc-airline-name">${f.airline || ''}</span>
           <span class="fc-flight-no">پرواز ${f.flight_no || ''}${cabinBadgeIfNotEconomy(f.cabin)}</span>
         </span>
@@ -2631,7 +2761,7 @@ function buildFlightCard(f, change) {
       <div class="fc-seller">
         <span class="fc-logo fc-logo-sm">
           <img src="${sellerLogoSrc(f.seller)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <span class="fc-logo-fallback">${(f.seller || '؟').charAt(0)}</span>
+          <span class="fc-logo-fallback" style="${fallbackAvatarStyle(f.seller)}">${(f.seller || '؟').charAt(0)}</span>
         </span>
         <span class="fc-seller-text">
           <span class="fc-seller-name">${f.seller || 'نامشخص'}</span>
@@ -2666,7 +2796,7 @@ function buildSparkline(points, width, height, opts) {
   const mini = !!opts.mini;
   if (points.length < 2) {
     if (mini) return ''; // توی کارت ردیف، وقتی تاریخچه کافی نیست چیزی نشون نمی‌دیم
-    return '<div style="text-align:center;color:#8d85ac;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
+    return '<div style="text-align:center;color:#777192;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
   }
   const prices = points.map(p => p.price);
   const min = Math.min(...prices);
@@ -2686,7 +2816,7 @@ function buildSparkline(points, width, height, opts) {
   const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
   const rising = prices[prices.length - 1] > prices[0];
   const flat = prices[prices.length - 1] === prices[0];
-  const stroke = flat ? '#5b5480' : (rising ? '#c4342a' : '#1e8c50');
+  const stroke = flat ? '#5b5480' : (rising ? '#c4342a' : '#1b7e48');
 
   if (mini) {
     // نسخه‌ی کوچیک برای کنار هر ردیف: بدون نقطه‌های تکی، با یه سایه‌ی کم‌رنگ زیر خط و یه نقطه فقط روی آخرین مقدار
@@ -2851,7 +2981,7 @@ function openHistoryModal(f) {
 
       <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
       <div class="history-list">
-        ${listHtml || '<div style="text-align:center;color:#8d85ac;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+        ${listHtml || '<div style="text-align:center;color:#777192;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
       </div>
     </div>`;
 
