@@ -100,6 +100,25 @@
     color: rgba(22, 48, 59, 0.35);
     font-weight: 400;
   }
+  .meta-stale-warn {
+    display: block;
+    margin-top: 3px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #9a5b00;
+  }
+  .fc-checked-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #8b98ac;
+    margin-top: 3px;
+  }
+  .fc-checked-row.is-stale { color: #b5490a; font-weight: 700; }
+  .fc-seller-text { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+  .fc-checked-row { margin-top: 0; }
   .manage-routes-link {
     font-size: 11px;
     font-weight: 700;
@@ -1537,9 +1556,23 @@ async function load() {
     generatedAtRaw = data.generated_at || null;
 
     const generatedDt = toJalaliDateTime(data.generated_at);
-    document.getElementById('meta').innerHTML = generatedDt
+    let metaHtml = generatedDt
       ? `به‌روزرسانی <span class="meta-time">${generatedDt.timeLabel}</span><span class="meta-sep">·</span><span>${generatedDt.dateLabel}</span>`
       : 'هنوز اجرایی ثبت نشده';
+
+    // «به‌روزرسانی HH:MM» یعنی پایپ‌لاین سر همین ساعت اجرا شده، نه اینکه
+    // همه‌ی ردیف‌های رو صفحه واقعاً همون لحظه از سپهر گرفته شدن (فقط
+    // پروازهای «due» اون اجرا رصد می‌شن). اگه قدیمی‌ترین ردیف صفحه بیش از
+    // ۹۰ دقیقه از این ساعت عقب‌تر باشه، اینجا صریح هشدار می‌دیم.
+    const stalestDt = toJalaliDateTime(data.stalest_captured_at);
+    if (generatedDt && stalestDt && data.generated_at && data.stalest_captured_at) {
+      const genMs = Date.parse(data.generated_at.length === 16 ? data.generated_at + ':00Z' : data.generated_at);
+      const staleMs = Date.parse(data.stalest_captured_at.length === 16 ? data.stalest_captured_at + ':00Z' : data.stalest_captured_at);
+      if (isFinite(genMs) && isFinite(staleMs) && (genMs - staleMs) / 60000 > 90) {
+        metaHtml += ` <span class="meta-stale-warn">⚠️ قدیمی‌ترین قیمت صفحه از ساعت ${stalestDt.timeLabel} است — لزوماً همه‌ی ردیف‌ها تازه نیستن</span>`;
+      }
+    }
+    document.getElementById('meta').innerHTML = metaHtml;
 
     document.getElementById('loading').style.display = 'none';
 
@@ -2267,6 +2300,34 @@ function buildChangeBadge(change) {
   return `<span class="fc-change down">${TREND_ICON_DOWN}کاهش ${formatPriceShort(Math.abs(change.diff))}</span>`;
 }
 
+// ---- همون جدول لایه‌بندی DTD که worker.js برای تصمیم «due» استفاده می‌کنه ----
+// اینجا فقط برای این استفاده می‌شه که به کاربر نشون بدیم این ردیف خاص
+// طبق قاعده‌ی خودش («امروز هر ۲۰ دقیقه»، «فردا هر ۱ ساعت»، ...) عقب
+// افتاده یا نه — نه برای تصمیم‌گیری واقعی رصد (اون هنوز کامل رو Worker‌ه).
+function tierIntervalHoursFE(dtdDays) {
+  if (dtdDays <= 0) return 20 / 60;
+  if (dtdDays <= 1) return 1;
+  if (dtdDays <= 3) return 2;
+  if (dtdDays <= 7) return 4;
+  return 12;
+}
+
+function rowCheckedInfo(f) {
+  const dt = toJalaliDateTime(f.captured_at);
+  if (!dt || !f.captured_at) return null;
+  const [fy, fm, fd] = (f.flight_date || '').split('-').map(Number);
+  const flightUtcMs = (fy && fm && fd) ? Date.UTC(fy, fm - 1, fd) : null;
+  const nowIranMs = Date.now() + IRAN_OFFSET_MS;
+  const todayUtcMs = Date.UTC(new Date(nowIranMs).getUTCFullYear(), new Date(nowIranMs).getUTCMonth(), new Date(nowIranMs).getUTCDate());
+  const dtdDays = flightUtcMs !== null ? Math.round((flightUtcMs - todayUtcMs) / 86400000) : 999;
+  const interval = tierIntervalHoursFE(dtdDays);
+  const capturedMs = Date.parse(f.captured_at.length === 16 ? f.captured_at + ':00Z' : f.captured_at);
+  const hoursSince = isFinite(capturedMs) ? (Date.now() - capturedMs) / 3600000 : null;
+  // حاشیه‌ی ۱.۵ برابر تا تأخیر طبیعی ۲۰ دقیقه‌ای کرون هشدار کاذب نده
+  const stale = hoursSince !== null && hoursSince > interval * 1.5;
+  return { timeLabel: dt.timeLabel, dateLabelShort: dt.dateLabelShort, stale };
+}
+
 // ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
 function buildFlightCard(f, change) {
   const sparkHtml = buildSparkline(getHistoryPoints(f), 54, 26, { mini: true });
@@ -2303,7 +2364,15 @@ function buildFlightCard(f, change) {
           <img src="${sellerLogoSrc(f.seller)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <span class="fc-logo-fallback">${(f.seller || '؟').charAt(0)}</span>
         </span>
-        <span class="fc-seller-name">${f.seller || 'نامشخص'}</span>
+        <span class="fc-seller-text">
+          <span class="fc-seller-name">${f.seller || 'نامشخص'}</span>
+          ${(() => {
+            const ci = rowCheckedInfo(f);
+            if (!ci) return '';
+            const icon = ci.stale ? '⚠️' : '🕐';
+            return `<span class="fc-checked-row${ci.stale ? ' is-stale' : ''}">${icon} رصد ${ci.timeLabel}</span>`;
+          })()}
+        </span>
       </div>
       <div class="fc-bottom-right">
         ${sparkHtml ? `<span class="fc-spark">${sparkHtml}</span>` : ''}
