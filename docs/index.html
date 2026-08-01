@@ -50,37 +50,37 @@
   }
 
   :root {
-    --ink: #1e1b3a;
-    --ink-soft: #5b5480;
-    --ink-muted: #777192;
-    --line: rgba(40, 28, 90, 0.11);
-    --paper: #f1effa;
+    --ink: #0f172a;
+    --ink-soft: #47536b;
+    --ink-muted: #66718a;
+    --line: rgba(15, 23, 42, 0.10);
+    --paper: #f4f5f7;
     --card: #ffffff;
-    --navy-900: #17132c;
-    --navy-800: #221c42;
-    --navy-700: #2d2657;
-    --accent: #5b4fe0;
-    --accent-strong: #443ac4;
-    --accent-bright: #8477f5;
-    --accent-tint: #eeecfb;
-    --accent-on-navy: #b7b0f7;
-    --brand-coral: #5b4fe0;
-    --brand-coral-strong: #443ac4;
-    --brand-coral-tint: #eeecfb;
-    --panel-line: rgba(255, 255, 255, 0.14);
-    --radius-panel: 16px;
-    --radius-field: 11px;
-    --danger: #c4342a;
-    --danger-strong: #a32c22;
-    --danger-tint: #fcebea;
-    --success: #1b7e48;
-    --success-strong: #146b3d;
-    --success-tint: #e7f6ec;
-    --warn: #946018;
-    --warn-tint: #fbf1dd;
-    --warn-line: #eedba8;
-    --shadow-sm: 0 1px 2px rgba(30, 20, 70, 0.07);
-    --shadow-md: 0 8px 24px -8px rgba(30, 20, 70, 0.20);
+    --navy-900: #0b1220;
+    --navy-800: #11192b;
+    --navy-700: #17233b;
+    --accent: #2d4a75;
+    --accent-strong: #1d3455;
+    --accent-bright: #3d6096;
+    --accent-tint: #eaeef3;
+    --accent-on-navy: #9db3d1;
+    --brand-coral: #2d4a75;
+    --brand-coral-strong: #1d3455;
+    --brand-coral-tint: #eaeef3;
+    --panel-line: rgba(255, 255, 255, 0.12);
+    --radius-panel: 10px;
+    --radius-field: 7px;
+    --danger: #ab2b23;
+    --danger-strong: #8c231d;
+    --danger-tint: #f9ebea;
+    --success: #1c6b41;
+    --success-strong: #14562f;
+    --success-tint: #e8f2ec;
+    --warn: #8a5a13;
+    --warn-tint: #f8f0dd;
+    --warn-line: #e6d5a8;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 6px 18px -8px rgba(15, 23, 42, 0.18);
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -96,12 +96,12 @@
     position: relative;
   }
   @media (min-width: 720px) {
-    html { background: linear-gradient(180deg, #e8e4f6, #dcd5f1) fixed; }
+    html { background: linear-gradient(180deg, #e7e9ed, #d8dce2) fixed; }
     body {
       max-width: 720px;
       margin: 0 auto;
       min-height: 100vh;
-      box-shadow: 0 0 0 1px rgba(40, 28, 90, 0.06), 0 24px 70px -20px rgba(30, 20, 70, 0.28);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 24px 70px -20px rgba(15, 23, 42, 0.28);
     }
   }
 
@@ -116,13 +116,22 @@
     color: var(--ink);
     padding: 0 16px 14px;
     border-bottom: 1px solid var(--line);
+    transition: padding .18s ease;
   }
+  /* --- حالت فشرده‌ی هدر هنگام اسکرول: تمرکز روی کنترل‌های اصلی، حذف موقت عناصر ثانویه --- */
+  header.is-compact { padding-bottom: 10px; }
+  header.is-compact .hero-top { margin-bottom: 10px; }
+  header.is-compact .hero-subtitle,
+  header.is-compact .route-picker-label { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
+  header.is-compact h1 { font-size: 15px; }
+  header.is-compact .hero-icon { width: 22px; height: 22px; }
+  .hero-subtitle, .route-picker-label { transition: opacity .15s ease, max-height .18s ease, margin .18s ease; max-height: 20px; opacity: 1; }
   header::before {
     content: '';
     display: block;
     height: 3px;
     margin: 0 -16px 0;
-    background: linear-gradient(90deg, var(--accent-strong), var(--accent-bright) 45%, var(--accent-strong));
+    background: var(--navy-900);
   }
   .header-inner {
     position: relative;
@@ -154,9 +163,9 @@
     width: 19px;
     height: 19px;
     border-radius: 6px;
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+    background: var(--accent-strong);
     color: #ffffff;
-    box-shadow: 0 2px 6px rgba(91, 79, 224, 0.38);
+    box-shadow: 0 2px 6px rgba(29, 52, 85, 0.30);
   }
   .brand-mark svg { width: 11px; height: 11px; display: block; }
   .sys-crumb {
@@ -179,7 +188,7 @@
     letter-spacing: .01em;
     color: var(--brand-coral-strong);
     background: var(--brand-coral-tint);
-    border: 1px solid rgba(91, 79, 224, 0.28);
+    border: 1px solid rgba(29, 52, 85, 0.22);
     border-radius: 5px;
     padding: 3px 8px;
   }
@@ -210,10 +219,10 @@
     width: 26px;
     height: 26px;
     border-radius: 8px;
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+    background: var(--accent-strong);
     color: #ffffff;
     font-size: 13px;
-    box-shadow: 0 3px 8px rgba(91, 79, 224, 0.32);
+    box-shadow: 0 3px 8px rgba(29, 52, 85, 0.26);
   }
   .hero-icon svg { display: block; }
   .hero-subtitle {
@@ -239,6 +248,16 @@
     border-radius: 50%;
     background: var(--success);
     flex: none;
+    box-shadow: 0 0 0 0 rgba(28, 107, 65, 0.45);
+    animation: liveDotPulse 2.2s ease-out infinite;
+  }
+  @keyframes liveDotPulse {
+    0% { box-shadow: 0 0 0 0 rgba(28, 107, 65, 0.45); }
+    70% { box-shadow: 0 0 0 6px rgba(28, 107, 65, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(28, 107, 65, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .meta::before { animation: none; }
   }
   .meta-time {
     font-weight: 700;
@@ -315,7 +334,7 @@
   .kpi-total .kpi-icon { background: var(--accent-tint); color: var(--accent-strong); }
   .kpi-up .kpi-icon { background: var(--danger-tint); color: var(--danger-strong); }
   .kpi-down .kpi-icon { background: var(--success-tint); color: var(--success-strong); }
-  .kpi-avg .kpi-icon { background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong)); color: #ffffff; }
+  .kpi-avg .kpi-icon { background: var(--accent-strong); color: #ffffff; }
   .kpi-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .kpi-value {
     font-size: 17px;
@@ -340,15 +359,23 @@
     overflow: hidden;
   }
 
-  /* --- انتخاب‌گر مبدأ / مقصد: نوار کوئری روشن، مطابق الگوی متداول اپ‌های سفر --- */
+  /* --- انتخاب‌گر مبدأ / مقصد: کارت یکپارچه با دکمه‌ی جابجایی شناور روی خط میانی --- */
+  .route-picker-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--ink-muted);
+    margin: 0 2px 6px;
+  }
   .route-picker {
     display: flex;
     align-items: stretch;
-    background: var(--paper);
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
     margin-bottom: 12px;
     position: relative;
+    box-shadow: var(--shadow-sm);
   }
   .route-field {
     flex: 1;
@@ -357,39 +384,45 @@
     flex-direction: column;
     background: transparent;
     border: none;
+    border-radius: var(--radius-panel);
     color: var(--ink);
     text-align: right;
-    padding: 10px 14px;
+    padding: 11px 16px;
     cursor: pointer;
     transition: background .15s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  #originField { border-radius: var(--radius-panel) 0 0 var(--radius-panel); }
-  #destField { border-radius: 0 var(--radius-panel) var(--radius-panel) 0; }
   .route-field:active { background: var(--accent-tint); }
+  .route-field:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--accent-strong);
+  }
   .route-field-label {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: .04em;
+    letter-spacing: .05em;
+    text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: 4px;
+    margin-bottom: 5px;
   }
   .route-field-icon {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     color: var(--accent-strong);
   }
   .route-field-icon svg { width: 100%; height: 100%; display: block; }
+  #originField { border-radius: var(--radius-panel) 0 0 var(--radius-panel); }
+  #destField { border-radius: 0 var(--radius-panel) var(--radius-panel) 0; }
   .route-field-value {
     display: block;
-    font-size: 15px;
+    font-size: 15.5px;
     font-weight: 700;
     letter-spacing: -.005em;
     white-space: nowrap;
@@ -397,25 +430,50 @@
     text-overflow: ellipsis;
     font-variant-numeric: tabular-nums;
   }
+  /* خط میانی نازک بین دو فیلد، پشت دکمه‌ی شناور جابجایی */
+  .route-picker::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 50%;
+    width: 1px;
+    background: var(--line);
+    z-index: 1;
+  }
   .route-swap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
     flex: none;
-    width: 42px;
-    align-self: stretch;
-    border-radius: 0;
-    border: none;
-    border-inline: 1px solid var(--line);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
     background: var(--card);
     color: var(--ink-soft);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: color .15s ease, background .15s ease;
+    box-shadow: var(--shadow-md);
+    transition: color .15s ease, border-color .15s ease, box-shadow .15s ease, background .15s ease;
   }
   .route-swap svg { width: 15px; height: 15px; display: block; transition: transform .3s ease; }
   .route-swap.spin svg { transform: rotate(180deg); }
-  .route-swap:disabled { opacity: .3; cursor: not-allowed; }
-  .route-swap:not(:disabled):active { background: var(--accent-tint); color: var(--accent-strong); }
+  .route-swap:disabled { opacity: .35; cursor: not-allowed; }
+  .route-swap:not(:disabled):hover,
+  .route-swap:not(:disabled):active {
+    background: var(--accent-strong);
+    color: #ffffff;
+    border-color: var(--accent-strong);
+  }
+  .route-swap:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-tint);
+  }
 
   /* --- شیت انتخاب مبدأ/مقصد --- */
   .picker-search {
@@ -457,7 +515,7 @@
     padding: 5px 11px;
     cursor: pointer;
   }
-  .picker-recent-chip:active { background: #ded7f5; }
+  .picker-recent-chip:active { background: #dde2e8; }
   .picker-item-text mark {
     background: transparent;
     color: var(--accent);
@@ -469,7 +527,7 @@
     align-items: center;
     gap: 10px;
     padding: 11px 4px;
-    border-bottom: 1px solid #f0ecf9;
+    border-bottom: 1px solid #eef0f3;
     cursor: pointer;
     border-radius: 8px;
   }
@@ -536,7 +594,7 @@
   .date-card.active {
     background: var(--accent-tint);
     border-color: var(--accent);
-    box-shadow: 0 2px 8px rgba(91, 79, 224, 0.22);
+    box-shadow: 0 2px 8px rgba(29, 52, 85, 0.18);
   }
   .date-card.active .weekday,
   .date-card.active .daynum { color: var(--accent-strong); }
@@ -549,7 +607,7 @@
     border-radius: var(--radius-panel);
     padding: 14px 14px 12px;
     border: 1px solid var(--line);
-    box-shadow: 0 2px 10px rgba(30, 20, 70, 0.07);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
   }
   .movers-header {
     display: flex;
@@ -595,7 +653,7 @@
     cursor: pointer;
     transition: transform .12s ease, background .15s ease;
   }
-  .mover-card:active { transform: scale(0.96); background: #e6e0f6; }
+  .mover-card:active { transform: scale(0.96); background: #eceef1; }
   .mover-rank {
     display: inline-block;
     font-size: 10px;
@@ -679,7 +737,7 @@
     font-weight: 800;
     padding: 4px 12px 4px 10px;
     border-radius: 0 8px 8px 0;
-    box-shadow: 0 2px 6px rgba(40, 28, 100, 0.22);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
   .anomaly-note {
     font-size: 12px;
@@ -700,7 +758,7 @@
     border-radius: var(--radius-panel);
     padding: 14px 14px 12px;
     border: 1px solid var(--line);
-    box-shadow: 0 2px 10px rgba(30, 20, 70, 0.07);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
   }
   .dtd-header {
     display: flex;
@@ -744,8 +802,8 @@
     margin: 14px 16px 0;
     border-radius: var(--radius-panel);
     padding: 12px 14px 10px;
-    background: #e9e4f6;
-    border: 1px dashed #cdc0e6;
+    background: #eceef1;
+    border: 1px dashed #c7cdd6;
   }
   .closed-header {
     display: flex;
@@ -793,7 +851,7 @@
     padding: 4px 12px 4px 10px;
     border-radius: 0 8px 8px 0;
     background: var(--ink-soft);
-    box-shadow: 0 2px 6px rgba(40, 28, 100, 0.22);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
 
   /* --- کشوی فیلتر و مرتب‌سازی: مینیمال، زیر هیرو، به‌صورت پیش‌فرض جمع‌شده --- */
@@ -802,7 +860,7 @@
     margin: 10px 16px 0;
     border-radius: var(--radius-panel);
     border: 1px solid var(--line);
-    box-shadow: 0 1px 3px rgba(30, 20, 70, 0.05);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
     overflow: hidden;
   }
   .filter-trigger {
@@ -938,9 +996,9 @@
     white-space: nowrap;
   }
   .sort-option.active {
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+    background: var(--accent-strong);
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(91, 79, 224, 0.32);
+    box-shadow: 0 2px 8px rgba(29, 52, 85, 0.26);
   }
 
   /* ردیف چیپ‌ها به‌صورت اسکرول افقی تا فضای عمودی اشغال نکنه */
@@ -969,10 +1027,10 @@
     transition: background .15s ease, color .15s ease, border-color .15s ease;
   }
   .chip.active {
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+    background: var(--accent-strong);
     color: #ffffff;
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(91, 79, 224, 0.32);
+    box-shadow: 0 2px 8px rgba(29, 52, 85, 0.26);
   }
 
   /* --- چیپ ایرلاین با جای لوگو (بعداً تصویر جایگذاری می‌شود) --- */
@@ -1068,7 +1126,7 @@
     height: 38px;
     padding: 0 18px;
     border-radius: var(--radius-field);
-    border: 1px solid rgba(91, 79, 224, 0.3);
+    border: 1px solid rgba(29, 52, 85, 0.24);
     background: var(--accent-tint);
     color: var(--accent-strong);
     font-size: 12px;
@@ -1077,7 +1135,7 @@
     cursor: pointer;
     transition: background .15s ease;
   }
-  .empty-reset:active { background: #e2ddf8; }
+  .empty-reset:active { background: #e4e7ec; }
 
   /* --- کارت پرواز: قالب گزارشی، فشرده و خوانا --- */
   .results-list { display: flex; flex-direction: column; gap: 10px; }
@@ -1115,14 +1173,14 @@
     background: var(--card);
     border-radius: var(--radius-panel);
     padding: 14px 16px 13px;
-    box-shadow: 0 2px 8px rgba(30, 20, 70, 0.07);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
     border: 1px solid var(--line);
     border-right: 3px solid transparent;
     cursor: pointer;
     transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
     animation: cardFadeIn .32s ease backwards;
   }
-  .flight-card:active { transform: scale(0.985); background: #f5f2fc; }
+  .flight-card:active { transform: scale(0.985); background: #f0f2f5; }
   @keyframes cardFadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1145,15 +1203,15 @@
   .fc-change-icon { width: 13px; height: 13px; flex: none; }
   .fc-change.up {
     background: var(--danger);
-    box-shadow: 0 2px 6px rgba(40, 28, 100, 0.22);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
   .fc-change.down {
     background: var(--success);
-    box-shadow: 0 2px 6px rgba(40, 28, 100, 0.22);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
   .fc-change.flat {
     background: var(--ink-soft);
-    box-shadow: 0 2px 8px rgba(40, 28, 100, 0.34);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.34);
   }
   .flight-card:has(.fc-change.up) { border-right-color: var(--danger); }
   .flight-card:has(.fc-change.down) { border-right-color: var(--success); }
@@ -1242,19 +1300,30 @@
   .fc-price-value { font-size: 15px; font-weight: 700; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
   .fc-price-currency { font-size: 11px; color: var(--ink-muted); font-weight: 600; }
 
-  .modal-overlay {
+  dialog.modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(24, 18, 48, 0.58);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
-    display: flex;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    background: transparent;
+    color: inherit;
+    display: none;
     align-items: flex-end;
     justify-content: center;
     z-index: 100;
-    animation: overlayFade .22s ease;
   }
-  .modal-overlay.closing { animation: overlayFadeOut .18s ease forwards; }
+  dialog.modal-overlay[open] { display: flex; animation: overlayFade .22s ease; }
+  dialog.modal-overlay::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  dialog.modal-overlay.closing { animation: overlayFadeOut .18s ease forwards; }
   @keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
@@ -1269,7 +1338,7 @@
     max-height: 88vh;
     overflow-y: auto;
     animation: sheetUp .32s cubic-bezier(.16,1,.3,1);
-    box-shadow: 0 -18px 50px rgba(20, 14, 46, 0.28);
+    box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
   }
   .modal-card::before {
     content: "";
@@ -1310,14 +1379,14 @@
     width: 42px;
     height: 42px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
+    background: var(--accent-strong);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 15px;
     font-weight: 800;
-    box-shadow: 0 4px 12px rgba(40, 28, 100, 0.32);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.32);
   }
   .modal-header-main { flex: 1; min-width: 0; }
   .modal-title { font-size: 16px; font-weight: 800; color: var(--ink); }
@@ -1350,7 +1419,7 @@
     transition: background .15s ease;
     border: 1px solid var(--line);
   }
-  .modal-close:active { background: #ece7f8; }
+  .modal-close:active { background: #eceef1; }
 
   /* --- ردیف آمار: کمترین / بیشترین / آخرین قیمت --- */
   .modal-stats {
@@ -1508,6 +1577,7 @@
     </div>
   </div>
 
+  <div class="route-picker-label">انتخاب مسیر پروازی</div>
   <div class="route-picker" id="routePicker">
     <button class="route-field" id="originField" type="button">
       <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></span> مبدأ</span>
@@ -1674,11 +1744,22 @@ const ICONS = {
   infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
 };
 
-// ---- بستن نرم یک شیت/مودال: قبل از حذف از DOM، انیمیشن اسلاید به پایین رو پخش می‌کنه ----
-function closeSheet(overlay) {
+// ---- بستن نرم یک شیت/مودال (dialog بومی): قبل از حذف، انیمیشن اسلاید به پایین پخش می‌شه ----
+// onDone (اختیاری): بعد از حذف کامل از DOM اجرا می‌شه؛ برای زنجیره‌کردن باز شدن شیت بعدی به‌کار می‌ره
+function closeSheet(overlay, onDone) {
   if (!overlay || overlay.classList.contains('closing')) return;
   overlay.classList.add('closing');
-  overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+  overlay.addEventListener('animationend', () => {
+    if (typeof overlay.close === 'function' && overlay.open) overlay.close();
+    overlay.remove();
+    if (typeof onDone === 'function') onDone();
+  }, { once: true });
+}
+
+// ---- تنظیمات مشترک هر dialog: کلید Escape رو با انیمیشن نرم می‌بندیم به‌جای بسته‌شدن آنی بومی ----
+function wireDialogDismiss(overlay) {
+  overlay.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(overlay); });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSheet(overlay); });
 }
 
 // ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
@@ -1755,7 +1836,7 @@ function airlineLogoSrc(name) {
 // رنگ یک‌دست خاکستری برای همه، هر اسم یه رنگ پایدار از یه پالت هماهنگ می‌گیره
 // تا کارت‌ها با نگاه اول از هم قابل تشخیص باشن ----
 const FALLBACK_PALETTE = [
-  { bg: '#eeecfb', fg: '#443ac4' },
+  { bg: '#eaeef3', fg: '#1d3455' },
   { bg: '#fcebea', fg: '#a32c22' },
   { bg: '#e7f6ec', fg: '#146b3d' },
   { bg: '#fbf1dd', fg: '#946018' },
@@ -2051,9 +2132,9 @@ function openRoutePicker(type) {
       .map(r => ({ label: r.to || r.raw, matchRoute: r }));
   }
 
-  const overlay = document.createElement('div');
+  const overlay = document.createElement('dialog');
   overlay.className = 'modal-overlay';
-  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(overlay); };
+  wireDialogDismiss(overlay);
 
   overlay.innerHTML = `
     <div class="modal-card">
@@ -2075,6 +2156,7 @@ function openRoutePicker(type) {
 
   overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
   document.body.appendChild(overlay);
+  overlay.showModal();
 
   const listEl = overlay.querySelector('#pickerList');
   const recentEl = overlay.querySelector('#pickerRecent');
@@ -2083,19 +2165,24 @@ function openRoutePicker(type) {
 
   function selectOption(raw) {
     const picked = routeMeta.find(r => r.raw === raw);
+    let advanceToDest = false;
     if (type === 'origin') {
       // با انتخاب مبدأ جدید، اولین مقصد موجود برای اون فعال می‌شه
-      state.route = (routeMeta.find(r => r.from === picked.from) || picked).raw;
+      const destOptions = routeMeta.filter(r => r.from === picked.from);
+      state.route = (destOptions[0] || picked).raw;
+      // اگه بیش از یک مقصد برای این مبدأ وجود داره، کاربر واقعاً باید انتخاب کنه؛
+      // پس به‌جای برگشتن به صفحه‌ی اصلی، مستقیم و نرم شیت مقصد باز می‌شه
+      advanceToDest = destOptions.length > 1;
     } else {
       state.route = picked.raw;
     }
     pushRecentRoute(state.route);
-    closeSheet(overlay);
     updateRouteFields();
     buildDateCards();
     buildMoversList();
     buildDtdSection();
     render();
+    closeSheet(overlay, advanceToDest ? () => openRoutePicker('dest') : undefined);
   }
 
   function renderRecent() {
@@ -2499,7 +2586,7 @@ function buildDtdChart(series) {
 
   const gridLines = [0.25, 0.5, 0.75].map(fr => {
     const y = (padY + innerH * fr).toFixed(1);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#e3ddf3" stroke-width="1" stroke-dasharray="3,4" />`;
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#dde1e7" stroke-width="1" stroke-dasharray="3,4" />`;
   }).join('');
 
   const minIdx = prices.indexOf(min);
@@ -2517,19 +2604,19 @@ function buildDtdChart(series) {
   const labels = coords.map(([x], i) => {
     if (!labelIdx.has(i)) return '';
     const dtdVal = Math.max(0, series[i].dtd);
-    return `<text x="${x.toFixed(1)}" y="${height - 3}" font-size="9" fill="#5b5480" text-anchor="middle">${toFaDigits(dtdVal)} روز</text>`;
+    return `<text x="${x.toFixed(1)}" y="${height - 3}" font-size="9" fill="#47536b" text-anchor="middle">${toFaDigits(dtdVal)} روز</text>`;
   }).join('');
 
   return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;display:block;">
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#5b4fe0" stop-opacity="0.22" />
-        <stop offset="100%" stop-color="#5b4fe0" stop-opacity="0" />
+        <stop offset="0%" stop-color="#2d4a75" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#2d4a75" stop-opacity="0" />
       </linearGradient>
     </defs>
     ${gridLines}
     <path d="${areaD}" fill="url(#${gid})" stroke="none" />
-    <path d="${pathD}" fill="none" stroke="#5b4fe0" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+    <path d="${pathD}" fill="none" stroke="#2d4a75" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
     ${markers}
     ${labels}
   </svg>`;
@@ -2843,7 +2930,7 @@ function buildSparkline(points, width, height, opts) {
 
   const gridLines = [0.25, 0.5, 0.75].map(fr => {
     const y = (padY + innerH * fr).toFixed(1);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#e3ddf3" stroke-width="1" stroke-dasharray="3,4" />`;
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#dde1e7" stroke-width="1" stroke-dasharray="3,4" />`;
   }).join('');
 
   const maxIdx = prices.indexOf(max);
@@ -2933,9 +3020,9 @@ function openHistoryModal(f) {
     dateChip = `${d.weekday} ${d.label}`;
   }
 
-  const overlay = document.createElement('div');
+  const overlay = document.createElement('dialog');
   overlay.className = 'modal-overlay';
-  overlay.onclick = (e) => { if (e.target === overlay) closeSheet(overlay); };
+  wireDialogDismiss(overlay);
 
   overlay.innerHTML = `
     <div class="modal-card">
@@ -2989,7 +3076,23 @@ function openHistoryModal(f) {
 
   overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
   document.body.appendChild(overlay);
+  overlay.showModal();
 }
+
+// ---- فشرده‌سازی هدر هنگام اسکرول: تمرکز روی نوار مسیر/تاریخ، مخفی‌شدن موقت زیرعنوان ----
+function initCompactHeader() {
+  const headerEl = document.querySelector('header');
+  if (!headerEl) return;
+  let ticking = false;
+  const applyState = () => {
+    headerEl.classList.toggle('is-compact', window.scrollY > 24);
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(applyState); ticking = true; }
+  }, { passive: true });
+}
+initCompactHeader();
 
 load();
 </script>
