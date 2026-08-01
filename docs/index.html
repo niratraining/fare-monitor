@@ -1773,7 +1773,7 @@ function buildDateCards() {
   el.innerHTML = '';
   dates.forEach(d => {
     const dayFlights = allFlights.filter(f => f.route === state.route && f.flight_date === d);
-    const openDayFlights = dayFlights.filter(f => !f.closed);
+    const openDayFlights = dayFlights.filter(f => !isFlightArchived(f));
     const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
     const { weekday, label } = formatDateCard(d);
 
@@ -1897,7 +1897,7 @@ function computeMovers(limit) {
   const items = [];
   // فقط پروازهای همون مسیر + همون تاریخ فعال (تب تاریخ انتخاب‌شده)، نه کل تاریخ‌ها با هم قاطی
   allFlights
-    .filter(f => f.route === state.route && f.flight_date === state.date && !f.closed)
+    .filter(f => f.route === state.route && f.flight_date === state.date && !isFlightArchived(f))
     .forEach(f => {
       const change = getLatestChange(f);
       if (change && change.diff !== 0) items.push({ f, change });
@@ -1948,7 +1948,7 @@ function getMarketPosition(f) {
   if (!isFinite(price)) return null;
   const cabinKey = normalizeCabin(f.cabin);
   const peerPrices = allFlights
-    .filter(x => x.route === f.route && x.flight_date === f.flight_date && !x.closed && normalizeCabin(x.cabin) === cabinKey)
+    .filter(x => x.route === f.route && x.flight_date === f.flight_date && !isFlightArchived(x) && normalizeCabin(x.cabin) === cabinKey)
     .map(x => toPriceNumber(x.adult_price))
     .filter(p => isFinite(p));
   if (peerPrices.length < 2) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
@@ -2155,6 +2155,29 @@ function buildDtdSection() {
   }
 }
 
+// ---- تاریخ و ساعت «الان» به وقت خودِ گوشی (که برای این پنل یعنی وقت ایران) ----
+function todayDateStrLocal() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  return `${y}-${mo}-${da}`;
+}
+
+function currentHHMM() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+// ---- پرواز الان بسته حساب می‌شه (باید بره تو کشوی آرشیو) اگه یا دیگه
+// تو آخرین رصد نبوده (نرخ‌گذاری‌ش تموم شده)، یا (فقط برای تاریخ امروز)
+// ساعت حرکتش گذشته — دو تا سیگنال مستقل، هرکدوم زودتر برسه کافیه ----
+function isFlightArchived(f) {
+  if (f.closed) return true;
+  if (f.flight_date !== todayDateStrLocal()) return false;
+  return !!(f.dep_time && f.dep_time <= currentHHMM());
+}
+
 function render() {
   let rows = allFlights.filter(f => f.route === state.route && f.flight_date === state.date);
 
@@ -2185,12 +2208,13 @@ function render() {
   const list = document.getElementById('resultsList');
   list.innerHTML = '';
 
-  // پروازهایی که دیگه تو آخرین رصد سپهر دیده نشدن (یعنی نرخ‌گذاری‌شون
-  // تموم شده / فروششون بسته شده) از لیست اصلی جدا می‌شن و می‌رن تو
-  // یه بخش جمع‌شونده‌ی «بسته‌شده»‌ی پایین صفحه — کارت‌هاشون دست‌نخورده
-  // و با کلیک همون تاریخچه‌ی قیمت رو نشون می‌ده، فقط رو صدر لیست شلوغ نمی‌کنن
-  const closedRows = rows.filter(f => f.closed);
-  rows = rows.filter(f => !f.closed);
+  // پروازهایی که یا دیگه تو آخرین رصد نبودن (نرخ‌گذاری‌شون تموم شده)،
+  // یا (فقط برای تاریخ امروز) ساعت حرکتشون گذشته — از لیست اصلی جدا
+  // می‌شن و می‌رن تو یه بخش جمع‌شونده‌ی «بسته‌شده»‌ی پایین صفحه —
+  // کارت‌هاشون دست‌نخورده و با کلیک همون تاریخچه‌ی قیمت رو نشون می‌ده،
+  // فقط رو صدر لیست شلوغ نمی‌کنن
+  const closedRows = rows.filter(isFlightArchived);
+  rows = rows.filter(f => !isFlightArchived(f));
 
   rows.forEach((f, idx) => {
     const card = buildFlightCard(f, getLatestChange(f));
@@ -2250,9 +2274,12 @@ function buildFlightCard(f, change) {
   const anomaly = detectAnomaly(f);
   const card = document.createElement('div');
   card.className = 'flight-card';
+  const archivedBadge = f.closed
+    ? '<span class="fc-closed-badge">🔒 اتمام نرخ‌گذاری</span>'
+    : (isFlightArchived(f) ? '<span class="fc-closed-badge">🕐 ساعت پرواز گذشته</span>' : buildAnomalyBadge(anomaly));
   card.innerHTML = `
     ${buildChangeBadge(change)}
-    ${f.closed ? '<span class="fc-closed-badge">🔒 بسته‌شده در سپهر</span>' : buildAnomalyBadge(anomaly)}
+    ${archivedBadge}
     <div class="fc-top">
       <div class="fc-airline">
         <span class="fc-logo">
