@@ -219,8 +219,24 @@ async function handleExportData(env) {
     ...closedFlights.map((f) => ({ ...f, closed: 1 })),
   ];
 
+  // «به‌روزرسانی ۱۰:۵۰» تو هدر پنل قبلاً یعنی «الان که export صدا زده شد»،
+  // نه «قدیمی‌ترین ردیفی که رو صفحه می‌بینی کِی واقعاً از سپهر گرفته شده».
+  // این دو تا می‌تونن ساعت‌ها فاصله داشته باشن (وقتی MAX_TARGETS_PER_RUN
+  // یه route+date رو عقب می‌ندازه)، و همون چیزیه که باعث می‌شد کاربر با
+  // دیدن «۱۰:۵۰» فکر کنه همه‌چیز تا اون لحظه تازه‌ست. stalest_captured_at
+  // پایین‌ترین (قدیمی‌ترین) captured_at بین ردیف‌های باز صفحه‌ست — پنل
+  // ازش برای هشدار «این عدد ممکنه قدیمی باشه» استفاده می‌کنه.
+  let stalestCapturedAt = null;
+  for (const f of openFlights) {
+    if (!f.captured_at) continue;
+    if (stalestCapturedAt === null || f.captured_at < stalestCapturedAt) {
+      stalestCapturedAt = f.captured_at;
+    }
+  }
+
   return json({
     generated_at: new Date().toISOString().slice(0, 16),
+    stalest_captured_at: stalestCapturedAt,
     flights,
   });
 }
