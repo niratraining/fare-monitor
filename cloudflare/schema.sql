@@ -29,6 +29,14 @@ CREATE INDEX IF NOT EXISTS idx_snapshots_route_date
 CREATE INDEX IF NOT EXISTS idx_snapshots_captured
   ON fare_snapshots (captured_at);
 
+-- برای ردیابی «آخرین باری که پاک‌سازی خودکار fare_snapshots اجرا شد»
+-- (رشد بی‌رویه‌ی جدول با گذشت زمان، چون هر رصد حتی بدون تغییر قیمت
+-- یک ردیف خام ثبت می‌کنه)
+CREATE TABLE IF NOT EXISTS maintenance_state (
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
+
 -- مسیرهای تحت رصد. هر مسیر origin/destination (کد ایاتا، چند فرودگاه با کاما)
 -- و بازه‌ی تاریخ خودش رو داره. اضافه/غیرفعال کردن مسیر یعنی یه ردیف
 -- این‌جا، نه تغییر کد پایتون یا Worker.

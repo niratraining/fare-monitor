@@ -72,6 +72,70 @@ function priceNum(s) {
 }
 
 // ===========================================================
+// نرمال‌سازی نام فروشنده — سپهر۳۶۰ بعضی‌وقتا همون فروشنده رو با
+// کاراکترهای نامرئی اضافه (ZWSP/LRM/RLM/BOM)، حروف عربی به‌جای فارسی
+// (ي به‌جای ی، ك به‌جای ک)، یا چند فاصله‌ی پشت‌سرهم برمی‌گردونه. بدون
+// این نرمال‌سازی، تاریخچه‌ی قیمت (که بر اساس رشته‌ی دقیق seller
+// گروه‌بندی می‌شه) بی‌دلیل قطع می‌شه — انگار یه فروشنده‌ی جدیده، درحالی
+// که همون فروشنده‌ی قبلیه با یه بایت اضافه.
+// ===========================================================
+function normalizeSellerName(s) {
+  if (!s) return "";
+  let out = String(s);
+  out = out.replace(/[\u200b\u200e\u200f\ufeff]/g, ""); // کاراکترهای نامرئی
+  out = out.replace(/\u064a/g, "\u06cc").replace(/\u0643/g, "\u06a9"); // عربی -> فارسی
+  out = out.replace(/\s+/g, " ").trim(); // چند فاصله -> یک فاصله
+  return out;
+}
+
+// ===========================================================
+// پاک‌سازی خودکار fare_snapshots/check_state برای تاریخ‌های خیلی
+// گذشته — بدون این، جدول با گذشت ماه‌ها (چون هر رصد حتی بدون تغییر
+// قیمت یک ردیف خام ثبت می‌کنه) بی‌نهایت بزرگ می‌شه و کوئری‌های export
+// کند می‌شن. اجرا فقط حداکثر هر ۲۰ ساعت یک‌بار واقعاً کار می‌کنه (وضعیتش
+// تو maintenance_state ذخیره می‌شه)، پس صدا زدنش از هر /ingest تقریباً
+// بی‌هزینه‌ست (یک SELECT ساده در بیشتر اجراها) و نیازی به cron جدا نداره.
+// ۳ روز بعد از تاریخ پرواز نگه داشته می‌شه (حاشیه‌ی کافی برای بج
+// «اتمام نرخ‌گذاری»/بررسی دستی)، نه بیشتر.
+const CLEANUP_RETENTION_DAYS = 3;
+const CLEANUP_MIN_INTERVAL_HOURS = 20;
+
+async function maybeRunCleanup(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT value FROM maintenance_state WHERE key = 'last_cleanup_at'`
+  ).all();
+  const lastCleanupAt = results[0]?.value || null;
+  const now = new Date();
+
+  if (lastCleanupAt) {
+    const hoursSince = (now - new Date(lastCleanupAt)) / 3600000;
+    if (hoursSince < CLEANUP_MIN_INTERVAL_HOURS) return null; // هنوز نوبتش نرسیده
+  }
+
+  const cutoffStr = new Date(now.getTime() - CLEANUP_RETENTION_DAYS * 86400000)
+    .toISOString()
+    .slice(0, 10);
+
+  const delSnap = await env.DB.prepare(`DELETE FROM fare_snapshots WHERE flight_date < ?`)
+    .bind(cutoffStr)
+    .run();
+  const delState = await env.DB.prepare(`DELETE FROM check_state WHERE flight_date < ?`)
+    .bind(cutoffStr)
+    .run();
+
+  await env.DB.prepare(
+    `INSERT INTO maintenance_state (key, value) VALUES ('last_cleanup_at', ?)
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value`
+  ).bind(now.toISOString()).run();
+
+  return {
+    cutoff: cutoffStr,
+    deleted_snapshots: delSnap.meta?.changes ?? null,
+    deleted_check_state: delState.meta?.changes ?? null,
+  };
+}
+
+// ===========================================================
 // POST /due — لیست کاندیدها رو می‌گیره، فقط اونایی که الان نوبتشونه برمی‌گردونه
 // body: { candidates: [{ route, flight_date }, ...] }
 // ===========================================================
@@ -151,7 +215,7 @@ async function handleIngest(request, env) {
       f.adult_price || "",
       f.child_price || "",
       f.infant_price || "",
-      f.seller || "",
+      normalizeSellerName(f.seller),
       f.seat_count || "",
       captured_at
     )
@@ -169,7 +233,9 @@ async function handleIngest(request, env) {
     await env.DB.batch(stmts);
   }
 
-  return json({ ok: true, inserted: flights.length });
+  const cleanup = await maybeRunCleanup(env);
+
+  return json({ ok: true, inserted: flights.length, cleanup });
 }
 
 // ===========================================================
@@ -181,6 +247,12 @@ async function handleIngest(request, env) {
 // زمان و انباشته‌شدن fare_snapshots بی‌نهایت بزرگ نشه.
 // ===========================================================
 async function handleExportData(env) {
+  // نکته: گروه‌بندی seller تو کوئری‌های زیر مستقیماً SQL هست (نه از طریق
+  // normalizeSellerName جاوااسکریپتی)، چون از این به بعد seller همیشه در
+  // لحظه‌ی ingest نرمال شده ذخیره می‌شه؛ ردیف‌های قدیمی‌تر که قبل از این
+  // تغییر با نام نرمال‌نشده ثبت شدن، حداکثر تا CLEANUP_RETENTION_DAYS روز
+  // دیگه خودشون پاک می‌شن (رجوع کن به maybeRunCleanup)، پس این مشکل به‌مرور
+  // خودش برطرف می‌شه، بدون نیاز به migration دستی.
   const { results: openFlights } = await env.DB.prepare(
     `SELECT f.*
      FROM fare_snapshots f
@@ -262,11 +334,12 @@ async function handleExportHistory(env) {
   for (const r of results) {
     const price = priceNum(r.adult_price);
     if (price === null) continue;
+    const seller = normalizeSellerName(r.seller); // برای ردیف‌های قدیمی قبل از نرمال‌سازی هم درست گروه‌بندی بشه
     // cabin و seller هر دو تو کلید هستن: یه پرواز هم‌زمان اکونومی/بیزنس داره،
     // و هر فروشنده هم روند قیمت جدای خودش رو داره. بدون seller تو کلید،
     // ارزون‌ترین فروشنده قیمت بقیه‌ی فروشنده‌ها رو تو تاریخچه پاک می‌کرد
     // (باگ: افزایش نرخ یه فروشنده گرون‌تر اصلاً تو تاریخچه دیده نمی‌شد).
-    const key = [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, r.seller, r.captured_at].join("|");
+    const key = [r.route, r.flight_date, r.flight_no, r.airline, r.cabin, seller, r.captured_at].join("|");
     const existing = grouped.get(key);
     if (!existing || price < existing.price) {
       grouped.set(key, {
@@ -275,7 +348,7 @@ async function handleExportHistory(env) {
         flight_no: r.flight_no,
         airline: r.airline,
         cabin: r.cabin,
-        seller: r.seller,
+        seller,
         captured_at: r.captured_at,
         price,
       });
