@@ -51,37 +51,42 @@
   }
 
   :root {
-    --ink: #0f172a;
-    --ink-soft: #47536b;
-    --ink-muted: #66718a;
-    --line: rgba(15, 23, 42, 0.10);
-    --paper: #f4f5f7;
+    --ink: #2F3B39;
+    --ink-soft: #4B5A57;
+    --ink-muted: #6E7C79;
+    --line: #DDE6E4;
+    --line-soft: rgba(69, 95, 91, 0.12);
+    --paper: #EEF3F2;
     --card: #ffffff;
-    --navy-900: #0b1220;
-    --navy-800: #11192b;
-    --navy-700: #17233b;
-    --accent: #2d4a75;
-    --accent-strong: #1d3455;
-    --accent-bright: #3d6096;
-    --accent-tint: #eaeef3;
-    --accent-on-navy: #9db3d1;
-    --brand-coral: #2d4a75;
-    --brand-coral-strong: #1d3455;
-    --brand-coral-tint: #eaeef3;
+    --navy-900: #1E2926;
+    --navy-800: #2C3A37;
+    --navy-700: #455F5B;
+    --accent: #556F6B;
+    --accent-strong: #455F5B;
+    --accent-bright: #D4A62A;
+    --accent-gold-soft: #E5BE21;
+    --accent-tint: #E8EEEC;
+    --accent-on-navy: #E9CB74;
+    --brand-coral: #556F6B;
+    --brand-coral-strong: #455F5B;
+    --brand-coral-tint: #E8EEEC;
     --panel-line: rgba(255, 255, 255, 0.12);
-    --radius-panel: 10px;
-    --radius-field: 7px;
-    --danger: #ab2b23;
-    --danger-strong: #8c231d;
-    --danger-tint: #f9ebea;
-    --success: #1c6b41;
-    --success-strong: #14562f;
-    --success-tint: #e8f2ec;
-    --warn: #8a5a13;
-    --warn-tint: #f8f0dd;
-    --warn-line: #e6d5a8;
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 6px 18px -8px rgba(15, 23, 42, 0.18);
+    --radius-panel: 22px;
+    --radius-card-sm: 16px;
+    --radius-field: 14px;
+    --danger: #C1443A;
+    --danger-strong: #9E362D;
+    --danger-tint: #FBEAE8;
+    --success: #2F7A5D;
+    --success-strong: #245F48;
+    --success-tint: #E7F3EC;
+    --warn: #A6790E;
+    --warn-tint: #FBF1DC;
+    --warn-line: #EAD9A8;
+    --shadow-sm: 0 2px 10px rgba(69, 95, 91, 0.07);
+    --shadow-md: 0 16px 40px -16px rgba(41, 51, 47, 0.22);
+    --shadow-lg: 0 28px 70px -20px rgba(41, 51, 47, 0.30);
+    --ease-smooth: cubic-bezier(.22, 1, .36, 1);
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -96,13 +101,13 @@
     -webkit-font-smoothing: antialiased;
     position: relative;
   }
-  @media (min-width: 720px) {
-    html { background: linear-gradient(180deg, #e7e9ed, #d8dce2) fixed; }
+  @media (min-width: 760px) {
+    html { background: linear-gradient(180deg, #E4EBE9, #D7E2DF) fixed; }
     body {
-      max-width: 720px;
+      max-width: 760px;
       margin: 0 auto;
       min-height: 100vh;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06), 0 24px 70px -20px rgba(15, 23, 42, 0.28);
+      box-shadow: 0 0 0 1px rgba(69, 95, 91, 0.06), var(--shadow-lg);
     }
   }
 
@@ -113,14 +118,15 @@
     top: 0;
     z-index: 10;
     overflow: hidden;
-    background: var(--card);
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
     color: var(--ink);
-    padding: 0 16px 14px;
+    padding: 0 18px 16px;
     border-bottom: 1px solid var(--line);
-    transition: padding .18s ease;
+    transition: padding .22s var(--ease-smooth), box-shadow .22s ease;
   }
-  /* --- حالت فشرده‌ی هدر هنگام اسکرول: تمرکز روی کنترل‌های اصلی، حذف موقت عناصر ثانویه --- */
-  header.is-compact { padding-bottom: 10px; }
+  header.is-compact { padding-bottom: 10px; box-shadow: var(--shadow-sm); }
   header.is-compact .hero-top { margin-bottom: 10px; }
   header.is-compact .hero-subtitle,
   header.is-compact .route-picker-label { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
@@ -131,8 +137,8 @@
     content: '';
     display: block;
     height: 3px;
-    margin: 0 -16px 0;
-    background: var(--navy-900);
+    margin: 0 -18px 0;
+    background: linear-gradient(90deg, var(--navy-700), var(--accent-bright));
   }
   .header-inner {
     position: relative;
@@ -161,12 +167,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 19px;
-    height: 19px;
-    border-radius: 6px;
-    background: var(--accent-strong);
+    width: 20px;
+    height: 20px;
+    border-radius: 8px;
+    background: linear-gradient(155deg, var(--accent-strong), var(--navy-900));
     color: #ffffff;
-    box-shadow: 0 2px 6px rgba(29, 52, 85, 0.30);
+    box-shadow: 0 2px 6px rgba(69, 95, 91, 0.30);
   }
   .brand-mark svg { width: 11px; height: 11px; display: block; }
   .sys-crumb {
@@ -189,9 +195,9 @@
     letter-spacing: .01em;
     color: var(--brand-coral-strong);
     background: var(--brand-coral-tint);
-    border: 1px solid rgba(29, 52, 85, 0.22);
-    border-radius: 5px;
-    padding: 3px 8px;
+    border: 1px solid rgba(69, 95, 91, 0.22);
+    border-radius: 999px;
+    padding: 3px 10px;
   }
   .sys-badge svg { width: 11px; height: 11px; flex: none; }
   .sys-bar-right { flex: none; }
@@ -204,10 +210,10 @@
   }
   .hero-title-group { display: flex; flex-direction: column; gap: 4px; }
   h1 {
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     margin: 0;
-    letter-spacing: -.005em;
+    letter-spacing: -.01em;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -217,13 +223,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
-    background: var(--accent-strong);
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    background: linear-gradient(155deg, var(--accent-strong), var(--navy-900));
     color: #ffffff;
     font-size: 13px;
-    box-shadow: 0 3px 8px rgba(29, 52, 85, 0.26);
+    box-shadow: 0 3px 8px rgba(69, 95, 91, 0.26);
   }
   .hero-icon svg { display: block; }
   .hero-subtitle {
@@ -249,13 +255,13 @@
     border-radius: 50%;
     background: var(--success);
     flex: none;
-    box-shadow: 0 0 0 0 rgba(28, 107, 65, 0.45);
+    box-shadow: 0 0 0 0 rgba(47, 122, 93, 0.45);
     animation: liveDotPulse 2.2s ease-out infinite;
   }
   @keyframes liveDotPulse {
-    0% { box-shadow: 0 0 0 0 rgba(28, 107, 65, 0.45); }
-    70% { box-shadow: 0 0 0 6px rgba(28, 107, 65, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(28, 107, 65, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(47, 122, 93, 0.45); }
+    70% { box-shadow: 0 0 0 6px rgba(47, 122, 93, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(47, 122, 93, 0); }
   }
   @media (prefers-reduced-motion: reduce) {
     .meta::before { animation: none; }
@@ -305,8 +311,8 @@
   .kpi-strip {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin: 12px 16px 0;
+    gap: 12px;
+    margin: 18px 18px 0;
   }
   @media (min-width: 560px) {
     .kpi-strip { grid-template-columns: repeat(4, 1fr); }
@@ -315,18 +321,22 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
-    padding: 12px;
+    padding: 15px 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     box-shadow: var(--shadow-sm);
     min-width: 0;
+    transition: transform .22s var(--ease-smooth), box-shadow .22s ease;
+  }
+  @media (hover: hover) {
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
   }
   .kpi-icon {
     flex: none;
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -479,11 +489,12 @@
   /* --- شیت انتخاب مبدأ/مقصد --- */
   .picker-search {
     width: 100%;
-    padding: 10px 36px 10px 12px;
+    padding: 11px 36px 11px 14px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-field);
     font-size: 14px;
     background: var(--paper);
+    transition: border-color .15s ease, box-shadow .15s ease;
   }
   .picker-search:focus { outline: none; border-color: var(--accent); background: white; }
   .picker-search-clear {
@@ -516,7 +527,7 @@
     padding: 5px 11px;
     cursor: pointer;
   }
-  .picker-recent-chip:active { background: #dde2e8; }
+  .picker-recent-chip:active { background: #E4ECEA; }
   .picker-item-text mark {
     background: transparent;
     color: var(--accent);
@@ -528,7 +539,7 @@
     align-items: center;
     gap: 10px;
     padding: 11px 4px;
-    border-bottom: 1px solid #eef0f3;
+    border-bottom: 1px solid #E3EAE8;
     cursor: pointer;
     border-radius: 8px;
   }
@@ -595,7 +606,7 @@
   .date-card.active {
     background: var(--accent-tint);
     border-color: var(--accent);
-    box-shadow: 0 2px 8px rgba(29, 52, 85, 0.18);
+    box-shadow: 0 2px 8px rgba(69, 95, 91, 0.18);
   }
   .date-card.active .weekday,
   .date-card.active .daynum { color: var(--accent-strong); }
@@ -604,11 +615,11 @@
   /* --- ویجت پرتغییرترین پروازها (Movers leaderboard) --- */
   .movers-section {
     background: var(--card);
-    margin: 12px 16px 0;
+    margin: 16px 18px 0;
     border-radius: var(--radius-panel);
-    padding: 14px 14px 12px;
+    padding: 18px 18px 16px;
     border: 1px solid var(--line);
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
+    box-shadow: var(--shadow-sm);
   }
   .movers-header {
     display: flex;
@@ -645,16 +656,19 @@
   .movers-list::-webkit-scrollbar { display: none; }
   .mover-card {
     flex: 0 0 auto;
-    min-width: 130px;
-    max-width: 150px;
+    min-width: 132px;
+    max-width: 152px;
     background: var(--paper);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 9px 10px;
+    border-radius: var(--radius-card-sm);
+    padding: 11px 12px;
     cursor: pointer;
-    transition: transform .12s ease, background .15s ease;
+    transition: transform .16s var(--ease-smooth), background .15s ease, box-shadow .16s ease;
   }
-  .mover-card:active { transform: scale(0.96); background: #eceef1; }
+  .mover-card:active { transform: scale(0.96); background: #E4ECEA; }
+  @media (hover: hover) {
+    .mover-card:hover { transform: translateY(-2px); background: #ffffff; box-shadow: var(--shadow-sm); }
+  }
   .mover-rank {
     display: inline-block;
     font-size: 10px;
@@ -705,8 +719,8 @@
     gap: 3px;
     font-size: 10px;
     font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 7px;
+    padding: 3px 9px;
+    border-radius: 10px;
     margin-top: 5px;
   }
   .fc-position.cheap { background: var(--success-tint); color: var(--success-strong); }
@@ -726,18 +740,18 @@
     background: var(--warn);
     font-size: 10px;
     font-weight: 800;
-    padding: 4px 10px 4px 12px;
-    border-radius: 8px 0 0 8px;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+    padding: 4px 11px 4px 13px;
+    border-radius: 12px 0 0 12px;
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
   /* --- بخش منحنی DTD (قیمت بر اساس فاصله تا پرواز)، هم‌سبک ویجت پرتغییرترین‌ها --- */
   .dtd-section {
     background: var(--card);
-    margin: 12px 16px 0;
+    margin: 16px 18px 0;
     border-radius: var(--radius-panel);
-    padding: 14px 14px 12px;
+    padding: 18px 18px 16px;
     border: 1px solid var(--line);
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
+    box-shadow: var(--shadow-sm);
   }
   .dtd-header {
     display: flex;
@@ -770,19 +784,19 @@
     font-weight: 700;
     color: var(--ink);
     background: var(--paper);
-    border-radius: 10px;
-    padding: 8px 10px;
+    border-radius: var(--radius-card-sm);
+    padding: 10px 12px;
     margin-top: 8px;
     line-height: 1.7;
   }
 
   /* --- بخش جمع‌شونده‌ی پروازهای بسته‌شده (نرخ‌گذاری‌شون تو سپهر تموم شده) --- */
   .closed-section {
-    margin: 14px 16px 0;
+    margin: 18px 18px 0;
     border-radius: var(--radius-panel);
-    padding: 12px 14px 10px;
-    background: #eceef1;
-    border: 1px dashed #c7cdd6;
+    padding: 16px 18px 14px;
+    background: #E4ECEA;
+    border: 1px dashed #C9D6D2;
   }
   .closed-header {
     display: flex;
@@ -827,10 +841,10 @@
     font-size: 11px;
     font-weight: 800;
     letter-spacing: .01em;
-    padding: 4px 10px 4px 12px;
-    border-radius: 8px 0 0 8px;
+    padding: 4px 11px 4px 13px;
+    border-radius: 12px 0 0 12px;
     background: var(--ink-soft);
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
 
   /* --- نوار ابزار فیلتر/مرتب‌سازی: الگوی استاندارد اپ‌های رزرو (دو دکمه‌ی قرصی
@@ -838,12 +852,12 @@
   .filter-toolbar {
     display: flex;
     gap: 8px;
-    margin: 10px 16px 0;
-    padding: 6px;
+    margin: 16px 18px 0;
+    padding: 7px;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), inset 0 0 0 1px rgba(255,255,255,.4);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm), inset 0 0 0 1px rgba(255,255,255,.4);
   }
   .ft-btn {
     flex: 1;
@@ -866,11 +880,14 @@
     min-width: 0;
   }
   .ft-btn:active { transform: scale(.97); }
+  @media (hover: hover) {
+    .ft-btn:not(.has-active):hover { background: var(--paper); color: var(--ink); }
+  }
   .ft-btn.has-active {
     background: linear-gradient(180deg, var(--card), var(--accent-tint));
     border-color: var(--accent-bright);
     color: var(--accent-strong);
-    box-shadow: 0 3px 10px -4px rgba(29, 52, 85, .35);
+    box-shadow: 0 3px 10px -4px rgba(69, 95, 91, .35);
   }
   .ft-btn .fi {
     display: inline-flex;
@@ -901,7 +918,7 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    box-shadow: 0 2px 6px rgba(29, 52, 85, .35);
+    box-shadow: 0 2px 6px rgba(69, 95, 91, .35);
   }
   .filter-badge.show { display: inline-flex; }
 
@@ -913,12 +930,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 11px;
+    width: 36px;
+    height: 36px;
+    border-radius: 14px;
     background: linear-gradient(160deg, var(--navy-800), var(--accent-strong));
     color: #fff;
-    box-shadow: 0 4px 12px -3px rgba(15, 23, 42, 0.4);
+    box-shadow: 0 4px 12px -3px rgba(30, 41, 38, 0.4);
   }
   .modal-title-icon svg { width: 16px; height: 16px; display: block; }
   .modal-title-text { display: flex; flex-direction: column; gap: 1px; }
@@ -937,23 +954,27 @@
   .fs-btn-secondary, .fs-btn-primary {
     flex: 1;
     border: none;
-    border-radius: 12px;
-    padding: 13px 10px;
+    border-radius: var(--radius-card-sm);
+    padding: 14px 10px;
     font-family: inherit;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: background .15s ease, transform .12s ease, box-shadow .15s ease;
+    transition: background .18s ease, transform .14s var(--ease-smooth), box-shadow .18s ease;
   }
   .fs-btn-secondary { background: var(--card); color: var(--ink-soft); border: 1px solid var(--line); flex: 0 0 40%; }
   .fs-btn-secondary:active { transform: scale(.98); background: var(--paper); }
   .fs-btn-primary {
     background: linear-gradient(135deg, var(--navy-800), var(--accent-strong));
     color: #fff;
-    box-shadow: 0 8px 20px -6px rgba(20, 35, 60, .55);
+    box-shadow: 0 8px 20px -6px rgba(44, 58, 55, .55);
     flex: 1;
   }
-  .fs-btn-primary:active { transform: scale(.98); box-shadow: 0 4px 12px -6px rgba(20, 35, 60, .55); }
+  .fs-btn-primary:active { transform: scale(.98); box-shadow: 0 4px 12px -6px rgba(44, 58, 55, .55); }
+  @media (hover: hover) {
+    .fs-btn-secondary:hover { background: var(--paper); }
+    .fs-btn-primary:hover { box-shadow: 0 10px 26px -6px rgba(44, 58, 55, .6); transform: translateY(-1px); }
+  }
 
   /* --- لیست عمودی گزینه‌های مرتب‌سازی: الگوی استاندارد شیت مرتب‌سازی (رادیو + تیک) --- */
   .sort-list { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
@@ -964,8 +985,8 @@
     width: 100%;
     border: 1px solid var(--line);
     background: var(--card);
-    border-radius: 13px;
-    padding: 12px 12px;
+    border-radius: var(--radius-card-sm);
+    padding: 13px 14px;
     font-family: inherit;
     font-size: 13.5px;
     font-weight: 600;
@@ -980,7 +1001,7 @@
     border-color: var(--accent-bright);
     font-weight: 700;
     color: var(--accent-strong);
-    box-shadow: 0 4px 14px -6px rgba(29, 52, 85, .35);
+    box-shadow: 0 4px 14px -6px rgba(69, 95, 91, .35);
   }
   .sort-row-icon {
     flex: none;
@@ -997,7 +1018,7 @@
   .sort-row.active .sort-row-icon {
     background: linear-gradient(160deg, var(--accent-bright), var(--accent-strong));
     color: #fff;
-    box-shadow: 0 3px 8px -2px rgba(29, 52, 85, .5);
+    box-shadow: 0 3px 8px -2px rgba(69, 95, 91, .5);
   }
   .sort-row-icon svg { width: 15px; height: 15px; }
   .sort-row-label { flex: 1; min-width: 0; }
@@ -1062,7 +1083,7 @@
     padding: 10px 36px 10px 12px;
     border: 1px solid var(--line);
     background: var(--paper);
-    border-radius: 11px;
+    border-radius: var(--radius-field);
     font-size: 13px;
     font-family: inherit;
     color: var(--ink);
@@ -1105,7 +1126,7 @@
     background: linear-gradient(135deg, var(--accent-bright), var(--accent-strong));
     color: #ffffff;
     border-color: transparent;
-    box-shadow: 0 4px 12px -3px rgba(29, 52, 85, 0.45);
+    box-shadow: 0 4px 12px -3px rgba(69, 95, 91, 0.45);
   }
 
   /* --- چیپ ایرلاین با جای لوگو (بعداً تصویر جایگذاری می‌شود) --- */
@@ -1163,8 +1184,8 @@
     display: inline-block;
     font-size: 10px;
     font-weight: bold;
-    padding: 1.5px 6px;
-    border-radius: 8px;
+    padding: 2px 7px;
+    border-radius: 10px;
     white-space: nowrap;
   }
   .cabin-economy { background: var(--paper); color: var(--ink-soft); }
@@ -1178,50 +1199,50 @@
     gap: 5px;
   }
 
-  main { padding: 12px 16px; }
+  main { padding: 16px 18px; }
   #loading { text-align: center; padding: 40px 16px; color: var(--ink-muted); font-size: 13px; }
-  #empty { text-align: center; padding: 48px 24px; }
+  #empty { text-align: center; padding: 52px 24px; }
   .empty-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: var(--accent-tint);
     color: var(--accent-strong);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .empty-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-  .empty-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 16px; }
+  .empty-sub { font-size: 12px; color: var(--ink-muted); margin-bottom: 18px; }
   .empty-reset {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 38px;
-    padding: 0 18px;
+    height: 40px;
+    padding: 0 20px;
     border-radius: var(--radius-field);
-    border: 1px solid rgba(29, 52, 85, 0.24);
+    border: 1px solid rgba(69, 95, 91, 0.24);
     background: var(--accent-tint);
     color: var(--accent-strong);
     font-size: 12px;
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    transition: background .15s ease;
+    transition: background .18s ease, transform .14s var(--ease-smooth);
   }
-  .empty-reset:active { background: #e4e7ec; }
+  .empty-reset:active { background: #E4ECEA; transform: scale(.97); }
 
   /* --- کارت پرواز: قالب گزارشی، فشرده و خوانا --- */
-  .results-list { display: flex; flex-direction: column; gap: 10px; }
+  .results-list { display: flex; flex-direction: column; gap: 14px; }
 
   /* --- کارت‌های اسکلتی حین بارگذاری داده --- */
   .skeleton-card {
     background: var(--card);
     border-radius: var(--radius-panel);
-    padding: 14px 16px;
+    padding: 16px 18px;
     border: 1px solid var(--line);
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
   .sk-row { display: flex; align-items: center; gap: 10px; }
   .sk-circle {
@@ -1247,15 +1268,18 @@
     position: relative;
     background: var(--card);
     border-radius: var(--radius-panel);
-    padding: 14px 16px 13px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.07);
+    padding: 17px 19px 16px;
+    box-shadow: var(--shadow-sm);
     border: 1px solid var(--line);
     border-right: 3px solid transparent;
     cursor: pointer;
-    transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+    transition: transform .18s var(--ease-smooth), box-shadow .2s ease, border-color .15s ease;
     animation: cardFadeIn .32s ease backwards;
   }
-  .flight-card:active { transform: scale(0.985); background: #f0f2f5; }
+  .flight-card:active { transform: scale(0.985); background: #E9EFED; }
+  @media (hover: hover) {
+    .flight-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  }
   @keyframes cardFadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1263,7 +1287,7 @@
 
   .fc-change {
     position: absolute;
-    top: 12px;
+    top: 14px;
     left: 0;
     display: inline-flex;
     align-items: center;
@@ -1272,21 +1296,21 @@
     font-size: 11px;
     font-weight: 800;
     letter-spacing: .01em;
-    padding: 4px 10px 4px 12px;
-    border-radius: 8px 0 0 8px;
+    padding: 4px 11px 4px 13px;
+    border-radius: 12px 0 0 12px;
   }
   .fc-change-icon { width: 13px; height: 13px; flex: none; }
   .fc-change.up {
     background: var(--danger);
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
   .fc-change.down {
     background: var(--success);
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
   .fc-change.flat {
     background: var(--ink-soft);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.34);
+    box-shadow: 0 2px 8px rgba(30, 41, 38, 0.34);
   }
   .flight-card:has(.fc-change.up) { border-right-color: var(--danger); }
   .flight-card:has(.fc-change.down) { border-right-color: var(--success); }
@@ -1352,7 +1376,7 @@
   .fc-stub-row {
     position: relative;
     height: 0;
-    margin: 12px -16px;
+    margin: 14px -19px;
     border-top: 1px dashed var(--line);
   }
   .fc-stub-row::before,
@@ -1400,7 +1424,7 @@
   }
   dialog.modal-overlay[open] { display: flex; animation: overlayFade .28s ease; }
   dialog.modal-overlay::backdrop {
-    background: rgba(15, 23, 42, 0.55);
+    background: rgba(30, 41, 38, 0.55);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
   }
@@ -1417,15 +1441,15 @@
     background: var(--paper);
     width: 100%;
     max-width: 480px;
-    border-radius: 20px 20px 0 0;
-    padding: 12px 18px 22px;
+    border-radius: 24px 24px 0 0;
+    padding: 14px 20px 24px;
     max-height: 88vh;
     overflow-y: auto;
     transform: translateY(100%);
     opacity: 0;
     transition: transform .36s cubic-bezier(.32,.72,0,1), opacity .3s ease;
     will-change: transform;
-    box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
+    box-shadow: 0 -18px 50px rgba(30, 41, 38, 0.28);
   }
   .modal-card.is-shown { transform: translateY(0); opacity: 1; }
   .modal-card::before {
@@ -1433,8 +1457,8 @@
     position: absolute;
     top: 0; right: 0; left: 0;
     height: 3px;
-    border-radius: 20px 20px 0 0;
-    background: linear-gradient(90deg, var(--navy-800), var(--accent));
+    border-radius: 24px 24px 0 0;
+    background: linear-gradient(90deg, var(--navy-800), var(--accent-bright));
     z-index: 1;
   }
   .sheet-handle {
@@ -1466,16 +1490,16 @@
   .modal-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
   .modal-logo {
     flex: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-card-sm);
     background: #ffffff;
     border: 1px solid var(--line);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+    box-shadow: 0 4px 12px rgba(30, 41, 38, 0.12);
   }
   .modal-logo img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 6px; box-sizing: border-box; }
   .modal-logo-fallback {
@@ -1502,8 +1526,8 @@
     color: var(--ink-soft);
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 7px;
-    padding: 3px 8px;
+    border-radius: 999px;
+    padding: 3px 10px;
   }
   .modal-close {
     border: none;
@@ -1515,10 +1539,13 @@
     color: var(--ink-soft);
     cursor: pointer;
     flex: none;
-    transition: background .15s ease;
+    transition: background .18s ease, transform .14s var(--ease-smooth);
     border: 1px solid var(--line);
   }
-  .modal-close:active { background: #eceef1; }
+  .modal-close:active { background: #E4ECEA; transform: scale(.94); }
+  @media (hover: hover) {
+    .modal-close:hover { background: var(--paper); }
+  }
 
   /* --- بلوک قیمت اصلی: آخرین قیمت + روند در یک نگاه، کمترین/بیشترین به‌عنوان جزئیات ثانویه ---
      جایگزین سه باکس هم‌وزن قبلی؛ چون در نگاه اول فقط «الان چند و در چه وضعیتی» مهمه،
@@ -1527,9 +1554,9 @@
     position: relative;
     overflow: hidden;
     background: linear-gradient(155deg, var(--navy-900) 55%, var(--navy-700));
-    border-radius: 16px;
-    padding: 14px 16px 12px;
-    margin-bottom: 10px;
+    border-radius: var(--radius-card-sm);
+    padding: 16px 18px 14px;
+    margin-bottom: 12px;
     color: #ffffff;
   }
   .price-hero::before {
@@ -1582,7 +1609,7 @@
   .trend-badge.flat { background: rgba(255, 255, 255, 0.12); color: #ffffff; }
 
   /* --- ردیف‌های بینش (نوسان غیرعادی/جایگاه بازار): کارت‌های رنگی مجزا به‌جای یک لیست خطی --- */
-  .insight-list { margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .insight-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
   .insight-row {
     display: flex;
     align-items: flex-start;
@@ -1590,26 +1617,26 @@
     font-size: 12px;
     font-weight: 600;
     line-height: 1.7;
-    padding: 9px 10px;
-    border-radius: 11px;
+    padding: 11px 12px;
+    border-radius: var(--radius-card-sm);
     color: var(--ink-soft);
     background: var(--card);
     border: 1px solid var(--line);
   }
   .insight-row.warn { background: var(--warn-tint); border-color: var(--warn-line); }
-  .insight-row.info { background: var(--accent-tint); border-color: rgba(29, 52, 85, .18); }
+  .insight-row.info { background: var(--accent-tint); border-color: rgba(69, 95, 91, .18); }
   .insight-icon {
     flex: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
+    width: 24px;
+    height: 24px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 1px;
   }
-  .insight-row.warn .insight-icon { background: #ffffff; color: var(--warn); box-shadow: 0 1px 3px rgba(138, 90, 19, .18); }
-  .insight-row.info .insight-icon { background: #ffffff; color: var(--accent-strong); box-shadow: 0 1px 3px rgba(29, 52, 85, .18); }
+  .insight-row.warn .insight-icon { background: #ffffff; color: var(--warn); box-shadow: 0 1px 3px rgba(166, 121, 14, .18); }
+  .insight-row.info .insight-icon { background: #ffffff; color: var(--accent-strong); box-shadow: 0 1px 3px rgba(69, 95, 91, .18); }
 
   /* --- چیدمان شیت تاریخچه: سرِ کارت (هدر+قیمت) ثابت می‌مونه، فقط بخش پایینی
      (نمودار+تاریخچه) خودش اسکرول می‌کنه. این چیزیه که مشکل «اسکرول نامناسب وقتی
@@ -1628,8 +1655,8 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -18px;
-    padding: 0 18px;
+    margin: 0 -20px;
+    padding: 0 20px;
   }
   .modal-scroll-body::-webkit-scrollbar { width: 5px; }
   .modal-scroll-body::-webkit-scrollbar-track { background: transparent; }
@@ -1639,10 +1666,10 @@
   .modal-chart-section {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 12px 12px 6px;
-    margin-bottom: 14px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+    border-radius: var(--radius-card-sm);
+    padding: 14px 14px 8px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
   }
   .modal-chart-title {
     display: flex;
@@ -1723,8 +1750,8 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    padding: 3px 8px;
-    border-radius: 8px;
+    padding: 3px 9px;
+    border-radius: 10px;
     direction: ltr;
   }
   .history-delta-chip.up { background: var(--danger-tint); color: var(--danger-strong); }
@@ -1743,15 +1770,16 @@
     gap: 6px;
     width: 100%;
     margin-top: 4px;
-    padding: 9px;
+    padding: 10px;
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
     color: var(--ink-soft);
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-field);
     cursor: pointer;
+    transition: background .15s ease;
   }
   .history-expand-btn:active { background: var(--accent-tint); }
 </style>
@@ -2179,7 +2207,7 @@ function airlineLogoSrc(name) {
 // رنگ یک‌دست خاکستری برای همه، هر اسم یه رنگ پایدار از یه پالت هماهنگ می‌گیره
 // تا کارت‌ها با نگاه اول از هم قابل تشخیص باشن ----
 const FALLBACK_PALETTE = [
-  { bg: '#eaeef3', fg: '#1d3455' },
+  { bg: '#E8EEEC', fg: '#455F5B' },
   { bg: '#fcebea', fg: '#a32c22' },
   { bg: '#e7f6ec', fg: '#146b3d' },
   { bg: '#fbf1dd', fg: '#946018' },
@@ -2956,14 +2984,14 @@ function buildDtdChart(series) {
 
   const gridLines = [0.25, 0.5, 0.75].map(fr => {
     const y = (padY + innerH * fr).toFixed(1);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#dde1e7" stroke-width="1" stroke-dasharray="3,4" />`;
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#DDE6E4" stroke-width="1" stroke-dasharray="3,4" />`;
   }).join('');
 
   const minIdx = prices.indexOf(min);
   const maxIdx = prices.indexOf(max);
   const markers = coords.map(([x, y], i) => {
     if (i !== minIdx && i !== maxIdx) return '';
-    const fill = i === minIdx ? '#1b7e48' : '#c4342a';
+    const fill = i === minIdx ? '#2F7A5D' : '#C1443A';
     return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="#fff" stroke="${fill}" stroke-width="2" />`;
   }).join('');
 
@@ -2974,19 +3002,19 @@ function buildDtdChart(series) {
   const labels = coords.map(([x], i) => {
     if (!labelIdx.has(i)) return '';
     const dtdVal = Math.max(0, series[i].dtd);
-    return `<text x="${x.toFixed(1)}" y="${height - 3}" font-size="9" fill="#47536b" text-anchor="middle">${toFaDigits(dtdVal)} روز</text>`;
+    return `<text x="${x.toFixed(1)}" y="${height - 3}" font-size="9" fill="#4B5A57" text-anchor="middle">${toFaDigits(dtdVal)} روز</text>`;
   }).join('');
 
   return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;display:block;">
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#2d4a75" stop-opacity="0.22" />
-        <stop offset="100%" stop-color="#2d4a75" stop-opacity="0" />
+        <stop offset="0%" stop-color="#556F6B" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#556F6B" stop-opacity="0" />
       </linearGradient>
     </defs>
     ${gridLines}
     <path d="${areaD}" fill="url(#${gid})" stroke="none" />
-    <path d="${pathD}" fill="none" stroke="#2d4a75" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+    <path d="${pathD}" fill="none" stroke="#556F6B" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
     ${markers}
     ${labels}
   </svg>`;
@@ -3263,7 +3291,7 @@ function buildHistoryChartConfig(points) {
   const prices = points.map(p => p.price);
   const rising = prices.length > 1 && prices[prices.length - 1] > prices[0];
   const falling = prices.length > 1 && prices[prices.length - 1] < prices[0];
-  const lineColor = falling ? '#1c6b41' : (rising ? '#ab2b23' : '#47536b');
+  const lineColor = falling ? '#2F7A5D' : (rising ? '#C1443A' : '#4B5A57');
 
   return {
     type: 'line',
@@ -3299,9 +3327,9 @@ function buildHistoryChartConfig(points) {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0f172a',
+          backgroundColor: '#2F3B39',
           titleColor: '#ffffff',
-          bodyColor: '#e2e6ec',
+          bodyColor: '#D8E3E0',
           titleFont: { family: "'Vazirmatn', Tahoma, sans-serif", size: 11, weight: '700' },
           bodyFont: { family: "'Vazirmatn', Tahoma, sans-serif", size: 12, weight: '700' },
           padding: 10,
@@ -3316,9 +3344,9 @@ function buildHistoryChartConfig(points) {
       scales: {
         x: {
           grid: { display: false },
-          border: { color: '#e3e6ea' },
+          border: { color: '#DDE6E4' },
           ticks: {
-            color: '#66718a',
+            color: '#6E7C79',
             font: { family: "'Vazirmatn', Tahoma, sans-serif", size: 10 },
             maxRotation: 0,
             autoSkip: true,
@@ -3327,10 +3355,10 @@ function buildHistoryChartConfig(points) {
         },
         y: {
           position: 'right',
-          grid: { color: '#e3e6ea', drawTicks: false },
+          grid: { color: '#DDE6E4', drawTicks: false },
           border: { display: false },
           ticks: {
-            color: '#66718a',
+            color: '#6E7C79',
             font: { family: "'Vazirmatn', Tahoma, sans-serif", size: 10 },
             maxTicksLimit: 4,
             callback: (val) => toFaDigits(formatPriceShort(val)),
@@ -3346,7 +3374,7 @@ function buildSparkline(points, width, height, opts) {
   const mini = !!opts.mini;
   if (points.length < 2) {
     if (mini) return ''; // توی کارت ردیف، وقتی تاریخچه کافی نیست چیزی نشون نمی‌دیم
-    return '<div style="text-align:center;color:#777192;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
+    return '<div style="text-align:center;color:#6E7C79;font-size:12px;padding:24px 0;">برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است</div>';
   }
   const prices = points.map(p => p.price);
   const min = Math.min(...prices);
@@ -3366,7 +3394,7 @@ function buildSparkline(points, width, height, opts) {
   const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
   const rising = prices[prices.length - 1] > prices[0];
   const flat = prices[prices.length - 1] === prices[0];
-  const stroke = flat ? '#5b5480' : (rising ? '#c4342a' : '#1b7e48');
+  const stroke = flat ? '#6E7C79' : (rising ? '#C1443A' : '#2F7A5D');
 
   if (mini) {
     // نسخه‌ی کوچیک برای کنار هر ردیف: بدون نقطه‌های تکی، با یه سایه‌ی کم‌رنگ زیر خط و یه نقطه فقط روی آخرین مقدار
@@ -3391,7 +3419,7 @@ function buildSparkline(points, width, height, opts) {
 
   const gridLines = [0.25, 0.5, 0.75].map(fr => {
     const y = (padY + innerH * fr).toFixed(1);
-    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#dde1e7" stroke-width="1" stroke-dasharray="3,4" />`;
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#DDE6E4" stroke-width="1" stroke-dasharray="3,4" />`;
   }).join('');
 
   const maxIdx = prices.indexOf(max);
@@ -3541,7 +3569,7 @@ function openHistoryModal(f) {
 
         <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
         <div class="history-list${shouldCollapse ? ' is-collapsed' : ''}" id="historyList">
-          ${listHtml || '<div style="text-align:center;color:#777192;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+          ${listHtml || '<div style="text-align:center;color:#6E7C79;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
         </div>
         ${shouldCollapse ? `<button type="button" class="history-expand-btn" id="historyExpandBtn">نمایش ${toFaDigits(points.length - collapseThreshold)} ثبت قدیمی‌تر</button>` : ''}
       </div>
@@ -3570,7 +3598,7 @@ function openHistoryModal(f) {
       historyChartInstance = new Chart(chartCanvas, buildHistoryChartConfig(points));
     } else if (chartCanvas) {
       chartCanvas.replaceWith(Object.assign(document.createElement('div'), {
-        style: 'display:flex;align-items:center;justify-content:center;height:100%;color:#66718a;font-size:12px;',
+        style: 'display:flex;align-items:center;justify-content:center;height:100%;color:#6E7C79;font-size:12px;',
         textContent: 'برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است',
       }));
     }
