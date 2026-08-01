@@ -18,6 +18,26 @@
  * ===========================================================
  */
 
+// ---- وقت ایران (UTC+۳:۳۰، بدون تغییر فصلی از ۱۴۰۱ به بعد) ----
+const IRAN_OFFSET_MS = 3.5 * 60 * 60 * 1000;
+
+// «امروز» به‌عنوان یه روز تقویمی کامل به وقت ایران، نه یه لحظه‌ی UTC.
+// flight_date یه برچسب روز تقویمیه (روزی که پرواز توش انجام می‌شه)،
+// نه یه لحظه؛ پس باید با «امروزِ» تقویم ایران مقایسه بشه، نه با
+// نیمه‌شب UTC (که معادل ساعت ۳:۳۰ بامداد ایرانه و باعث می‌شد از اون
+// ساعت به بعد، پرواز «امروز» به‌اشتباه «گذشته» حساب بشه و کلاً از
+// رصد حذف بشه — همون چیزی که باعث می‌شد پرواز امروز از صبح دیگه
+// اصلاً به‌روز نشه).
+function iranTodayUTCms(nowUtcMs) {
+  const shifted = new Date(nowUtcMs + IRAN_OFFSET_MS);
+  return Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
+}
+
+function flightDateUTCms(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return Date.UTC(y, m - 1, d);
+}
+
 // ---- سطح‌بندی فاصله‌ی رصد بر اساس DTD (روزهای مونده به پرواز) ----
 // اینجا رو هر وقت خواستی تغییر بدی، فقط همین چند خط رو عوض کن.
 // نکته: این عدد فقط سقف بالای فاصله‌ی رصده؛ چون کرون بیرونی (GitHub
@@ -54,6 +74,7 @@ async function handleDue(request, env) {
   }
 
   const now = new Date();
+  const todayMs = iranTodayUTCms(now.getTime());
 
   // به‌جای یه SELECT جدا برای هر کاندید (که با ~۴۰-۵۰ کاندید سریالی
   // می‌شد و گاهی از ۲۰ ثانیه تایم‌اوت کلاینت پایتون رد می‌شد)، همه‌ی
@@ -75,9 +96,8 @@ async function handleDue(request, env) {
 
   const due = [];
   for (const c of candidates) {
-    const flightDate = new Date(c.flight_date + "T00:00:00Z");
-    const dtdDays = Math.floor((flightDate - now) / 86400000);
-    if (dtdDays < 0) continue; // پرواز گذشته
+    const dtdDays = Math.round((flightDateUTCms(c.flight_date) - todayMs) / 86400000);
+    if (dtdDays < 0) continue; // پرواز گذشته (روز تقویمی ایرانش گذشته، نه فقط لحظه‌ی UTC)
 
     const interval = tierIntervalHours(dtdDays);
     const lastCheckedAt = stateMap.get(`${c.route}|${c.flight_date}`);
