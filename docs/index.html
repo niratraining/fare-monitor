@@ -1418,9 +1418,12 @@
   @keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
   /* --- کارت مودال: هویت بصری مستقل، هماهنگ با رنگ برند اما رسمی‌تر و خاص‌تر از بقیه‌ی UI ---
-     باز/بسته‌شدن با transition (نه keyframe) پیاده‌سازی شده: هم شروعش نرم‌تره (منحنی
-     استاندارد شیت‌های موبایل)، هم قابل‌قطعه — یعنی وسط کشیدن با دست هم می‌شه بستش
-     بدون پرش بصری، چون هر دو از همون transform:translateY استفاده می‌کنن. */
+     حالت باز = حالت پیش‌فرضه؛ حالت بسته/در حال بسته‌شدن با کلاس .is-closing اعمال
+     می‌شه. برای ورودی (باز شدن) از @starting-style استفاده شده: مرورگر خودش
+     تضمین می‌کنه انیمیشن همیشه واقعاً از translateY(100%) شروع بشه، بدون نیاز به
+     ترفندهای JS (ریست دستی transition + forced reflow + requestAnimationFrame)
+     که قبلاً گاهی روی موبایل با فریم اشتباه قاطی می‌شد و باعث می‌شد شیت به‌جای
+     اسلاید نرم از پایین، یهو بالا بپره و فوری برگرده پایین. */
   .modal-card {
     position: relative;
     background: var(--paper);
@@ -1430,13 +1433,16 @@
     padding: 14px 20px 24px;
     max-height: 88vh;
     overflow-y: auto;
-    transform: translateY(100%);
-    opacity: 0;
+    transform: translateY(0);
+    opacity: 1;
     transition: transform .36s cubic-bezier(.32,.72,0,1), opacity .3s ease;
     will-change: transform;
     box-shadow: 0 -18px 50px rgba(30, 41, 38, 0.28);
   }
-  .modal-card.is-shown { transform: translateY(0); opacity: 1; }
+  @starting-style {
+    .modal-card { transform: translateY(100%); opacity: 0; }
+  }
+  .modal-card.is-closing { transform: translateY(100%); opacity: 0; }
   .modal-card::before {
     content: "";
     position: absolute;
@@ -2006,25 +2012,13 @@ function presentSheet(overlay) {
   if (!overlay) return;
   overlay.classList.remove('closing');
   if (!overlay.isConnected) document.body.appendChild(overlay);
+  const card = overlay.querySelector('.modal-card');
+  // اگه کارت از دفعه‌ی قبل هنوز کلاس is-closing رو داشته باشه (مثلاً بسته‌شدن
+  // به هر دلیلی قطع شده بوده)، پاکش می‌کنیم تا حالت پیش‌فرض (باز) برقرار باشه؛
+  // خودِ باز شدنِ دیالوگ (display:none → flex) با @starting-style در CSS انیمیت می‌شه.
+  if (card) card.classList.remove('is-closing');
   if (!overlay.open) {
     try { overlay.showModal(); } catch (err) { /* اگه به هر دلیلی از قبل باز بوده، بی‌خیال */ }
-  }
-  const card = overlay.querySelector('.modal-card');
-  if (card) {
-    // ریست فوری به حالت اولیه (بدون transition)، بعد با یه reflow اجباری
-    // (خوندن offsetHeight) مطمئن می‌شیم مرورگر این حالت رو واقعاً paint کرده
-    // قبل از اینکه کلاس is-shown رو اضافه کنیم — این همون چیزیه که تضمین می‌کنه
-    // transition واقعاً از پایین شروع بشه، نه اینکه یهو ظاهر بشه یا اصلاً اجرا نشه.
-    // یه rAF به‌تنهایی گاهی با همون فریمی که reflow توش انجام شده قاطی می‌شه (به‌خصوص
-    // روی موبایل زیر فشار)، و نتیجه‌ش اینه که شیت به‌جای اسلاید نرم، یهو/سخت باز می‌شه؛
-    // با دو rAF تودرتو مطمئن می‌شیم مرورگر واقعاً یه فریم کامل حالت اولیه رو paint کرده.
-    card.style.transition = 'none';
-    card.classList.remove('is-shown');
-    void card.offsetHeight;
-    card.style.transition = '';
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => card.classList.add('is-shown'));
-    });
   }
   wireSheetDrag(overlay);
 }
@@ -2052,7 +2046,7 @@ function closeSheet(overlay, onDone) {
     if (typeof onDone === 'function') onDone();
   };
   if (card) {
-    card.classList.remove('is-shown');
+    card.classList.add('is-closing');
     card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
     setTimeout(finish, 450);
   } else {
