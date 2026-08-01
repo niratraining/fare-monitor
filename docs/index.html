@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <style>
   /* --- فونت اختصاصی اعداد: Yekan Bakh FaNum ---
      این فونت لایسنس‌دار/تجاریه، پس فایل باینری‌ش رو نمی‌شه به‌صورت خودکار تهیه کرد؛
@@ -1374,13 +1373,11 @@
     overflow-y: auto;
     transform: translateY(100%);
     opacity: 0;
+    transition: transform .36s cubic-bezier(.32,.72,0,1), opacity .3s ease;
     will-change: transform;
     box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
   }
-  /* انیمیشن باز/بسته‌شدن دیگه با GSAP کنترل می‌شه (توابع presentSheet/closeSheet)؛
-     این کلاس فقط برای حالتی نگه داشته شده که GSAP به هر دلیلی لود نشده باشه (fallback با transition ساده) */
   .modal-card.is-shown { transform: translateY(0); opacity: 1; }
-  .no-gsap .modal-card { transition: transform .38s cubic-bezier(.32,.72,0,1), opacity .3s ease; }
   .modal-card::before {
     content: "";
     position: absolute;
@@ -1767,7 +1764,7 @@
   </button>
 </div>
 
-<dialog class="modal-overlay" id="filterSheetOverlay">
+<dialog class="modal-overlay" id="filterSheetOverlay" data-ephemeral="false">
   <div class="modal-card filter-sheet-card">
     <div class="sheet-handle"></div>
     <div class="modal-sticky-top">
@@ -1813,7 +1810,7 @@
   </div>
 </dialog>
 
-<dialog class="modal-overlay" id="sortSheetOverlay">
+<dialog class="modal-overlay" id="sortSheetOverlay" data-ephemeral="false">
   <div class="modal-card sort-sheet-card">
     <div class="sheet-handle"></div>
     <div class="modal-header">
@@ -1914,70 +1911,60 @@ const ICONS = {
   infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
 };
 
-// ---- انیمیشن نرمِ شیت با GSAP: به‌جای transition خام CSS (که روی خیلی از موبایل‌ها
-// به‌خاطر جهش فریم اول یا تداخل با استایل پیش‌فرض <dialog> «سفت» و پرشی به‌نظر می‌رسید)،
-// از gsap.fromTo با easing نرم و کمی overshoot طبیعی (مثل شیت‌های iOS/Android) استفاده
-// می‌کنیم. اگه به هر دلیلی GSAP لود نشده باشه، fallback روی همون transition ساده‌ی CSS ----
-const hasGSAP = typeof gsap !== 'undefined';
-if (!hasGSAP) document.documentElement.classList.add('no-gsap');
-
-// ---- باز کردن نرم یک شیت: اول به DOM اضافه و showModal می‌شه، بعد کارت از پایین با
-// یه easing نرم (خروج آروم، بدون ضربه) میاد بالا؛ سایه/بک‌دراپ هم هم‌زمان محو می‌شه ----
+// ---- باز کردن نرم یک شیت (بدون هیچ کتابخانه‌ی خارجی؛ فقط transition خام CSS) ----
+// نکته‌ی مهم: بعضی از شیت‌ها (فیلتر/مرتب‌سازی) برخلاف شیت جزئیات پرواز هر بار از نو
+// ساخته نمی‌شن — یه عنصر ثابته که هر بار دوباره باز/بسته می‌شه. اگه کاربر سریع دوبار
+// بزنه، ممکنه showModal() روی دیالوگی که هنوز باز/در حال بسته‌شدنه صدا زده بشه؛
+// قبلاً همین باعث می‌شد استثنا پرتاب بشه و شیت برای همیشه گیر کنه (نیاز به رفرش).
+// اینجا صراحتاً این حالت‌ها رو چک می‌کنیم تا هیچ‌وقت قفل نشه.
 function presentSheet(overlay) {
-  document.body.appendChild(overlay);
-  overlay.showModal();
+  if (!overlay) return;
+  overlay.classList.remove('closing');
+  if (!overlay.isConnected) document.body.appendChild(overlay);
+  if (!overlay.open) {
+    try { overlay.showModal(); } catch (err) { /* اگه به هر دلیلی از قبل باز بوده، بی‌خیال */ }
+  }
   const card = overlay.querySelector('.modal-card');
   if (card) {
-    if (hasGSAP) {
-      gsap.killTweensOf(card);
-      gsap.set(card, { y: '100%', opacity: 0 });
-      requestAnimationFrame(() => {
-        gsap.to(card, {
-          y: '0%',
-          opacity: 1,
-          duration: .5,
-          ease: 'power3.out',
-        });
-      });
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        card.classList.add('is-shown');
-      }));
-    }
+    // ریست فوری به حالت اولیه (بدون transition)، بعد با یه reflow اجباری
+    // (خوندن offsetHeight) مطمئن می‌شیم مرورگر این حالت رو واقعاً paint کرده
+    // قبل از اینکه کلاس is-shown رو اضافه کنیم — این همون چیزیه که تضمین می‌کنه
+    // transition واقعاً از پایین شروع بشه، نه اینکه یهو ظاهر بشه یا اصلاً اجرا نشه.
+    card.style.transition = 'none';
+    card.classList.remove('is-shown');
+    void card.offsetHeight;
+    card.style.transition = '';
+    requestAnimationFrame(() => card.classList.add('is-shown'));
   }
   wireSheetDrag(overlay);
 }
 
-// ---- بستن نرم یک شیت/مودال (dialog بومی): کارت با شتاب‌گیری نرم به پایین می‌ره
-// (ease ورودی نرم، نه خطی/سفت)؛ بعد از تمومِ انیمیشن (یا مهلت fallback) از DOM حذف می‌شه ----
+// ---- بستن نرم یک شیت/مودال (dialog بومی) ----
 // onDone (اختیاری): بعد از حذف کامل از DOM اجرا می‌شه؛ برای زنجیره‌کردن باز شدن شیت بعدی به‌کار می‌ره
 function closeSheet(overlay, onDone) {
-  if (!overlay || overlay.classList.contains('closing')) return;
+  if (!overlay) return;
+  // اگه از قبل در حال بسته‌شدنه، دوباره از اول شروع نکن؛ فقط onDone رو صف کن
+  if (overlay.classList.contains('closing')) {
+    if (typeof onDone === 'function') overlay.addEventListener('close', onDone, { once: true });
+    return;
+  }
   overlay.classList.add('closing');
   const card = overlay.querySelector('.modal-card');
   let finished = false;
   const finish = () => {
     if (finished) return;
     finished = true;
+    overlay.classList.remove('closing');
     if (typeof overlay.close === 'function' && overlay.open) overlay.close();
-    overlay.remove();
+    // شیت‌های ثابت (فیلتر/مرتب‌سازی) توی DOM می‌مونن تا بار بعد دوباره استفاده بشن؛
+    // فقط شیت‌های ساخته‌شده‌ی پویا (جزئیات پرواز و...) که data-ephemeral دارن حذف می‌شن
+    if (overlay.dataset.ephemeral !== 'false') overlay.remove();
     if (typeof onDone === 'function') onDone();
   };
   if (card) {
-    if (hasGSAP) {
-      gsap.killTweensOf(card);
-      gsap.to(card, {
-        y: '100%',
-        opacity: 0,
-        duration: .36,
-        ease: 'power2.in',
-        onComplete: finish,
-      });
-    } else {
-      card.classList.remove('is-shown');
-      card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
-    }
-    setTimeout(finish, 550);
+    card.classList.remove('is-shown');
+    card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
+    setTimeout(finish, 450);
   } else {
     finish();
   }
@@ -1996,31 +1983,32 @@ function wireSheetDrag(overlay) {
   const card = overlay.querySelector('.modal-card');
   const handle = overlay.querySelector('.sheet-handle');
   if (!card || !handle) return;
+  // شیت‌های ثابت (فیلتر/مرتب‌سازی) هر بار presentSheet دوباره صدا زده می‌شن روی همون
+  // عنصر؛ بدون این چک، هر بار یه ست جدید listener روی همون handle اضافه می‌شد و
+  // رفتار درگ رو خراب می‌کرد. یه‌بار سیم‌کشی کافیه.
+  if (handle.dataset.dragWired === '1') return;
+  handle.dataset.dragWired = '1';
   let startY = 0, dragY = 0, dragging = false, cardH = 0;
 
   const onDown = (e) => {
     dragging = true;
     startY = e.clientY;
     cardH = card.getBoundingClientRect().height || 1;
-    if (hasGSAP) gsap.killTweensOf(card);
-    else card.style.transition = 'none';
+    card.style.transition = 'none';
     if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (_) {} }
   };
   const onMove = (e) => {
     if (!dragging) return;
     dragY = Math.max(0, e.clientY - startY);
-    if (hasGSAP) gsap.set(card, { y: dragY });
-    else card.style.transform = `translateY(${dragY}px)`;
+    card.style.transform = `translateY(${dragY}px)`;
   };
   const onUp = () => {
     if (!dragging) return;
     dragging = false;
     const shouldClose = dragY > cardH * 0.24;
     if (shouldClose) {
+      card.style.transform = '';
       closeSheet(overlay);
-    } else if (hasGSAP) {
-      // برگشت نرم سرجاش با یه فنر ملایم، نه پرش سفت
-      gsap.to(card, { y: '0%', duration: .45, ease: 'elastic.out(1, 0.75)' });
     } else {
       card.style.transition = 'transform .22s cubic-bezier(.32,.72,0,1)';
       card.style.transform = '';
