@@ -1412,8 +1412,6 @@
   dialog.modal-overlay[open] { display: flex; animation: overlayFade .28s ease; }
   dialog.modal-overlay::backdrop {
     background: rgba(30, 41, 38, 0.55);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
   }
   dialog.modal-overlay.closing { animation: overlayFadeOut .22s ease forwards; }
   @keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
@@ -2017,11 +2015,16 @@ function presentSheet(overlay) {
     // (خوندن offsetHeight) مطمئن می‌شیم مرورگر این حالت رو واقعاً paint کرده
     // قبل از اینکه کلاس is-shown رو اضافه کنیم — این همون چیزیه که تضمین می‌کنه
     // transition واقعاً از پایین شروع بشه، نه اینکه یهو ظاهر بشه یا اصلاً اجرا نشه.
+    // یه rAF به‌تنهایی گاهی با همون فریمی که reflow توش انجام شده قاطی می‌شه (به‌خصوص
+    // روی موبایل زیر فشار)، و نتیجه‌ش اینه که شیت به‌جای اسلاید نرم، یهو/سخت باز می‌شه؛
+    // با دو rAF تودرتو مطمئن می‌شیم مرورگر واقعاً یه فریم کامل حالت اولیه رو paint کرده.
     card.style.transition = 'none';
     card.classList.remove('is-shown');
     void card.offsetHeight;
     card.style.transition = '';
-    requestAnimationFrame(() => card.classList.add('is-shown'));
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => card.classList.add('is-shown'));
+    });
   }
   wireSheetDrag(overlay);
 }
