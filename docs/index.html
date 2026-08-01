@@ -129,6 +129,91 @@
   header.is-compact .route-picker-label { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
   header.is-compact h1 { font-size: 14px; }
   .route-picker-label { transition: opacity .15s ease, max-height .18s ease, margin .18s ease; max-height: 20px; opacity: 1; }
+
+  /* --- بسته‌شدن نرم جعبه‌ی جستجو (مسیر + تاریخ‌ها) موقع اسکرول به یک ردیف
+     خلاصه؛ همون تکنیک استانداردِ «max-height مقصد ثابتِ بزرگ‌تر از ارتفاع
+     واقعی + opacity» که بقیه‌ی هدر (بالا) هم ازش استفاده می‌کنه، به‌جای
+     اندازه‌گیری ارتفاع با جاوااسکریپت — سبک‌تر و روان‌تره. اسکرول‌لیسنر
+     خودش هم پایین (initCompactHeader) با requestAnimationFrame throttle
+     می‌شه، همون الگوی استاندارد هدرهای فشرده‌شونده. */
+  .hero-search-wrap {
+    overflow: hidden;
+    max-height: 220px;
+    opacity: 1;
+    transition: max-height .32s var(--ease-smooth), opacity .2s ease, margin-top .28s var(--ease-smooth);
+  }
+  header.is-compact .hero-search-wrap {
+    max-height: 0;
+    opacity: 0;
+  }
+  .route-compact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 0 14px;
+    font-family: inherit;
+    cursor: pointer;
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+    transition: max-height .3s var(--ease-smooth) .04s, opacity .22s ease .06s, margin-top .3s var(--ease-smooth) .04s, padding .3s var(--ease-smooth) .04s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  header.is-compact .route-compact-row {
+    max-height: 42px;
+    opacity: 1;
+    margin-top: 4px;
+    padding: 9px 14px;
+  }
+  .route-compact-row:active { background: var(--card); }
+  .rcr-route {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .rcr-route-icon {
+    flex: none;
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+    transform: rotate(90deg);
+  }
+  .rcr-route-icon svg { width: 100%; height: 100%; display: block; }
+  #rcrOrigin, #rcrDest { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rcr-arrow { flex: none; color: var(--ink-muted); font-size: 11px; }
+  .rcr-date {
+    flex: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-strong);
+    background: var(--accent-tint);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- مخفی‌شدن زیرعنوان زیر هدر هنگام فشرده‌شدن (سیبلینگ مستقیم header) --- */
+  .page-subtitle {
+    overflow: hidden;
+    transition: max-height .22s var(--ease-smooth), opacity .16s ease, margin .22s var(--ease-smooth);
+    max-height: 40px;
+  }
+  header.is-compact + .page-subtitle {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+  }
   header::before {
     content: '';
     display: block;
@@ -1808,23 +1893,34 @@
     </div>
   </div>
 
-  <div class="route-picker-label">انتخاب مسیر پروازی</div>
-  <div class="route-picker" id="routePicker">
-    <button class="route-field" id="originField" type="button">
-      <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></span> مبدأ</span>
-      <span class="route-field-value" id="originValue">—</span>
-    </button>
-    <button class="route-swap" id="swapBtn" type="button" aria-label="جابجایی مبدأ و مقصد" title="جابجایی مبدأ و مقصد">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7 7h13M17 3l4 4-4 4M17 17H4M7 21l-4-4 4-4"/>
-      </svg>
-    </button>
-    <button class="route-field" id="destField" type="button">
-      <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></span> مقصد</span>
-      <span class="route-field-value" id="destValue">—</span>
-    </button>
+  <div class="hero-search-wrap" id="heroSearchWrap">
+    <div class="route-picker-label">انتخاب مسیر پروازی</div>
+    <div class="route-picker" id="routePicker">
+      <button class="route-field" id="originField" type="button">
+        <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg></span> مبدأ</span>
+        <span class="route-field-value" id="originValue">—</span>
+      </button>
+      <button class="route-swap" id="swapBtn" type="button" aria-label="جابجایی مبدأ و مقصد" title="جابجایی مبدأ و مقصد">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 7h13M17 3l4 4-4 4M17 17H4M7 21l-4-4 4-4"/>
+        </svg>
+      </button>
+      <button class="route-field" id="destField" type="button">
+        <span class="route-field-label"><span class="route-field-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg></span> مقصد</span>
+        <span class="route-field-value" id="destValue">—</span>
+      </button>
+    </div>
+    <div class="date-cards" id="dateCards"></div>
   </div>
-  <div class="date-cards" id="dateCards"></div>
+  <button type="button" class="route-compact-row" id="routeCompactRow" aria-label="نمایش کامل انتخاب مسیر و تاریخ">
+    <span class="rcr-route">
+      <span class="rcr-route-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l3-1 5.5 2 3-1-8-8 2-2 11 6.5 4-1.5a2 2 0 0 1 2 3.5L11 22l-2-5-7-1z"/></svg></span>
+      <span id="rcrOrigin">—</span>
+      <span class="rcr-arrow">⇄</span>
+      <span id="rcrDest">—</span>
+    </span>
+    <span class="rcr-date" id="rcrDate">—</span>
+  </button>
 </div>
 </header>
 <p class="page-subtitle">پایش لحظه‌ای نرخ‌گذاری در مسیرهای فعال و مقایسه با میانگین بازار</p>
@@ -2449,6 +2545,18 @@ function updateRouteFields() {
   document.getElementById('originValue').textContent = meta.from || '—';
   document.getElementById('destValue').textContent = meta.to || '—';
   updateSwapButton();
+  updateRouteCompactRow();
+}
+
+// ---- متن ردیفِ خلاصه‌ی مسیر/تاریخ که فقط موقع اسکرول (حالت is-compact) دیده می‌شه ----
+function updateRouteCompactRow() {
+  const meta = currentRouteMeta();
+  const originEl = document.getElementById('rcrOrigin');
+  const destEl = document.getElementById('rcrDest');
+  const dateEl = document.getElementById('rcrDate');
+  if (originEl) originEl.textContent = meta.from || '—';
+  if (destEl) destEl.textContent = meta.to || '—';
+  if (dateEl) dateEl.textContent = state.date ? formatDateCardCompact(state.date) : '—';
 }
 
 function updateSwapButton() {
@@ -2622,6 +2730,7 @@ function buildDateCards() {
     allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
   )].sort();
   state.date = dates[0] || null;
+  updateRouteCompactRow();
 
   const el = document.getElementById('dateCards');
   el.innerHTML = '';
@@ -2640,6 +2749,7 @@ function buildDateCards() {
       state.date = d;
       document.querySelectorAll('.date-card').forEach(c =>
         c.classList.toggle('active', c.dataset.date === d));
+      updateRouteCompactRow();
       buildMoversList();
       render();
     };
@@ -3638,6 +3748,15 @@ function initCompactHeader() {
   window.addEventListener('scroll', () => {
     if (!ticking) { requestAnimationFrame(applyState); ticking = true; }
   }, { passive: true });
+
+  // با تپ رو ردیف خلاصه (مسیر/تاریخ)، برمی‌گردیم بالا تا جعبه‌ی کامل
+  // جستجو دوباره باز بشه — همون رفتار استاندارد هدرهای فشرده‌شونده
+  const compactRow = document.getElementById('routeCompactRow');
+  if (compactRow) {
+    compactRow.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 }
 initCompactHeader();
 
