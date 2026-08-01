@@ -415,6 +415,104 @@
     padding: 10px 2px 2px;
   }
 
+  /* --- نشان جایگاه قیمتی نسبت به میانگین بازار همون مسیر/تاریخ/کلاس --- */
+  .fc-position {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 7px;
+    margin-top: 5px;
+  }
+  .fc-position.cheap { background: #e3f0e7; color: #195639; }
+  .fc-position.expensive { background: #fbe4e7; color: #9c2a38; }
+  .fc-position.flat { background: #e9ebef; color: #445571; }
+
+  .position-note {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e2f4a;
+    background: #eef1f5;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* --- نشان نوسان غیرعادی قیمت روی کارت --- */
+  .fc-anomaly {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: white;
+    background: #a5670f;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 12px 4px 10px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 6px rgba(10, 12, 17, 0.18);
+  }
+  .anomaly-note {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6b4408;
+    background: #fdf0dc;
+    border: 1px solid #f1d8a8;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* --- بخش منحنی DTD (قیمت بر اساس فاصله تا پرواز)، هم‌سبک ویجت پرتغییرترین‌ها --- */
+  .dtd-section {
+    background: white;
+    margin: 12px 12px 0;
+    border-radius: 18px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 2px 14px rgba(10, 12, 17, 0.07);
+  }
+  .dtd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dtd-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #4a5d7b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dtd-toggle-icon {
+    font-size: 11px;
+    color: #44546f;
+    transition: transform .2s ease;
+  }
+  .dtd-section.collapsed .dtd-toggle-icon { transform: rotate(-90deg); }
+  .dtd-section.collapsed .dtd-body { display: none; }
+  .dtd-body { padding-top: 10px; }
+  .dtd-chart-wrap { width: 100%; }
+  .dtd-note {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1e2f4a;
+    background: #eef1f5;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
   /* --- کشوی فیلتر و مرتب‌سازی: مینیمال، زیر هیرو، به‌صورت پیش‌فرض جمع‌شده --- */
   .filter-drawer {
     background: white;
@@ -1161,6 +1259,17 @@
   <div class="movers-list" id="moversList"></div>
 </section>
 
+<section class="dtd-section" id="dtdSection" style="display:none;">
+  <div class="dtd-header" id="dtdToggle">
+    <span class="dtd-title">📉 منحنی قیمت بر اساس فاصله تا پرواز</span>
+    <span class="dtd-toggle-icon" id="dtdToggleIcon">▾</span>
+  </div>
+  <div class="dtd-body" id="dtdBody">
+    <div class="dtd-chart-wrap" id="dtdChartWrap"></div>
+    <div class="dtd-note" id="dtdNote"></div>
+  </div>
+</section>
+
 <main>
   <div id="loading">
     <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:55%;"></div><div class="sk-line" style="width:35%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
@@ -1174,6 +1283,7 @@
 <script>
 let allFlights = [];
 let allHistory = [];
+let generatedAtRaw = null; // زمان تولید آخرین اسنپ‌شات (ISO خام)، مرجع محاسبه‌ی DTD
 let state = {
   route: null,
   date: null,
@@ -1347,6 +1457,8 @@ async function load() {
       allHistory = [];
     }
 
+    generatedAtRaw = data.generated_at || null;
+
     const generatedDt = toJalaliDateTime(data.generated_at);
     document.getElementById('meta').innerHTML = generatedDt
       ? `به‌روزرسانی <span class="meta-time">${generatedDt.timeLabel}</span><span class="meta-sep">·</span><span>${generatedDt.dateLabel}</span>`
@@ -1364,6 +1476,7 @@ async function load() {
     buildAirlineChips();
     buildCabinChips();
     buildMoversList();
+    buildDtdSection();
     bindControls();
     render();
 
@@ -1431,6 +1544,7 @@ function trySwapRoute() {
   updateRouteFields();
   buildDateCards();
   buildMoversList();
+  buildDtdSection();
   render();
 }
 
@@ -1516,6 +1630,7 @@ function openRoutePicker(type) {
     updateRouteFields();
     buildDateCards();
     buildMoversList();
+    buildDtdSection();
     render();
   }
 
@@ -1672,6 +1787,9 @@ function bindControls() {
   document.getElementById('moversToggle').addEventListener('click', () => {
     document.getElementById('moversSection').classList.toggle('collapsed');
   });
+  document.getElementById('dtdToggle').addEventListener('click', () => {
+    document.getElementById('dtdSection').classList.toggle('collapsed');
+  });
   document.getElementById('filterTrigger').addEventListener('click', () => {
     document.getElementById('filterDrawer').classList.toggle('open');
   });
@@ -1742,6 +1860,215 @@ function buildMoversList() {
   });
 }
 
+// ===========================================================
+// شاخص جایگاه قیمتی: مقایسه‌ی قیمت این پیشنهاد با میانگین بقیه‌ی
+// پیشنهادهای همون مسیر/تاریخ/کلاس پروازی در آخرین اسنپ‌شات (نه با
+// تاریخچه‌ی خودش) — همون چیزی که ابزارهای رصد رقبا بهش «Price Index» می‌گن
+// ===========================================================
+function getMarketPosition(f) {
+  const price = toPriceNumber(f.adult_price);
+  if (!isFinite(price)) return null;
+  const cabinKey = normalizeCabin(f.cabin);
+  const peerPrices = allFlights
+    .filter(x => x.route === f.route && x.flight_date === f.flight_date && normalizeCabin(x.cabin) === cabinKey)
+    .map(x => toPriceNumber(x.adult_price))
+    .filter(p => isFinite(p));
+  if (peerPrices.length < 2) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
+
+  const avg = peerPrices.reduce((a, b) => a + b, 0) / peerPrices.length;
+  if (!avg) return null;
+  const pct = Math.round(((price - avg) / avg) * 100);
+  return { price, avg, pct, count: peerPrices.length };
+}
+
+function buildPositionBadge(pos) {
+  if (!pos) return '';
+  if (Math.abs(pos.pct) < 2) {
+    return `<span class="fc-position flat">≈ میانگین بازار</span>`;
+  }
+  if (pos.pct < 0) {
+    return `<span class="fc-position cheap">٪${toFaDigits(Math.abs(pos.pct))} زیر میانگین</span>`;
+  }
+  return `<span class="fc-position expensive">٪${toFaDigits(pos.pct)} بالای میانگین</span>`;
+}
+
+function positionNoteHtml(pos) {
+  if (!pos) return '';
+  const others = toFaDigits(pos.count - 1);
+  if (Math.abs(pos.pct) < 2) {
+    return `<div class="position-note">📊 این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+  }
+  if (pos.pct < 0) {
+    return `<div class="position-note">📊 این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.</div>`;
+  }
+  return `<div class="position-note">📊 این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+}
+
+// ===========================================================
+// تشخیص نوسان غیرعادی: آخرین تغییر قیمت این پرواز رو با نوسان معمول
+// خودِ همون پرواز (نه بقیه) مقایسه می‌کنه؛ اگه از حد معمولش خیلی
+// بیشتر بود یا حداقل ٪۱۲ جهش داشت (هر کدوم بزرگ‌تر بود)، پرچم می‌خوره
+// ===========================================================
+function detectAnomaly(f) {
+  const points = getHistoryPoints(f);
+  if (points.length < 4) return null; // برای یه خط‌مبنای معنادار حداقل چند نقطه لازمه
+
+  const diffs = [];
+  for (let i = 1; i < points.length - 1; i++) {
+    diffs.push(points[i].price - points[i - 1].price);
+  }
+  if (diffs.length < 2) return null;
+
+  const meanAbs = diffs.reduce((s, d) => s + Math.abs(d), 0) / diffs.length;
+  const variance = diffs.reduce((s, d) => s + Math.pow(Math.abs(d) - meanAbs, 2), 0) / diffs.length;
+  const std = Math.sqrt(variance);
+
+  const prevPrice = points[points.length - 2].price;
+  const lastDiff = points[points.length - 1].price - prevPrice;
+  if (!prevPrice || lastDiff === 0) return null;
+
+  const threshold = Math.max(meanAbs + 2 * std, prevPrice * 0.12);
+  if (Math.abs(lastDiff) <= threshold) return null;
+
+  const pct = Math.round((lastDiff / prevPrice) * 100);
+  return { diff: lastDiff, pct, prevPrice };
+}
+
+function buildAnomalyBadge(anomaly) {
+  if (!anomaly) return '';
+  return `<span class="fc-anomaly">⚠️ نوسان غیرعادی</span>`;
+}
+
+function anomalyNoteHtml(anomaly) {
+  if (!anomaly) return '';
+  const dir = anomaly.diff > 0 ? 'جهش' : 'افت';
+  return `<div class="anomaly-note">⚠️ آخرین تغییر (٪${toFaDigits(Math.abs(anomaly.pct))} ${dir}) نسبت به نوسان معمول این پرواز غیرعادیه — می‌تونه فرصت واقعی یا خطای داده باشه.</div>`;
+}
+
+// ===========================================================
+// منحنی DTD: ارزان‌ترین پیشنهاد هر تاریخِ پرواز (در آخرین اسنپ‌شات)
+// در برابر «چند روز مونده به همون تاریخ» — مقایسه‌ی چند تاریخ پرواز
+// در یک لحظه، نه تاریخچه‌ی زمانی یک پرواز
+// ===========================================================
+function computeDtdSeries() {
+  const dates = [...new Set(
+    allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
+  )].sort();
+
+  const refTime = generatedAtRaw ? new Date(generatedAtRaw) : new Date();
+
+  return dates.map(d => {
+    const prices = allFlights
+      .filter(f => f.route === state.route && f.flight_date === d)
+      .map(f => toPriceNumber(f.adult_price))
+      .filter(p => isFinite(p));
+    if (!prices.length) return null;
+    const min = Math.min(...prices);
+    const dtd = Math.round((new Date(d + 'T00:00:00') - refTime) / 86400000);
+    return { date: d, dtd, min };
+  }).filter(Boolean);
+}
+
+function describeDtdTrend(series) {
+  if (series.length < 3) return null;
+  const sorted = [...series].sort((a, b) => a.dtd - b.dtd); // نزدیک به پرواز -> دور
+  const half = Math.max(1, Math.floor(sorted.length / 2));
+  const near = sorted.slice(0, half);
+  const far = sorted.slice(sorted.length - half);
+  const avgNear = near.reduce((s, p) => s + p.min, 0) / near.length;
+  const avgFar = far.reduce((s, p) => s + p.min, 0) / far.length;
+  if (!avgFar) return null;
+  const diffPct = Math.round(((avgNear - avgFar) / avgFar) * 100);
+  return { avgNear, avgFar, diffPct };
+}
+
+function buildDtdChart(series) {
+  const width = 320, height = 130;
+  const padX = 16, padY = 16;
+  const innerW = width - padX * 2;
+  const innerH = height - padY * 2;
+  const prices = series.map(p => p.min);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const range = (max - min) || 1;
+  const stepX = series.length > 1 ? innerW / (series.length - 1) : 0;
+
+  const coords = series.map((p, i) => {
+    const x = padX + i * stepX;
+    const y = padY + innerH - ((p.min - min) / range) * innerH;
+    return [x, y];
+  });
+
+  const pathD = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
+  const last = coords[coords.length - 1];
+  const baseline = height - padY;
+  const areaD = pathD + ` L${last[0].toFixed(1)},${baseline.toFixed(1)} L${coords[0][0].toFixed(1)},${baseline.toFixed(1)} Z`;
+
+  const gridLines = [0.25, 0.5, 0.75].map(fr => {
+    const y = (padY + innerH * fr).toFixed(1);
+    return `<line x1="${padX}" y1="${y}" x2="${width - padX}" y2="${y}" stroke="#e8ebee" stroke-width="1" stroke-dasharray="3,4" />`;
+  }).join('');
+
+  const minIdx = prices.indexOf(min);
+  const maxIdx = prices.indexOf(max);
+  const markers = coords.map(([x, y], i) => {
+    if (i !== minIdx && i !== maxIdx) return '';
+    const fill = i === minIdx ? '#1d6544' : '#a5303e';
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6" fill="#fff" stroke="${fill}" stroke-width="2" />`;
+  }).join('');
+
+  const gid = 'dtdGrad' + Math.random().toString(36).slice(2, 8);
+
+  // برچسب روز فقط زیر اولین، آخرین و ارزان‌ترین نقطه (تا شلوغ نشه)
+  const labelIdx = new Set([0, series.length - 1, minIdx]);
+  const labels = coords.map(([x], i) => {
+    if (!labelIdx.has(i)) return '';
+    const dtdVal = Math.max(0, series[i].dtd);
+    return `<text x="${x.toFixed(1)}" y="${height - 3}" font-size="9" fill="#6b7a94" text-anchor="middle">${toFaDigits(dtdVal)} روز</text>`;
+  }).join('');
+
+  return `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" style="direction:ltr;display:block;">
+    <defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2d6cdf" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#2d6cdf" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    ${gridLines}
+    <path d="${areaD}" fill="url(#${gid})" stroke="none" />
+    <path d="${pathD}" fill="none" stroke="#2d6cdf" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+    ${markers}
+    ${labels}
+  </svg>`;
+}
+
+function buildDtdSection() {
+  const section = document.getElementById('dtdSection');
+  const wrap = document.getElementById('dtdChartWrap');
+  const noteEl = document.getElementById('dtdNote');
+  const series = computeDtdSeries();
+
+  if (series.length < 3) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  const chronoSeries = [...series].sort((a, b) => a.date.localeCompare(b.date));
+  wrap.innerHTML = buildDtdChart(chronoSeries);
+
+  const trend = describeDtdTrend(series);
+  if (!trend) {
+    noteEl.innerHTML = '';
+  } else if (trend.diffPct > 5) {
+    noteEl.innerHTML = `🔵 هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانگین ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره.`;
+  } else if (trend.diffPct < -5) {
+    noteEl.innerHTML = `🟢 برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه.`;
+  } else {
+    noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره.`;
+  }
+}
+
 function render() {
   let rows = allFlights.filter(f => f.route === state.route && f.flight_date === state.date);
 
@@ -1803,10 +2130,13 @@ function buildChangeBadge(change) {
 // ---- ساخت یک کارت پرواز به‌سبک بلیط بوردینگ‌پس ----
 function buildFlightCard(f, change) {
   const sparkHtml = buildSparkline(getHistoryPoints(f), 54, 26, { mini: true });
+  const pos = getMarketPosition(f);
+  const anomaly = detectAnomaly(f);
   const card = document.createElement('div');
   card.className = 'flight-card';
   card.innerHTML = `
     ${buildChangeBadge(change)}
+    ${buildAnomalyBadge(anomaly)}
     <div class="fc-top">
       <div class="fc-airline">
         <span class="fc-logo">
@@ -1839,6 +2169,7 @@ function buildFlightCard(f, change) {
             <span class="fc-price-value">${f.adult_price || ''}</span>
             <span class="fc-price-currency">تومان</span>
           </div>
+          ${buildPositionBadge(pos)}
         </div>
       </div>
     </div>`;
@@ -1930,6 +2261,8 @@ function buildSparkline(points, width, height, opts) {
 // ===========================================================
 function openHistoryModal(f) {
   const points = getHistoryPoints(f);
+  const pos = getMarketPosition(f);
+  const anomaly = detectAnomaly(f);
   const prices = points.map(p => p.price);
   const minPrice = prices.length ? Math.min(...prices) : null;
   const maxPrice = prices.length ? Math.max(...prices) : null;
@@ -2024,6 +2357,8 @@ function openHistoryModal(f) {
       </div>
 
       <div class="modal-trend">${trendHtml}</div>
+      ${anomalyNoteHtml(anomaly)}
+      ${positionNoteHtml(pos)}
 
       <div class="modal-chart-section">
         <div class="modal-chart-title">
