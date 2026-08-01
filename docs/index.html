@@ -1381,13 +1381,25 @@ function formatDateCard(dateStr) {
   return { weekday, label };
 }
 
+// ---- وقت ایران (UTC+۳:۳۰، بدون تغییر فصلی) — همون افستی که تو Worker هم استفاده می‌شه ----
+const IRAN_OFFSET_MS = 3.5 * 60 * 60 * 1000;
+
 // ---- تبدیل یک رشته‌ی زمان ایزو (مثل «2026-07-31T18:47») به تاریخ و ساعت شمسی برای نمایش ----
 // خروجی جدا برای تاریخ و ساعت، تا هرجا لازم بود (هدر، تاریخچه‌ی قیمت) هرکدوم جدا چیده بشن
+//
+// نکته‌ی مهم: captured_at (از پایتون، رو رانرِ گیت‌هاب‌اکشن) و generated_at
+// (از خودِ Worker) هر دو با ساعت UTC ساخته می‌شن، بدون هیچ نشونه‌ای از
+// timezone تو رشته. اگه این‌جا بدون تبدیل مستقیم نمایش داده بشن، عددی که
+// رو صفحه می‌بینی حدود ۳.۵ ساعت عقب‌تر از ساعت واقعی ایرانه. برای همین
+// اول با Date.UTC می‌خونیمش، بعد افست ایران رو اضافه می‌کنیم.
 function toJalaliDateTime(isoStr) {
   const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(isoStr || '');
   if (!m) return null;
-  const gy = +m[1], gmo = +m[2], gd = +m[3], hh = +m[4], mi = +m[5];
-  const weekday = WEEKDAYS_FA[new Date(gy, gmo - 1, gd).getDay()];
+  const utcMs = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  const d = new Date(utcMs + IRAN_OFFSET_MS);
+  const gy = d.getUTCFullYear(), gmo = d.getUTCMonth() + 1, gd = d.getUTCDate();
+  const hh = d.getUTCHours(), mi = d.getUTCMinutes();
+  const weekday = WEEKDAYS_FA[d.getUTCDay()];
   const [jy, jmo, jd] = gregorianToJalali(gy, gmo, gd);
   return {
     weekday,
@@ -1955,7 +1967,13 @@ function computeDtdSeries() {
     allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
   )].sort();
 
-  const refTime = generatedAtRaw ? new Date(generatedAtRaw) : new Date();
+  // «امروز» رو مثل خودِ Worker به‌صورت یه روز تقویمی کامل به وقت ایران
+  // حساب می‌کنیم (نه یه لحظه‌ی خام)، وگرنه نزدیک نیمه‌شب/صبح زود DTD
+  // یه روز جابه‌جا نمایش داده می‌شه.
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(generatedAtRaw || '');
+  const refUtcMs = m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) : Date.now();
+  const iranShifted = new Date(refUtcMs + IRAN_OFFSET_MS);
+  const todayUtcMs = Date.UTC(iranShifted.getUTCFullYear(), iranShifted.getUTCMonth(), iranShifted.getUTCDate());
 
   return dates.map(d => {
     const prices = allFlights
@@ -1964,7 +1982,9 @@ function computeDtdSeries() {
       .filter(p => isFinite(p));
     if (!prices.length) return null;
     const min = Math.min(...prices);
-    const dtd = Math.round((new Date(d + 'T00:00:00') - refTime) / 86400000);
+    const [dy, dm, dd] = d.split('-').map(Number);
+    const flightUtcMs = Date.UTC(dy, dm - 1, dd);
+    const dtd = Math.round((flightUtcMs - todayUtcMs) / 86400000);
     return { date: d, dtd, min };
   }).filter(Boolean);
 }
