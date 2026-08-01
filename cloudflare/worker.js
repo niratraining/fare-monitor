@@ -44,7 +44,8 @@ function flightDateUTCms(dateStr) {
 // Actions) هر ۲۰ دقیقه ضربان می‌زنه، این تایمرها معمولاً با دقت
 // ۲۰ دقیقه‌ای رعایت می‌شن، نه اینکه دقیقاً سر ساعت باشن.
 function tierIntervalHours(dtdDays) {
-  if (dtdDays <= 1) return 1;   // خیلی‌نزدیک (امروز/فردا): هر ۱ ساعت
+  if (dtdDays <= 0) return 20 / 60; // امروز: هر ۲۰ دقیقه (هم‌قدم با ضربان پایه‌ی گیت‌هاب اکشن، برای تشخیص سریع‌تر «بسته‌شده»)
+  if (dtdDays <= 1) return 1;   // فردا: هر ۱ ساعت
   if (dtdDays <= 3) return 2;   // نزدیک: هر ۲ ساعت
   if (dtdDays <= 7) return 4;   // متوسط: هر ۴ ساعت
   return 12;                     // دور: هر ۱۲ ساعت
