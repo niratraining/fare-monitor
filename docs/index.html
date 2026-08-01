@@ -111,31 +111,32 @@
     }
   }
 
-  /* --- هدر: پنل ابزاری آبی‌سرمه‌ای، جدی و یکدست --- */
-  /* --- هدر: پنل روشن و تمیز، مطابق الگوی استاندارد پنل‌های داخلی --- */
+  /* --- هدر: پنل تیره با گرادیان سبز/طلایی برند، متمایز از پس‌زمینه‌ی روشن صفحه --- */
   header {
     position: sticky;
     top: 0;
     z-index: 10;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.82);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    backdrop-filter: blur(18px) saturate(160%);
-    color: var(--ink);
+    background: linear-gradient(165deg, var(--navy-700) 0%, var(--accent) 100%);
+    color: #ffffff;
     padding: 0 18px 16px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     transition: padding .22s var(--ease-smooth), box-shadow .22s ease;
   }
-  header.is-compact { padding-bottom: 10px; box-shadow: var(--shadow-sm); }
+  header.is-compact { padding-bottom: 10px; box-shadow: 0 12px 30px -14px rgba(30, 41, 38, 0.45); }
   header.is-compact .route-picker-label { max-height: 0; opacity: 0; margin: 0; overflow: hidden; }
   header.is-compact h1 { font-size: 14px; }
   .route-picker-label { transition: opacity .15s ease, max-height .18s ease, margin .18s ease; max-height: 20px; opacity: 1; }
   header::before {
     content: '';
-    display: block;
-    height: 3px;
-    margin: 0 -18px 0;
-    background: linear-gradient(90deg, var(--navy-700), var(--accent-bright));
+    position: absolute;
+    inset: -55% -15% auto auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-gold-soft) 0%, transparent 70%);
+    opacity: .28;
+    pointer-events: none;
   }
   .header-inner {
     position: relative;
@@ -151,7 +152,7 @@
     gap: 8px 10px;
     padding: 9px 0;
     margin-bottom: 14px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   }
   .sys-bar-left {
     display: flex;
@@ -170,9 +171,9 @@
     width: 20px;
     height: 20px;
     border-radius: 8px;
-    background: linear-gradient(155deg, var(--accent-strong), var(--navy-900));
-    color: #ffffff;
-    box-shadow: 0 2px 6px rgba(69, 95, 91, 0.30);
+    background: linear-gradient(155deg, var(--accent-bright), var(--accent-gold-soft));
+    color: var(--navy-700);
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.30);
   }
   .brand-mark svg { width: 11px; height: 11px; display: block; }
   .sys-bar-right {
@@ -198,7 +199,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--ink);
+    color: #ffffff;
   }
   h1 .hero-icon {
     display: inline-flex;
@@ -221,7 +222,7 @@
   }
   .manage-routes-link svg { flex: none; }
   .meta {
-    color: var(--ink-soft);
+    color: rgba(255, 255, 255, 0.75);
     font-size: 11px;
     font-weight: 500;
     display: flex;
@@ -234,29 +235,29 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--success);
+    background: var(--accent-gold-soft);
     flex: none;
-    box-shadow: 0 0 0 0 rgba(47, 122, 93, 0.45);
+    box-shadow: 0 0 0 0 rgba(229, 190, 33, 0.5);
     animation: liveDotPulse 2.2s ease-out infinite;
   }
   @keyframes liveDotPulse {
-    0% { box-shadow: 0 0 0 0 rgba(47, 122, 93, 0.45); }
-    70% { box-shadow: 0 0 0 6px rgba(47, 122, 93, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(47, 122, 93, 0); }
+    0% { box-shadow: 0 0 0 0 rgba(229, 190, 33, 0.5); }
+    70% { box-shadow: 0 0 0 6px rgba(229, 190, 33, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(229, 190, 33, 0); }
   }
   @media (prefers-reduced-motion: reduce) {
     .meta::before { animation: none; }
   }
   .meta-time {
     font-weight: 700;
-    color: var(--ink);
+    color: #ffffff;
     direction: ltr;
     display: inline-block;
     letter-spacing: 0;
     font-variant-numeric: tabular-nums;
   }
   .meta-sep {
-    color: var(--ink-muted);
+    color: rgba(255, 255, 255, 0.5);
     font-weight: 400;
   }
   .fc-checked-row {
@@ -274,10 +275,10 @@
   .manage-routes-link {
     font-size: 11px;
     font-weight: 700;
-    color: var(--ink-soft);
+    color: #ffffff;
     text-decoration: none;
-    background: var(--card);
-    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     width: 30px;
     height: 30px;
     border-radius: var(--radius-field);
@@ -288,7 +289,7 @@
     transition: background .15s ease, border-color .15s ease;
   }
   .manage-routes-link svg { width: 14px; height: 14px; }
-  .manage-routes-link:active { background: var(--paper); border-color: var(--ink-muted); }
+  .manage-routes-link:active { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.34); }
   .page-subtitle {
     font-size: 12px;
     font-weight: 500;
@@ -364,7 +365,7 @@
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .06em;
-    color: var(--ink-muted);
+    color: rgba(255, 255, 255, 0.65);
     margin: 0 2px 6px;
   }
   .route-picker {
