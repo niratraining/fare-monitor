@@ -1556,10 +1556,18 @@ function airlineLogoSrc(name) {
 }
 
 // ---- لوگوی فروشنده‌ها: هر فروشنده رو اینجا به مسیر فایل لوگو وصل کن ----
-// مثال: 'اسنپ تریپ': 'logos/sellers/snapptrip.png'
-const SELLER_LOGOS = {};
+const SELLER_LOGOS = {
+  'ره بال آسمان': 'logos/sellers/rahbal-aseman.svg',
+  'خیام گشت': 'logos/sellers/khayyam-gasht.svg',
+  'آدم و حوا': 'logos/sellers/adam-o-havva.svg',
+  'مهر آگین سیر': 'logos/sellers/mehragin-sair.svg',
+  'شهران گشت': 'logos/sellers/shahran-gasht.svg',
+  'آسمان پر ستاره': 'logos/sellers/aseman-por-setareh.svg',
+  'تاپ تورز': 'logos/sellers/top-tours.svg',
+  'پرشین پرواز': 'logos/sellers/persian-parvaz.svg'
+};
 function sellerLogoSrc(name) {
-  return SELLER_LOGOS[name] || `logos/sellers/${slugifyAirline(name)}.png`;
+  return SELLER_LOGOS[name] || `logos/sellers/${slugifyAirline(name)}.svg`;
 }
 
 const WEEKDAYS_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
