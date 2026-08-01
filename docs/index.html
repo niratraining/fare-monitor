@@ -6,6 +6,7 @@
 <title>رصد نرخ پرواز</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
   /* --- فونت اختصاصی اعداد: Yekan Bakh FaNum ---
      این فونت لایسنس‌دار/تجاریه، پس فایل باینری‌ش رو نمی‌شه به‌صورت خودکار تهیه کرد؛
@@ -712,22 +713,12 @@
   .fc-position.expensive { background: var(--danger-tint); color: var(--danger-strong); }
   .fc-position.flat { background: var(--paper); color: var(--ink-soft); }
 
-  .position-note {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ink);
-    background: var(--paper);
-    border-radius: 10px;
-    padding: 8px 10px;
-    margin-top: 8px;
-    line-height: 1.7;
-  }
-
-  /* --- نشان نوسان غیرعادی قیمت روی کارت --- */
+  /* --- نشان نوسان غیرعادی قیمت روی کارت: زیر نشان افزایش/کاهش، هم‌سمت با اون
+     (نه سمت لوگوی ایرلاین) تا هیچ‌وقت روی لوگو نیفته --- */
   .fc-anomaly {
     position: absolute;
-    top: 12px;
-    right: 0;
+    top: 42px;
+    left: 0;
     display: inline-flex;
     align-items: center;
     gap: 3px;
@@ -735,22 +726,10 @@
     background: var(--warn);
     font-size: 10px;
     font-weight: 800;
-    padding: 4px 12px 4px 10px;
-    border-radius: 0 8px 8px 0;
+    padding: 4px 10px 4px 12px;
+    border-radius: 8px 0 0 8px;
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
-  .anomaly-note {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--warn);
-    background: var(--warn-tint);
-    border: 1px solid var(--warn-line);
-    border-radius: 10px;
-    padding: 8px 10px;
-    margin-top: 8px;
-    line-height: 1.7;
-  }
-
   /* --- بخش منحنی DTD (قیمت بر اساس فاصله تا پرواز)، هم‌سبک ویجت پرتغییرترین‌ها --- */
   .dtd-section {
     background: var(--card);
@@ -839,8 +818,8 @@
 
   .fc-closed-badge {
     position: absolute;
-    top: 12px;
-    right: 0;
+    top: 42px;
+    left: 0;
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -848,8 +827,8 @@
     font-size: 11px;
     font-weight: 800;
     letter-spacing: .01em;
-    padding: 4px 12px 4px 10px;
-    border-radius: 0 8px 8px 0;
+    padding: 4px 10px 4px 12px;
+    border-radius: 8px 0 0 8px;
     background: var(--ink-soft);
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
@@ -1215,6 +1194,12 @@
   }
   .flight-card:has(.fc-change.up) { border-right-color: var(--danger); }
   .flight-card:has(.fc-change.down) { border-right-color: var(--success); }
+  /* وقتی نشان دوم (نوسان غیرعادی/بسته‌شده) هم زیر نشان تغییر قیمت ظاهر می‌شه،
+     ردیف ایرلاین رو کمی پایین‌تر می‌بریم تا دو نشان روی هم یا روی محتوای بعدی نیفتن */
+  .flight-card:has(.fc-anomaly) .fc-top,
+  .flight-card:has(.fc-closed-badge) .fc-top {
+    margin-top: 58px;
+  }
 
   .fc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .fc-airline { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -1317,17 +1302,20 @@
     justify-content: center;
     z-index: 100;
   }
-  dialog.modal-overlay[open] { display: flex; animation: overlayFade .22s ease; }
+  dialog.modal-overlay[open] { display: flex; animation: overlayFade .28s ease; }
   dialog.modal-overlay::backdrop {
     background: rgba(15, 23, 42, 0.55);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
   }
-  dialog.modal-overlay.closing { animation: overlayFadeOut .18s ease forwards; }
+  dialog.modal-overlay.closing { animation: overlayFadeOut .22s ease forwards; }
   @keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes overlayFadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-  /* --- کارت مودال: هویت بصری مستقل، هماهنگ با رنگ برند اما رسمی‌تر و خاص‌تر از بقیه‌ی UI --- */
+  /* --- کارت مودال: هویت بصری مستقل، هماهنگ با رنگ برند اما رسمی‌تر و خاص‌تر از بقیه‌ی UI ---
+     باز/بسته‌شدن با transition (نه keyframe) پیاده‌سازی شده: هم شروعش نرم‌تره (منحنی
+     استاندارد شیت‌های موبایل)، هم قابل‌قطعه — یعنی وسط کشیدن با دست هم می‌شه بستش
+     بدون پرش بصری، چون هر دو از همون transform:translateY استفاده می‌کنن. */
   .modal-card {
     position: relative;
     background: var(--paper);
@@ -1337,9 +1325,12 @@
     padding: 12px 18px 22px;
     max-height: 88vh;
     overflow-y: auto;
-    animation: sheetUp .32s cubic-bezier(.16,1,.3,1);
+    transform: translateY(100%);
+    transition: transform .38s cubic-bezier(.32,.72,0,1);
+    will-change: transform;
     box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
   }
+  .modal-card.is-shown { transform: translateY(0); }
   .modal-card::before {
     content: "";
     position: absolute;
@@ -1347,23 +1338,25 @@
     height: 3px;
     border-radius: 20px 20px 0 0;
     background: linear-gradient(90deg, var(--navy-800), var(--accent));
-  }
-  .modal-overlay.closing .modal-card { animation: sheetDown .18s cubic-bezier(.4,0,1,1) forwards; }
-  @keyframes sheetUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-  @keyframes sheetDown {
-    from { transform: translateY(0); }
-    to { transform: translateY(100%); }
+    z-index: 1;
   }
   .sheet-handle {
+    position: relative;
     width: 38px;
     height: 4px;
     border-radius: 3px;
     background: var(--line);
     margin: 8px auto 14px;
+    touch-action: none;
+    cursor: grab;
   }
+  .sheet-handle::before {
+    /* ناحیه‌ی لمسی بزرگ‌تر از دستگیره‌ی دیده‌شده، بدون تغییر ظاهر — استاندارد دسترسی‌پذیری لمسی */
+    content: "";
+    position: absolute;
+    inset: -16px -34px;
+  }
+  .sheet-handle:active { cursor: grabbing; }
 
   /* --- هدر: آواتار ایرلاین + عنوان + برچسب‌های متادیتا --- */
   .modal-header {
@@ -1374,19 +1367,28 @@
     margin-bottom: 16px;
   }
   .modal-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
-  .modal-avatar {
+  .modal-logo {
     flex: none;
     width: 42px;
     height: 42px;
     border-radius: 12px;
-    background: var(--accent-strong);
-    color: #ffffff;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    overflow: hidden;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  }
+  .modal-logo img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 6px; box-sizing: border-box; }
+  .modal-logo-fallback {
+    display: none;
+    width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: center;
     font-size: 15px;
     font-weight: 800;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.32);
   }
   .modal-header-main { flex: 1; min-width: 0; }
   .modal-title { font-size: 16px; font-weight: 800; color: var(--ink); }
@@ -1421,41 +1423,102 @@
   }
   .modal-close:active { background: #eceef1; }
 
-  /* --- ردیف آمار: کمترین / بیشترین / آخرین قیمت --- */
-  .modal-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+  /* --- بلوک قیمت اصلی: آخرین قیمت + روند در یک نگاه، کمترین/بیشترین به‌عنوان جزئیات ثانویه ---
+     جایگزین سه باکس هم‌وزن قبلی؛ چون در نگاه اول فقط «الان چند و در چه وضعیتی» مهمه،
+     نه سه عدد هم‌رتبه که چشم رو بین‌شون پخش می‌کنه. */
+  .price-hero {
+    background: var(--navy-900);
+    border-radius: 14px;
+    padding: 14px 16px 12px;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  .price-hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
   }
-  .modal-stat {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 9px 6px;
-    text-align: center;
+  .price-hero-label { font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.6); }
+  .price-hero-value { font-size: 26px; font-weight: 800; direction: ltr; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .price-hero-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
   }
-  .modal-stat-label { font-size: 10px; color: var(--ink-soft); font-weight: 700; margin-bottom: 3px; }
-  .modal-stat-value { font-size: 13px; font-weight: 700; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
-  .modal-stat.is-current { background: var(--navy-800); border-color: transparent; }
-  .modal-stat.is-current .modal-stat-label { color: rgba(255, 255, 255, 0.65); }
-  .modal-stat.is-current .modal-stat-value { color: #ffffff; }
+  .phr-item { display: flex; align-items: center; gap: 5px; }
+  .phr-item b { font-weight: 800; color: #ffffff; direction: ltr; font-variant-numeric: tabular-nums; }
+  .phr-sep { width: 1px; height: 11px; background: rgba(255, 255, 255, 0.16); }
 
-  /* --- نشان روند کلی --- */
-  .modal-trend { margin-bottom: 12px; }
   .trend-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
-    padding: 6px 12px;
+    padding: 5px 11px;
     border-radius: 20px;
     letter-spacing: -.01em;
+    flex: none;
   }
   .trend-badge.up { background: var(--danger-tint); color: var(--danger-strong); }
   .trend-badge.down { background: var(--success-tint); color: var(--success-strong); }
-  .trend-badge.flat { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .trend-badge.flat { background: rgba(255, 255, 255, 0.12); color: #ffffff; }
+
+  /* --- ردیف‌های بینش (نوسان غیرعادی/جایگاه بازار): یک لیست فشرده به‌جای دو باکس رنگی جدا --- */
+  .insight-list { margin-bottom: 10px; }
+  .insight-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.7;
+    padding: 8px 2px;
+    color: var(--ink-soft);
+  }
+  .insight-row + .insight-row { border-top: 1px solid var(--line); }
+  .insight-icon {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .insight-row.warn .insight-icon { background: var(--warn-tint); color: var(--warn); }
+  .insight-row.info .insight-icon { background: var(--accent-tint); color: var(--accent-strong); }
+
+  /* --- چیدمان شیت تاریخچه: سرِ کارت (هدر+قیمت) ثابت می‌مونه، فقط بخش پایینی
+     (نمودار+تاریخچه) خودش اسکرول می‌کنه. این چیزیه که مشکل «اسکرول نامناسب وقتی
+     تعداد ثبت‌ها زیاد بشه» رو حل می‌کنه: قبلاً کل کارت با هم اسکرول می‌شد و با
+     هر ثبت جدید، عنوان/قیمت هم از دید خارج می‌شد؛ الان فقط لیست رشد می‌کنه. --- */
+  .modal-overlay.history-sheet .modal-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-sticky-top { flex: none; }
+  .modal-scroll-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -18px;
+    padding: 0 18px;
+  }
+  .modal-scroll-body::-webkit-scrollbar { width: 5px; }
+  .modal-scroll-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-scroll-body::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 
   /* --- نمودار: بخش مجزا با عنوان و برچسب بازه‌ی قیمت --- */
   .modal-chart-section {
@@ -1476,8 +1539,10 @@
   }
   .modal-chart-title .range-hint { color: var(--ink-soft); font-weight: 700; direction: ltr; font-size: 11px; }
   .modal-chart {
-    display: flex;
-    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 160px;
+    direction: ltr;
   }
 
   /* --- تایم‌لاین تاریخچه: خط عمودی متصل‌کننده + نقاط رنگی --- */
@@ -1550,6 +1615,29 @@
   .history-delta-chip.down { background: var(--success-tint); color: var(--success-strong); }
   .history-delta-chip.flat { background: var(--card); color: var(--ink-soft); }
   .history-item.is-latest .history-price { color: var(--accent-strong); }
+
+  /* --- جمع‌کردن پیش‌فرض تاریخچه‌های بلند: فقط چند ثبت اخیر نشون داده می‌شه،
+     بقیه پشت یه دکمه‌ی «نمایش بیشتر»ان — هم صفحه شلوغ نمی‌شه، هم با اسکرول
+     مستقل بالا، حتی اگه صدها ثبت جمع بشه چیزی به‌هم نمی‌ریزه --- */
+  .history-list.is-collapsed .history-item:nth-child(n+9) { display: none; }
+  .history-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .history-expand-btn:active { background: var(--accent-tint); }
 </style>
 
 </head>
@@ -1718,6 +1806,7 @@
 <script>
 let allFlights = [];
 let allHistory = [];
+let historyChartInstance = null; // نمونه‌ی فعال Chart.js برای نمودار روند قیمت داخل مودال تاریخچه
 let generatedAtRaw = null; // زمان تولید آخرین اسنپ‌شات (ISO خام)، مرجع محاسبه‌ی DTD
 let state = {
   route: null,
@@ -1744,22 +1833,94 @@ const ICONS = {
   infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
 };
 
-// ---- بستن نرم یک شیت/مودال (dialog بومی): قبل از حذف، انیمیشن اسلاید به پایین پخش می‌شه ----
+// ---- باز کردن نرم یک شیت: اول به DOM اضافه و showModal می‌شه (کارت هنوز translateY(100%)ه،
+// چون کلاس is-shown نداره)، بعد با دو فریم تأخیر کلاس is-shown اضافه می‌شه تا مرورگر فرصت
+// paint کردن حالت اولیه رو داشته باشه و transition واقعاً از پایین به بالا پخش بشه؛
+// بدون این تأخیر، چون [open] و کلاس همزمان اعمال می‌شدن، شیت یهو ظاهر می‌شد نه نرم ----
+function presentSheet(overlay) {
+  document.body.appendChild(overlay);
+  overlay.showModal();
+  const card = overlay.querySelector('.modal-card');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (card) card.classList.add('is-shown');
+  }));
+  wireSheetDrag(overlay);
+}
+
+// ---- بستن نرم یک شیت/مودال (dialog بومی): حذف کلاس is-shown، transition تعریف‌شده
+// روی .modal-card خودش کارت رو به پایین می‌بره؛ بعد از تمومِ transition (یا مهلت fallback،
+// برای حالتی که transitionend به هر دلیلی نیاد) از DOM حذف می‌شه ----
 // onDone (اختیاری): بعد از حذف کامل از DOM اجرا می‌شه؛ برای زنجیره‌کردن باز شدن شیت بعدی به‌کار می‌ره
 function closeSheet(overlay, onDone) {
   if (!overlay || overlay.classList.contains('closing')) return;
   overlay.classList.add('closing');
-  overlay.addEventListener('animationend', () => {
+  const card = overlay.querySelector('.modal-card');
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
     if (typeof overlay.close === 'function' && overlay.open) overlay.close();
     overlay.remove();
     if (typeof onDone === 'function') onDone();
-  }, { once: true });
+  };
+  if (card) {
+    card.classList.remove('is-shown');
+    card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
+    setTimeout(finish, 450);
+  } else {
+    finish();
+  }
 }
 
 // ---- تنظیمات مشترک هر dialog: کلید Escape رو با انیمیشن نرم می‌بندیم به‌جای بسته‌شدن آنی بومی ----
 function wireDialogDismiss(overlay) {
   overlay.addEventListener('cancel', (e) => { e.preventDefault(); closeSheet(overlay); });
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSheet(overlay); });
+}
+
+// ---- کشیدنِ دستگیره رو به پایین برای بستن شیت: الگوی استاندارد بات‌شیت موبایل
+// (iOS/Android). دستگیره رو با انگشت دنبال می‌کنه؛ اگه بیش از ۲۴٪ ارتفاع کارت
+// کشیده بشه، بستن ادامه پیدا می‌کنه، وگرنه با یه فنر کوچیک برمی‌گرده سرجاش ----
+function wireSheetDrag(overlay) {
+  const card = overlay.querySelector('.modal-card');
+  const handle = overlay.querySelector('.sheet-handle');
+  if (!card || !handle) return;
+  let startY = 0, dragY = 0, dragging = false, cardH = 0;
+
+  const onDown = (e) => {
+    dragging = true;
+    startY = e.clientY;
+    cardH = card.getBoundingClientRect().height || 1;
+    card.style.transition = 'none';
+    if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (_) {} }
+  };
+  const onMove = (e) => {
+    if (!dragging) return;
+    dragY = Math.max(0, e.clientY - startY);
+    card.style.transform = `translateY(${dragY}px)`;
+  };
+  const onUp = () => {
+    if (!dragging) return;
+    dragging = false;
+    const shouldClose = dragY > cardH * 0.24;
+    if (shouldClose) {
+      card.style.transition = 'transform .2s cubic-bezier(.4,0,1,1)';
+      card.style.transform = `translateY(${cardH}px)`;
+      closeSheet(overlay);
+    } else {
+      card.style.transition = 'transform .22s cubic-bezier(.32,.72,0,1)';
+      card.style.transform = '';
+      card.addEventListener('transitionend', function h() {
+        card.removeEventListener('transitionend', h);
+        card.style.transition = '';
+      }, { once: true });
+    }
+    dragY = 0;
+  };
+  handle.addEventListener('pointerdown', onDown);
+  handle.addEventListener('pointermove', onMove);
+  handle.addEventListener('pointerup', onUp);
+  handle.addEventListener('pointercancel', onUp);
 }
 
 // ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
@@ -2155,8 +2316,7 @@ function openRoutePicker(type) {
     </div>`;
 
   overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
-  document.body.appendChild(overlay);
-  overlay.showModal();
+  presentSheet(overlay);
 
   const listEl = overlay.querySelector('#pickerList');
   const recentEl = overlay.querySelector('#pickerRecent');
@@ -2467,13 +2627,15 @@ function buildPositionBadge(pos) {
 function positionNoteHtml(pos) {
   if (!pos) return '';
   const others = toFaDigits(pos.count - 1);
+  let text;
   if (Math.abs(pos.pct) < 2) {
-    return `<div class="position-note">${ICONS.chart} این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+    text = `این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.`;
+  } else if (pos.pct < 0) {
+    text = `این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.`;
+  } else {
+    text = `این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.`;
   }
-  if (pos.pct < 0) {
-    return `<div class="position-note">${ICONS.chart} این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.</div>`;
-  }
-  return `<div class="position-note">${ICONS.chart} این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.</div>`;
+  return `<div class="insight-row info"><span class="insight-icon">${ICONS.chart}</span><span>${text}</span></div>`;
 }
 
 // ===========================================================
@@ -2514,7 +2676,7 @@ function buildAnomalyBadge(anomaly) {
 function anomalyNoteHtml(anomaly) {
   if (!anomaly) return '';
   const dir = anomaly.diff > 0 ? 'جهش' : 'افت';
-  return `<div class="anomaly-note">${ICONS.warn} آخرین تغییر (٪${toFaDigits(Math.abs(anomaly.pct))} ${dir}) نسبت به نوسان معمول این پرواز غیرعادیه — می‌تونه فرصت واقعی یا خطای داده باشه.</div>`;
+  return `<div class="insight-row warn"><span class="insight-icon">${ICONS.warn}</span><span>آخرین تغییر (٪${toFaDigits(Math.abs(anomaly.pct))} ${dir}) نسبت به نوسان معمول این پرواز غیرعادیه — می‌تونه فرصت واقعی یا خطای داده باشه.</span></div>`;
 }
 
 // ===========================================================
@@ -2880,6 +3042,97 @@ function buildFlightCard(f, change) {
 // ===========================================================
 // نمودار ساده‌ی روند قیمت (SVG سبک بدون کتابخانه)
 // ===========================================================
+// ===========================================================
+// نمودار تعاملی روند قیمت (Chart.js) — برای مودال تاریخچه‌ی هر پرواز
+// (اسپارک‌لاین کوچک داخل کارت‌ها همچنان SVG سبک خودش رو داره، چون
+// ساخت چندین نمونه‌ی Chart.js برای همه‌ی کارت‌ها سنگین می‌شد)
+// ===========================================================
+function buildHistoryChartConfig(points) {
+  const labels = points.map(p => {
+    const dt = toJalaliDateTime(p.captured_at);
+    return dt ? dt.dateLabelShort : '';
+  });
+  const prices = points.map(p => p.price);
+  const rising = prices.length > 1 && prices[prices.length - 1] > prices[0];
+  const falling = prices.length > 1 && prices[prices.length - 1] < prices[0];
+  const lineColor = falling ? '#1c6b41' : (rising ? '#ab2b23' : '#47536b');
+
+  return {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: prices,
+        borderColor: lineColor,
+        backgroundColor: (ctx) => {
+          const area = ctx.chart.chartArea;
+          if (!area) return 'transparent';
+          const g = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+          g.addColorStop(0, lineColor + '38');
+          g.addColorStop(1, lineColor + '00');
+          return g;
+        },
+        fill: true,
+        borderWidth: 2.2,
+        tension: 0.35,
+        pointRadius: 0,
+        pointHitRadius: 14,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: lineColor,
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 6, left: 2, right: 2 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          titleColor: '#ffffff',
+          bodyColor: '#e2e6ec',
+          titleFont: { family: "'Vazirmatn', Tahoma, sans-serif", size: 11, weight: '700' },
+          bodyFont: { family: "'Vazirmatn', Tahoma, sans-serif", size: 12, weight: '700' },
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false,
+          callbacks: {
+            title: (items) => items[0] ? items[0].label : '',
+            label: (item) => toFaDigits(formatPriceShort(item.raw)) + ' تومان',
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { color: '#e3e6ea' },
+          ticks: {
+            color: '#66718a',
+            font: { family: "'Vazirmatn', Tahoma, sans-serif", size: 10 },
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 5,
+          },
+        },
+        y: {
+          position: 'right',
+          grid: { color: '#e3e6ea', drawTicks: false },
+          border: { display: false },
+          ticks: {
+            color: '#66718a',
+            font: { family: "'Vazirmatn', Tahoma, sans-serif", size: 10 },
+            maxTicksLimit: 4,
+            callback: (val) => toFaDigits(formatPriceShort(val)),
+          },
+        },
+      },
+    },
+  };
+}
+
 function buildSparkline(points, width, height, opts) {
   opts = opts || {};
   const mini = !!opts.mini;
@@ -2985,7 +3238,7 @@ function openHistoryModal(f) {
     trendHtml = `<span class="trend-badge flat">فقط یک بار ثبت شده — هنوز تاریخچه‌ای نیست</span>`;
   }
 
-  const chartHtml = buildSparkline(points, 300, 130);
+  // نمودار روند قیمت (Chart.js) در پایین همین تابع، بعد از باز شدن مودال ساخته می‌شه
 
   let listHtml = '';
   const reversed = [...points].reverse();
@@ -3021,62 +3274,112 @@ function openHistoryModal(f) {
   }
 
   const overlay = document.createElement('dialog');
-  overlay.className = 'modal-overlay';
+  overlay.className = 'modal-overlay history-sheet';
   wireDialogDismiss(overlay);
+
+  // تاریخچه‌ی بلند پیش‌فرض جمع‌شده‌ست: فقط ۸ ثبت اخیر نشون داده می‌شه، بقیه پشت
+  // یه دکمه‌ان. هم صفحه‌ی اول شلوغ نمی‌شه، هم هرچقدر ثبت‌ها زیاد بشن (این همون
+  // نگرانی اصلی بود) چیزی نمی‌شکنه — چون این بخش داخل modal-scroll-body خودش
+  // مستقل اسکرول می‌کنه، نه کل کارت.
+  const collapseThreshold = 8;
+  const shouldCollapse = points.length > collapseThreshold;
+  const insightsHtml = anomalyNoteHtml(anomaly) + positionNoteHtml(pos);
 
   overlay.innerHTML = `
     <div class="modal-card">
       <div class="sheet-handle"></div>
-      <div class="modal-header">
-        <div class="modal-avatar">${airlineInitial}</div>
-        <div class="modal-header-main">
-          <div class="modal-title">${f.airline || ''} <bdi class="modal-flightno">#${f.flight_no || ''}</bdi></div>
-          <div class="modal-meta-row">
-            ${f.route ? `<span class="modal-chip">${f.route}</span>` : ''}
-            ${dateChip ? `<span class="modal-chip">${dateChip}</span>` : ''}
-            ${cabinBadge(f.cabin)}
-            ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
+      <div class="modal-sticky-top">
+        <div class="modal-header">
+          <div class="modal-logo">
+            <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <span class="modal-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${airlineInitial}</span>
+          </div>
+          <div class="modal-header-main">
+            <div class="modal-title">${f.airline || ''} <bdi class="modal-flightno">#${f.flight_no || ''}</bdi></div>
+            <div class="modal-meta-row">
+              ${f.route ? `<span class="modal-chip">${f.route}</span>` : ''}
+              ${dateChip ? `<span class="modal-chip">${dateChip}</span>` : ''}
+              ${cabinBadge(f.cabin)}
+              ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
+            </div>
+          </div>
+          <button class="modal-close">✕</button>
+        </div>
+
+        <div class="price-hero">
+          <div class="price-hero-top">
+            <span class="price-hero-label">آخرین قیمت</span>
+            ${trendHtml}
+          </div>
+          <div class="price-hero-value">${currentPrice !== null ? formatPriceShort(currentPrice) : '—'}</div>
+          <div class="price-hero-range">
+            <span class="phr-item">کمترین <b>${minPrice !== null ? formatPriceShort(minPrice) : '—'}</b></span>
+            <span class="phr-sep"></span>
+            <span class="phr-item">بیشترین <b>${maxPrice !== null ? formatPriceShort(maxPrice) : '—'}</b></span>
           </div>
         </div>
-        <button class="modal-close">✕</button>
       </div>
 
-      <div class="modal-stats">
-        <div class="modal-stat">
-          <div class="modal-stat-label">کمترین</div>
-          <div class="modal-stat-value">${minPrice !== null ? formatPriceShort(minPrice) : '—'}</div>
-        </div>
-        <div class="modal-stat">
-          <div class="modal-stat-label">بیشترین</div>
-          <div class="modal-stat-value">${maxPrice !== null ? formatPriceShort(maxPrice) : '—'}</div>
-        </div>
-        <div class="modal-stat is-current">
-          <div class="modal-stat-label">آخرین قیمت</div>
-          <div class="modal-stat-value">${currentPrice !== null ? formatPriceShort(currentPrice) : '—'}</div>
-        </div>
-      </div>
+      <div class="modal-scroll-body">
+        ${insightsHtml ? `<div class="insight-list">${insightsHtml}</div>` : ''}
 
-      <div class="modal-trend">${trendHtml}</div>
-      ${anomalyNoteHtml(anomaly)}
-      ${positionNoteHtml(pos)}
-
-      <div class="modal-chart-section">
-        <div class="modal-chart-title">
-          <span>روند قیمت در طول زمان</span>
-          ${minPrice !== null && maxPrice !== null ? `<bdi class="range-hint">${formatPriceShort(minPrice)}–${formatPriceShort(maxPrice)}</bdi>` : ''}
+        <div class="modal-chart-section">
+          <div class="modal-chart-title">
+            <span>روند قیمت در طول زمان</span>
+            ${minPrice !== null && maxPrice !== null ? `<bdi class="range-hint">${formatPriceShort(minPrice)}–${formatPriceShort(maxPrice)}</bdi>` : ''}
+          </div>
+          <div class="modal-chart"><canvas id="historyPriceChart"></canvas></div>
         </div>
-        <div class="modal-chart">${chartHtml}</div>
-      </div>
 
-      <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
-      <div class="history-list">
-        ${listHtml || '<div style="text-align:center;color:#777192;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+        <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
+        <div class="history-list${shouldCollapse ? ' is-collapsed' : ''}" id="historyList">
+          ${listHtml || '<div style="text-align:center;color:#777192;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+        </div>
+        ${shouldCollapse ? `<button type="button" class="history-expand-btn" id="historyExpandBtn">نمایش ${toFaDigits(points.length - collapseThreshold)} ثبت قدیمی‌تر</button>` : ''}
       </div>
     </div>`;
 
   overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
-  document.body.appendChild(overlay);
-  overlay.showModal();
+  const expandBtn = overlay.querySelector('#historyExpandBtn');
+  if (expandBtn) {
+    expandBtn.onclick = () => {
+      overlay.querySelector('#historyList').classList.remove('is-collapsed');
+      expandBtn.remove();
+    };
+  }
+  presentSheet(overlay);
+
+  // ساخت نمودار رو به بعد از تمومِ انیمیشنِ بازشدنِ شیت موکول می‌کنیم: ساخت Chart.js
+  // کار نسبتاً سنگینیه و اگه همون لحظه‌ی شروع اسلاید انجام بشه، فریم‌ها رو قفل
+  // می‌کنه و به‌جای نرم، باز شدن شیت تکه‌تکه/ناگهانی به نظر می‌رسه.
+  if (historyChartInstance) { historyChartInstance.destroy(); historyChartInstance = null; }
+  const chartCanvas = overlay.querySelector('#historyPriceChart');
+  let chartInited = false;
+  const initChart = () => {
+    if (chartInited) return;
+    chartInited = true;
+    if (chartCanvas && points.length >= 2 && window.Chart) {
+      historyChartInstance = new Chart(chartCanvas, buildHistoryChartConfig(points));
+    } else if (chartCanvas) {
+      chartCanvas.replaceWith(Object.assign(document.createElement('div'), {
+        style: 'display:flex;align-items:center;justify-content:center;height:100%;color:#66718a;font-size:12px;',
+        textContent: 'برای رسم نمودار حداقل به ۲ نقطه‌ی قیمتی نیاز است',
+      }));
+    }
+  };
+  const cardEl = overlay.querySelector('.modal-card');
+  if (cardEl) {
+    cardEl.addEventListener('transitionend', function h(e) {
+      if (e.propertyName !== 'transform') return;
+      cardEl.removeEventListener('transitionend', h);
+      initChart();
+    });
+  }
+  setTimeout(initChart, 420); // fallback، برای اطمینان از ساخته‌شدن نمودار حتی بدون transitionend
+
+  overlay.addEventListener('close', () => {
+    if (historyChartInstance) { historyChartInstance.destroy(); historyChartInstance = null; }
+  });
 }
 
 // ---- فشرده‌سازی هدر هنگام اسکرول: تمرکز روی نوار مسیر/تاریخ، مخفی‌شدن موقت زیرعنوان ----
