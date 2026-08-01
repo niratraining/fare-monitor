@@ -573,16 +573,13 @@
     box-shadow: 0 2px 6px rgba(30, 41, 38, 0.10);
     transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .date-card .weekday {
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 2px;
-    color: var(--ink);
-  }
   .date-card .daynum {
-    font-size: 11px;
-    color: var(--ink-muted);
-    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 5px;
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
   }
   .date-card .cardprice {
     font-size: 11px;
@@ -595,7 +592,6 @@
     border-color: var(--accent);
     box-shadow: 0 2px 8px rgba(69, 95, 91, 0.18);
   }
-  .date-card.active .weekday,
   .date-card.active .daynum { color: var(--accent-strong); }
   .date-card.active .cardprice { color: var(--accent-strong); }
 
@@ -929,19 +925,18 @@
   .modal-title-text .modal-title { font-size: 15.5px; }
   .modal-title-text .modal-sub { margin-top: 0; }
 
-  /* --- فوتر شیت فیلتر: پین‌شده زیر بدنه‌ی اسکرول‌شونده (همون الگوی modal-scroll-body) --- */
+  /* --- فوتر شیت فیلتر: پین‌شده زیر بدنه‌ی اسکرول‌شونده (همون الگوی modal-scroll-body).
+     یک دکمه‌ی قرصی تمام‌عرض (به‌جای ردیف دو دکمه‌ای قبلی) برای ارتفاع کمتر و
+     ظاهر خلوت‌تر، هم‌راستا با الگوی نمونه --- */
   .filter-sheet-footer {
     flex: none;
-    display: flex;
-    gap: 8px;
-    padding-top: 12px;
-    margin-top: 4px;
+    padding-top: 10px;
+    margin-top: 2px;
     border-top: 1px solid var(--line);
   }
   .fs-btn-secondary, .fs-btn-primary {
-    flex: 1;
     border: none;
-    border-radius: var(--radius-card-sm);
+    border-radius: 999px;
     padding: 14px 10px;
     font-family: inherit;
     font-size: 13px;
@@ -949,17 +944,27 @@
     cursor: pointer;
     transition: background .18s ease, transform .14s var(--ease-smooth), box-shadow .18s ease;
   }
-  .fs-btn-secondary { background: var(--card); color: var(--ink-soft); border: 1px solid var(--line); flex: 0 0 40%; }
-  .fs-btn-secondary:active { transform: scale(.98); background: var(--paper); }
+  .fs-btn-secondary {
+    background: transparent;
+    color: var(--ink-muted);
+    border: none;
+    width: 100%;
+    padding: 6px 10px 10px;
+    font-size: 12px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .fs-btn-secondary:active { opacity: .6; }
   .fs-btn-primary {
+    display: block;
+    width: 100%;
     background: linear-gradient(135deg, var(--navy-800), var(--accent-strong));
     color: #fff;
     box-shadow: 0 8px 20px -6px rgba(44, 58, 55, .55);
-    flex: 1;
   }
   .fs-btn-primary:active { transform: scale(.98); box-shadow: 0 4px 12px -6px rgba(44, 58, 55, .55); }
   @media (hover: hover) {
-    .fs-btn-secondary:hover { background: var(--paper); }
+    .fs-btn-secondary:hover { color: var(--ink); }
     .fs-btn-primary:hover { box-shadow: 0 10px 26px -6px rgba(44, 58, 55, .6); transform: translateY(-1px); }
   }
 
@@ -1032,24 +1037,36 @@
     transform: rotate(45deg);
   }
 
-  .filter-group { margin-bottom: 12px; }
+  .filter-group {
+    background: var(--card);
+    border-radius: var(--radius-card-sm);
+    padding: 12px 12px 13px;
+    margin-bottom: 8px;
+    border: 1px solid var(--line-soft);
+  }
   .filter-group:last-child { margin-bottom: 0; }
   .filter-group-label {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--ink-soft);
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink);
     letter-spacing: .01em;
-    margin-bottom: 6px;
+    margin-bottom: 9px;
   }
   .filter-group-label .fi {
     display: inline-flex;
     flex: none;
-    width: 12px;
-    height: 12px;
-    color: var(--accent);
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-tint);
+    color: var(--accent-strong);
+    padding: 4px;
+    box-sizing: border-box;
   }
   .filter-group-label .fi svg { width: 100%; height: 100%; display: block; }
 
@@ -1067,7 +1084,7 @@
   .search-input-wrap .fi svg { width: 100%; height: 100%; display: block; }
   input[type="text"] {
     width: 100%;
-    padding: 10px 36px 10px 12px;
+    padding: 9px 34px 9px 12px;
     border: 1px solid var(--line);
     background: var(--paper);
     border-radius: var(--radius-field);
@@ -1890,8 +1907,8 @@
     </div>
 
     <div class="filter-sheet-footer">
-      <button type="button" class="fs-btn-secondary" id="filterSheetReset">پاک‌کردن</button>
-      <button type="button" class="fs-btn-primary" id="filterSheetApply">مشاهده‌ی نتایج</button>
+      <button type="button" class="fs-btn-secondary" id="filterSheetReset">پاک‌کردن فیلترها</button>
+      <button type="button" class="fs-btn-primary" id="filterSheetApply">اعمال فیلتر</button>
     </div>
   </div>
 </dialog>
@@ -2259,6 +2276,23 @@ function formatDateCard(dateStr) {
   return { weekday, label };
 }
 
+// ---- برچسب کوتاه تاریخِ کارت، به شکل «ماه/روز» شمسی (بدون نام روز هفته) —
+// برای کارت‌های تقویم افقیِ کم‌ارتفاع، همون الگوی «۰۵/۱۳» ----
+function formatDateCardCompact(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const [, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  const pad2 = (n) => toFaDigits(String(n).padStart(2, '0'));
+  return `${pad2(jm)}/${pad2(jd)}`;
+}
+
+// ---- نمایش فشرده‌ی قیمت رو کارت‌های تاریخ: هزارتومان، بدون سه رقم آخر
+// (مثلاً ۹,۶۴۲,۵۰۰ -> ۹,۶۴۲) تا کارت کم‌ارتفاع و خلوت بمونه؛ برای قیمت
+// اصلی/کامل همه‌جای دیگه همچنان formatPriceShort (بدون کوتاه‌سازی) استفاده می‌شه
+function formatPriceCompact(n) {
+  if (!isFinite(n)) return '—';
+  return Math.floor(n / 1000).toLocaleString('en-US');
+}
+
 // ---- وقت ایران (UTC+۳:۳۰، بدون تغییر فصلی) — همون افستی که تو Worker هم استفاده می‌شه ----
 const IRAN_OFFSET_MS = 3.5 * 60 * 60 * 1000;
 
@@ -2595,15 +2629,13 @@ function buildDateCards() {
     const dayFlights = allFlights.filter(f => f.route === state.route && f.flight_date === d);
     const openDayFlights = dayFlights.filter(f => !isFlightArchived(f));
     const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
-    const { weekday, label } = formatDateCard(d);
 
     const card = document.createElement('div');
     card.className = 'date-card' + (d === state.date ? ' active' : '');
     card.dataset.date = d;
     card.innerHTML = `
-      <div class="weekday">${weekday}</div>
-      <div class="daynum">${label}</div>
-      <div class="cardprice">${formatPriceShort(minPrice)}</div>`;
+      <div class="daynum">${formatDateCardCompact(d)}</div>
+      <div class="cardprice">${formatPriceCompact(minPrice)}</div>`;
     card.onclick = () => {
       state.date = d;
       document.querySelectorAll('.date-card').forEach(c =>
