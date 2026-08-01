@@ -90,6 +90,29 @@
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
+
+  /* --- پایه‌ی دسترس‌پذیری: outline قابل‌مشاهده برای ناوبری کیبورد روی هر
+     عنصر تعاملی، مگر جایی که خودش استایل focus-visible اختصاصی‌تر داره
+     (که چون بعداً تعریف شده، همون رو override می‌کنه) --- */
+  a, button, [tabindex] {
+    -webkit-tap-highlight-color: transparent;
+  }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* --- احترام به تنظیم کاربر برای کاهش انیمیشن (حرکت‌پریشی/vestibular) --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
   body {
     font-family: 'Yekan Bakh FaNum', 'Vazirmatn', Tahoma, sans-serif;
     font-feature-settings: "ss01" on, "cv01" on;
@@ -380,24 +403,23 @@
     margin: 14px 18px 0;
   }
 
-  /* --- نوار شاخص‌های گزارشی: چهار عدد کلیدی از وضعیت فعلی بازار، عنصر امضادار پنل --- */
+  /* --- نوار شاخص‌های گزارشی: سه عدد کلیدی از وضعیت فعلی بازار، در یک ردیف --- */
   .kpi-strip {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     margin: 18px 18px 0;
-  }
-  @media (min-width: 560px) {
-    .kpi-strip { grid-template-columns: repeat(4, 1fr); }
   }
   .kpi-card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: var(--radius-panel);
-    padding: 15px 14px;
+    border-radius: var(--radius-card-sm);
+    padding: 12px 8px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    text-align: center;
+    gap: 7px;
     box-shadow: var(--shadow-sm);
     min-width: 0;
     transition: transform .22s var(--ease-smooth), box-shadow .22s ease;
@@ -407,21 +429,20 @@
   }
   .kpi-icon {
     flex: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .kpi-icon svg { width: 13px; height: 13px; display: block; }
+  .kpi-icon svg { width: 12px; height: 12px; display: block; }
   .kpi-total .kpi-icon { background: var(--accent-tint); color: var(--accent-strong); }
   .kpi-up .kpi-icon { background: var(--danger-tint); color: var(--danger-strong); }
   .kpi-down .kpi-icon { background: var(--success-tint); color: var(--success-strong); }
-  .kpi-avg .kpi-icon { background: var(--accent-strong); color: #ffffff; }
-  .kpi-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .kpi-text { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; width: 100%; }
   .kpi-value {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 800;
     color: var(--ink);
     direction: ltr;
@@ -437,10 +458,10 @@
     font-weight: 600;
     color: var(--ink-muted);
     line-height: 1.25;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   /* --- انتخاب‌گر مبدأ / مقصد: کارت یکپارچه با دکمه‌ی جابجایی شناور روی خط میانی --- */
@@ -1921,7 +1942,7 @@
       <h1>رصد نرخ پرواز</h1>
     </div>
     <div class="sys-bar-right">
-      <span class="meta" id="meta">در حال بارگذاری...</span>
+      <span class="meta" id="meta" aria-live="polite">در حال بارگذاری...</span>
       <a href="routes.html" class="manage-routes-link" title="مدیریت مسیرها" aria-label="مدیریت مسیرها"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
     </div>
   </div>
@@ -1971,10 +1992,6 @@
     <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></span>
     <span class="kpi-text"><span class="kpi-value" id="kpiDown">—</span><span class="kpi-label">کاهش قیمت</span></span>
   </div>
-  <div class="kpi-card kpi-avg">
-    <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg></span>
-    <span class="kpi-text"><span class="kpi-value" id="kpiAvg">—</span><span class="kpi-label">میانگین نرخ (تومان)</span></span>
-  </div>
 </section>
 
 <div class="filter-toolbar" id="filterToolbar">
@@ -2002,7 +2019,7 @@
             <div class="modal-sub">بر اساس ایرلاین، شماره پرواز و کلاس</div>
           </div>
         </div>
-        <button class="modal-close" id="filterSheetClose" type="button">✕</button>
+        <button class="modal-close" id="filterSheetClose" type="button" aria-label="بستن">✕</button>
       </div>
     </div>
 
@@ -2053,7 +2070,7 @@
           <div class="modal-sub">ترتیب نمایش پروازهای این فهرست</div>
         </div>
       </div>
-      <button class="modal-close" id="sortSheetClose" type="button">✕</button>
+      <button class="modal-close" id="sortSheetClose" type="button" aria-label="بستن">✕</button>
     </div>
 
     <div class="sort-list" id="sortSegment">
@@ -2077,7 +2094,7 @@
 </dialog>
 
 <section class="movers-section" id="moversSection" style="display:none;">
-  <div class="movers-header" id="moversToggle">
+  <div class="movers-header" id="moversToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="moversList">
     <span class="movers-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg> پرتغییرترین پروازهای امروز</span>
     <span class="movers-toggle-icon" id="moversToggleIcon">▾</span>
   </div>
@@ -2085,7 +2102,7 @@
 </section>
 
 <section class="dtd-section" id="dtdSection" style="display:none;">
-  <div class="dtd-header" id="dtdToggle">
+  <div class="dtd-header" id="dtdToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="dtdBody">
     <span class="dtd-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg> منحنی قیمت بر اساس فاصله تا پرواز</span>
     <span class="dtd-toggle-icon" id="dtdToggleIcon">▾</span>
   </div>
@@ -2110,7 +2127,7 @@
   <div class="results-list" id="resultsList" style="display:none;"></div>
 
   <section class="closed-section collapsed" id="closedSection" style="display:none;">
-    <div class="closed-header" id="closedToggle">
+    <div class="closed-header" id="closedToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="closedList">
       <span class="closed-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> پروازهای بسته‌شده <span class="closed-count" id="closedCount"></span></span>
       <span class="closed-toggle-icon" id="closedToggleIcon">▾</span>
     </div>
@@ -2462,6 +2479,23 @@ function formatPriceShort(n) {
   return n.toLocaleString('en-US');
 }
 
+// ---- نمایش فوق‌فشرده‌ی مبلغ برای جاهای خیلی کم‌عرض (مثل کارت‌های
+// «پرتغییرترین‌ها»): مقیاس هزارتومان (مثل formatPriceCompact) ولی به‌جای
+// ویرگول جداکننده‌ی سه‌رقمی، از «/» استفاده می‌کنه — کوتاه‌تر و خواناتر
+// تو یه pill باریک. مثال: ۳,۸۶۳,۲۰۰ تومان -> ۳۸۶۳ هزار تومان -> «۳/۸۶۳»
+function formatPriceUltraCompact(n) {
+  if (!isFinite(n)) return '—';
+  const thousands = Math.floor(Math.abs(n) / 1000);
+  let s = String(thousands);
+  const groups = [];
+  while (s.length > 3) {
+    groups.unshift(s.slice(-3));
+    s = s.slice(0, -3);
+  }
+  groups.unshift(s);
+  return groups.join('/');
+}
+
 // ---- تاریخچه‌ی قیمت یک پرواز مشخص، مرتب‌شده بر اساس زمان ثبت (پایه‌ی مشترک برای نشان تغییر، اسپارک‌لاین و مودال) ----
 // هر رصد (هر ۲/۶/۱۲ ساعت) یک ردیف خام تو history.json ثبت می‌شه، حتی وقتی
 // قیمت هیچ تغییری نکرده — چون این دیتا برای «آخرین وضعیت» هم لازمه.
@@ -2666,11 +2700,11 @@ function openRoutePicker(type) {
           <div class="modal-title">${type === 'origin' ? 'انتخاب مبدأ' : 'انتخاب مقصد'}</div>
           <div class="modal-sub">${toFaDigits(options.length)} مسیر موجود</div>
         </div>
-        <button class="modal-close">✕</button>
+        <button class="modal-close" type="button" aria-label="بستن">✕</button>
       </div>
       <div class="search-input-wrap">
         <input type="text" class="picker-search" id="pickerSearchInput" placeholder="جستجوی شهر یا فرودگاه...">
-        <button type="button" class="picker-search-clear" id="pickerSearchClear" style="display:none;">✕</button>
+        <button type="button" class="picker-search-clear" id="pickerSearchClear" style="display:none;" aria-label="پاک کردن جستجو">✕</button>
       </div>
       <div class="picker-recent" id="pickerRecent"></div>
       <div class="picker-list" id="pickerList"></div>
@@ -2883,15 +2917,28 @@ function bindControls() {
       if (sortOverlay) closeSheet(sortOverlay);
     });
   });
-  document.getElementById('moversToggle').addEventListener('click', () => {
-    document.getElementById('moversSection').classList.toggle('collapsed');
-  });
-  document.getElementById('dtdToggle').addEventListener('click', () => {
-    document.getElementById('dtdSection').classList.toggle('collapsed');
-  });
-  document.getElementById('closedToggle').addEventListener('click', () => {
-    document.getElementById('closedSection').classList.toggle('collapsed');
-  });
+  // ---- بخش‌های جمع‌شونده (پرتغییرترین‌ها/منحنی DTD/بسته‌شده‌ها): هم با کلیک
+  // و هم با کیبورد (Enter/Space) باز و بسته می‌شن، و aria-expanded هم‌قدم با
+  // وضعیت واقعی‌شون به‌روز می‌مونه — برای کاربرهای صفحه‌خوان/ناوبری کیبوردی
+  function wireCollapsible(toggleId, sectionId) {
+    const toggle = document.getElementById(toggleId);
+    const section = document.getElementById(sectionId);
+    if (!toggle || !section) return;
+    const apply = () => {
+      const collapsed = section.classList.toggle('collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+    };
+    toggle.addEventListener('click', apply);
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        apply();
+      }
+    });
+  }
+  wireCollapsible('moversToggle', 'moversSection');
+  wireCollapsible('dtdToggle', 'dtdSection');
+  wireCollapsible('closedToggle', 'closedSection');
 
   // ---- شیت فیلتر و شیت مرتب‌سازی: هر دو روی همون سیستم شیت بومی پروژه
   // (presentSheet/closeSheet/wireDialogDismiss/wireSheetDrag) اجرا می‌شن —
@@ -2999,7 +3046,7 @@ function buildMoversList() {
         <span class="mover-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
       </span>
       <div class="mover-flightno">${f.flight_no || ''}</div>
-      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceShort(Math.abs(change.diff))}</div>`;
+      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceUltraCompact(Math.abs(change.diff))}</div>`;
     card.onclick = () => openHistoryModal(f);
     list.appendChild(card);
   });
@@ -3329,20 +3376,15 @@ function buildKpiStrip(rows) {
   strip.style.display = 'grid';
 
   let upCount = 0, downCount = 0;
-  let priceSum = 0, priceCount = 0;
   rows.forEach(f => {
     const change = getLatestChange(f);
     if (change && change.diff > 0) upCount++;
     else if (change && change.diff < 0) downCount++;
-    const p = toPriceNumber(f.adult_price);
-    if (isFinite(p)) { priceSum += p; priceCount++; }
   });
-  const avg = priceCount ? Math.round(priceSum / priceCount) : null;
 
   document.getElementById('kpiTotal').textContent = toFaDigits(rows.length);
   document.getElementById('kpiUp').textContent = toFaDigits(upCount);
   document.getElementById('kpiDown').textContent = toFaDigits(downCount);
-  document.getElementById('kpiAvg').textContent = avg !== null ? formatPriceShort(avg) : '—';
 }
 
 // ---- نشان تغییر نرخ: افزایش/کاهش/بدون تغییر با آیکون مدرن روند ----
@@ -3716,7 +3758,7 @@ function openHistoryModal(f) {
               ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
             </div>
           </div>
-          <button class="modal-close">✕</button>
+          <button class="modal-close" type="button" aria-label="بستن">✕</button>
         </div>
 
         <div class="price-hero">
