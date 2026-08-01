@@ -1509,13 +1509,50 @@ function cabinBadgeIfNotEconomy(raw) {
 }
 
 // ---- لوگوی ایرلاین‌ها: هر ایرلاین رو اینجا به مسیر فایل لوگو وصل کن ----
-// مثال: 'ماهان ایر': 'logos/mahan.png'
-const AIRLINE_LOGOS = {};
+const AIRLINE_LOGOS = {
+  'ماهان': 'logos/mahan.svg',
+  'ماهان ایر': 'logos/mahan.svg',
+  'ايران اير': 'logos/iranair.svg',
+  'ایران ایر': 'logos/iranair.svg',
+  'هما': 'logos/iranair.svg',
+  'آتا': 'logos/ata.svg',
+  'اتا': 'logos/ata.svg',
+  'زاگرس': 'logos/zagros.svg',
+  'قشم اير': 'logos/qeshm.svg',
+  'قشم ایر': 'logos/qeshm.svg',
+  'کيش اير': 'logos/kishair.svg',
+  'کیش ایر': 'logos/kishair.svg',
+  'فلای پرشیا': 'logos/flypersia.svg',
+  'فلای کیش': 'logos/flykish.svg',
+  'تابان': 'logos/taban.svg',
+  'ساها': 'logos/saha.svg',
+  'معراج': 'logos/meraj.svg',
+  'سپهران': 'logos/sepehran.svg',
+  'نسیم ایر': 'logos/nasimair.svg',
+  'سروش ایر': 'logos/soroush.svg',
+  'سروش': 'logos/soroush.svg',
+  'وارش': 'logos/varesh.svg',
+  'چابهار': 'logos/chabahar.svg',
+  'کاسپين': 'logos/caspian.svg',
+  'کاسپین': 'logos/caspian.svg',
+  'ايران ايرتور': 'logos/iran-airtour.svg',
+  'ایران ایرتور': 'logos/iran-airtour.svg',
+  'آوا': 'logos/ava.svg',
+  'اوا': 'logos/ava.svg',
+  'آسمان': 'logos/aseman.svg',
+  'اسمان': 'logos/aseman.svg',
+  'پارس': 'logos/pars.svg',
+  'پارس ایر': 'logos/pars.svg',
+  'آسا جت': 'logos/asajet.svg',
+  'اسا جت': 'logos/asajet.svg',
+  'ری مون': 'logos/reymoon.svg',
+  'ریمون': 'logos/reymoon.svg'
+};
 function slugifyAirline(name) {
   return String(name || '').trim().toLowerCase().replace(/\s+/g, '-');
 }
 function airlineLogoSrc(name) {
-  return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.png`;
+  return AIRLINE_LOGOS[name] || `logos/${slugifyAirline(name)}.svg`;
 }
 
 // ---- لوگوی فروشنده‌ها: هر فروشنده رو اینجا به مسیر فایل لوگو وصل کن ----
