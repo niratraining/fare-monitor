@@ -560,20 +560,19 @@
     padding: 3px 2px 4px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
   }
   .date-cards::-webkit-scrollbar { display: none; }
   .date-card {
     flex: 0 0 auto;
     min-width: 74px;
     background: var(--card);
-    border: 1px solid var(--line);
+    border: 1px solid rgba(30, 41, 38, 0.08);
     border-radius: var(--radius-field);
     padding: 9px 7px;
     text-align: center;
     cursor: pointer;
     color: var(--ink-soft);
+    box-shadow: 0 2px 6px rgba(30, 41, 38, 0.10);
     transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
   .date-card .weekday {
