@@ -513,6 +513,63 @@
     line-height: 1.7;
   }
 
+  /* --- بخش جمع‌شونده‌ی پروازهای بسته‌شده (نرخ‌گذاری‌شون تو سپهر تموم شده) --- */
+  .closed-section {
+    margin: 14px 12px 0;
+    border-radius: 18px;
+    padding: 12px 14px 10px;
+    background: #eef0f2;
+    border: 1px dashed #cfd4db;
+  }
+  .closed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .closed-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #5a6a82;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .closed-count { font-weight: 700; color: #7c899d; }
+  .closed-toggle-icon {
+    font-size: 11px;
+    color: #6b7a8f;
+    transition: transform .2s ease;
+  }
+  .closed-section.collapsed .closed-toggle-icon { transform: rotate(-90deg); }
+  .closed-section.collapsed .closed-list { display: none; }
+  .closed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+  }
+  .closed-list .flight-card { opacity: .72; }
+
+  .fc-closed-badge {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    padding: 4px 12px 4px 10px;
+    border-radius: 0 8px 8px 0;
+    background: #6b7a8f;
+    box-shadow: 0 2px 6px rgba(10, 12, 17, 0.18);
+  }
+
   /* --- کشوی فیلتر و مرتب‌سازی: مینیمال، زیر هیرو، به‌صورت پیش‌فرض جمع‌شده --- */
   .filter-drawer {
     background: white;
@@ -1278,6 +1335,14 @@
   </div>
   <div id="empty" style="display:none;">هیچ پروازی با این فیلترها پیدا نشد.</div>
   <div class="results-list" id="resultsList" style="display:none;"></div>
+
+  <section class="closed-section collapsed" id="closedSection" style="display:none;">
+    <div class="closed-header" id="closedToggle">
+      <span class="closed-title">🔒 پروازهای بسته‌شده <span class="closed-count" id="closedCount"></span></span>
+      <span class="closed-toggle-icon" id="closedToggleIcon">▾</span>
+    </div>
+    <div class="closed-list" id="closedList"></div>
+  </section>
 </main>
 
 <script>
@@ -1707,11 +1772,9 @@ function buildDateCards() {
   const el = document.getElementById('dateCards');
   el.innerHTML = '';
   dates.forEach(d => {
-    const minPrice = Math.min(
-      ...allFlights
-        .filter(f => f.route === state.route && f.flight_date === d)
-        .map(f => toPriceNumber(f.adult_price))
-    );
+    const dayFlights = allFlights.filter(f => f.route === state.route && f.flight_date === d);
+    const openDayFlights = dayFlights.filter(f => !f.closed);
+    const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
     const { weekday, label } = formatDateCard(d);
 
     const card = document.createElement('div');
@@ -1802,6 +1865,9 @@ function bindControls() {
   document.getElementById('dtdToggle').addEventListener('click', () => {
     document.getElementById('dtdSection').classList.toggle('collapsed');
   });
+  document.getElementById('closedToggle').addEventListener('click', () => {
+    document.getElementById('closedSection').classList.toggle('collapsed');
+  });
   document.getElementById('filterTrigger').addEventListener('click', () => {
     document.getElementById('filterDrawer').classList.toggle('open');
   });
@@ -1831,7 +1897,7 @@ function computeMovers(limit) {
   const items = [];
   // فقط پروازهای همون مسیر + همون تاریخ فعال (تب تاریخ انتخاب‌شده)، نه کل تاریخ‌ها با هم قاطی
   allFlights
-    .filter(f => f.route === state.route && f.flight_date === state.date)
+    .filter(f => f.route === state.route && f.flight_date === state.date && !f.closed)
     .forEach(f => {
       const change = getLatestChange(f);
       if (change && change.diff !== 0) items.push({ f, change });
@@ -1882,7 +1948,7 @@ function getMarketPosition(f) {
   if (!isFinite(price)) return null;
   const cabinKey = normalizeCabin(f.cabin);
   const peerPrices = allFlights
-    .filter(x => x.route === f.route && x.flight_date === f.flight_date && normalizeCabin(x.cabin) === cabinKey)
+    .filter(x => x.route === f.route && x.flight_date === f.flight_date && !x.closed && normalizeCabin(x.cabin) === cabinKey)
     .map(x => toPriceNumber(x.adult_price))
     .filter(p => isFinite(p));
   if (peerPrices.length < 2) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
@@ -2118,6 +2184,14 @@ function render() {
 
   const list = document.getElementById('resultsList');
   list.innerHTML = '';
+
+  // پروازهایی که دیگه تو آخرین رصد سپهر دیده نشدن (یعنی نرخ‌گذاری‌شون
+  // تموم شده / فروششون بسته شده) از لیست اصلی جدا می‌شن و می‌رن تو
+  // یه بخش جمع‌شونده‌ی «بسته‌شده»‌ی پایین صفحه — کارت‌هاشون دست‌نخورده
+  // و با کلیک همون تاریخچه‌ی قیمت رو نشون می‌ده، فقط رو صدر لیست شلوغ نمی‌کنن
+  const closedRows = rows.filter(f => f.closed);
+  rows = rows.filter(f => !f.closed);
+
   rows.forEach((f, idx) => {
     const card = buildFlightCard(f, getLatestChange(f));
     card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
@@ -2125,8 +2199,30 @@ function render() {
   });
 
   list.style.display = rows.length ? 'flex' : 'none';
-  document.getElementById('empty').style.display = rows.length ? 'none' : 'block';
+  document.getElementById('empty').style.display = (rows.length === 0 && closedRows.length === 0) ? 'block' : 'none';
+  buildClosedSection(closedRows);
   updateFilterBadge();
+}
+
+// ---- پروازهایی که دیگه تو آخرین رصد سپهر نبودن (بسته‌شده/فروش تموم‌شده) — جمع‌شده، ولی کارت‌هاشون دست‌نخورده و با کلیک تاریخچه‌شون قابل مشاهده‌ست ----
+function buildClosedSection(closedRows) {
+  const section = document.getElementById('closedSection');
+  const list = document.getElementById('closedList');
+  const countEl = document.getElementById('closedCount');
+
+  if (!closedRows.length) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  countEl.textContent = `(${toFaDigits(closedRows.length)} پرواز)`;
+  list.innerHTML = '';
+  closedRows.forEach((f, idx) => {
+    const card = buildFlightCard(f, getLatestChange(f));
+    card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
+    list.appendChild(card);
+  });
 }
 
 // ---- نشان تغییر نرخ: افزایش/کاهش/بدون تغییر با آیکون مدرن روند ----
@@ -2156,7 +2252,7 @@ function buildFlightCard(f, change) {
   card.className = 'flight-card';
   card.innerHTML = `
     ${buildChangeBadge(change)}
-    ${buildAnomalyBadge(anomaly)}
+    ${f.closed ? '<span class="fc-closed-badge">🔒 بسته‌شده در سپهر</span>' : buildAnomalyBadge(anomaly)}
     <div class="fc-top">
       <div class="fc-airline">
         <span class="fc-logo">
