@@ -2306,9 +2306,9 @@ function buildChangeBadge(change) {
 // افتاده یا نه — نه برای تصمیم‌گیری واقعی رصد (اون هنوز کامل رو Worker‌ه).
 function tierIntervalHoursFE(dtdDays) {
   if (dtdDays <= 0) return 20 / 60;
-  if (dtdDays <= 1) return 1;
-  if (dtdDays <= 3) return 2;
-  if (dtdDays <= 7) return 4;
+  if (dtdDays <= 1) return 0.5;
+  if (dtdDays <= 3) return 1;
+  if (dtdDays <= 7) return 3;
   return 12;
 }
 
