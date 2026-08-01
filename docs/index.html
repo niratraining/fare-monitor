@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <style>
   /* --- فونت اختصاصی اعداد: Yekan Bakh FaNum ---
      این فونت لایسنس‌دار/تجاریه، پس فایل باینری‌ش رو نمی‌شه به‌صورت خودکار تهیه کرد؛
@@ -833,74 +834,148 @@
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
   }
 
-  /* --- کشوی فیلتر و مرتب‌سازی: مینیمال، زیر هیرو، به‌صورت پیش‌فرض جمع‌شده --- */
-  .filter-drawer {
-    background: var(--card);
+  /* --- نوار ابزار فیلتر/مرتب‌سازی: الگوی استاندارد اپ‌های رزرو (دو دکمه‌ی قرصی
+     زیر نوار KPI، چسبان زیر هدر)؛ هرکدوم یه شیت پایین‌رونده‌ی جدا باز می‌کنن --- */
+  .filter-toolbar {
+    display: flex;
+    gap: 8px;
     margin: 10px 16px 0;
-    border-radius: var(--radius-panel);
+    padding: 8px;
+    background: var(--card);
     border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-    overflow: hidden;
   }
-  .filter-trigger {
+  .ft-btn {
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    border-bottom: 1px solid transparent;
-  }
-  .filter-drawer.open .filter-trigger { border-bottom-color: var(--line); }
-  .filter-trigger-label {
-    display: flex;
-    align-items: center;
+    justify-content: center;
     gap: 7px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .01em;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
     color: var(--ink);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s ease, border-color .15s ease, transform .12s ease;
+    position: relative;
+    min-width: 0;
   }
-  .filter-trigger-label .fi {
-    display: inline-flex;
-    flex: none;
-    width: 13px;
-    height: 13px;
-    color: var(--accent);
-  }
-  .filter-trigger-label .fi svg { width: 100%; height: 100%; display: block; }
-  .filter-trigger-right { display: flex; align-items: center; gap: 8px; }
+  .ft-btn:active { transform: scale(.97); }
+  .ft-btn.has-active { background: var(--accent-tint); border-color: var(--accent-bright); color: var(--accent-strong); }
+  .ft-btn .fi { display: inline-flex; flex: none; width: 14px; height: 14px; color: var(--accent); }
+  .ft-btn.has-active .fi { color: var(--accent-strong); }
+  .ft-btn .fi svg { width: 100%; height: 100%; display: block; }
+  .ft-btn-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ft-chevron { flex: none; width: 8px; height: 8px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-top: -3px; opacity: .55; }
   .filter-badge {
     display: none;
     min-width: 16px;
     height: 16px;
     padding: 0 5px;
-    border-radius: 4px;
-    background: var(--accent);
+    border-radius: 999px;
+    background: var(--accent-strong);
     color: #ffffff;
     font-size: 10px;
     font-weight: 800;
     align-items: center;
     justify-content: center;
+    flex: none;
   }
   .filter-badge.show { display: inline-flex; }
-  .filter-trigger-chevron {
-    font-size: 10px;
-    color: var(--ink-soft);
-    transition: transform .25s ease;
-  }
-  .filter-drawer.open .filter-trigger-chevron { transform: rotate(180deg); }
-  .filter-drawer-body {
-    max-height: 0;
+
+  /* --- محتوای شیت فیلتر/مرتب‌سازی: دکمه‌های پایین ثابت می‌مونن، فقط بدنه اسکرول می‌کنه --- */
+  .filter-sheet-card {
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    transition: max-height .28s ease;
   }
-  .filter-drawer.open .filter-drawer-body {
-    max-height: 640px;
+  .filter-sheet-card .modal-scroll-body {
+    flex: 1;
+    min-height: 0;
+    padding-top: 2px;
+  }
+  .filter-sheet-footer {
+    flex: none;
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 6px;
     border-top: 1px solid var(--line);
   }
-  .filter-drawer-inner { padding: 12px 14px 13px; }
+  .fs-btn-secondary, .fs-btn-primary {
+    flex: 1;
+    border: none;
+    border-radius: var(--radius-field);
+    padding: 12px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s ease, transform .12s ease;
+  }
+  .fs-btn-secondary { background: var(--paper); color: var(--ink-soft); border: 1px solid var(--line); }
+  .fs-btn-secondary:active { transform: scale(.98); }
+  .fs-btn-primary { background: var(--accent-strong); color: #fff; box-shadow: 0 6px 16px -4px rgba(29,52,85,.4); }
+  .fs-btn-primary:active { transform: scale(.98); }
+
+  /* --- لیست عمودی گزینه‌های مرتب‌سازی: الگوی استاندارد شیت مرتب‌سازی (رادیو + تیک) --- */
+  .sort-list { display: flex; flex-direction: column; gap: 4px; padding-bottom: 4px; }
+  .sort-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: var(--radius-field);
+    padding: 12px 10px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: right;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .sort-row:active { background: var(--paper); }
+  .sort-row.active { background: var(--accent-tint); border-color: var(--accent-bright); font-weight: 700; color: var(--accent-strong); }
+  .sort-row-icon {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--paper);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sort-row.active .sort-row-icon { background: var(--accent-strong); color: #fff; }
+  .sort-row-icon svg { width: 15px; height: 15px; }
+  .sort-row-label { flex: 1; min-width: 0; }
+  .sort-row-check {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.6px solid var(--line);
+    position: relative;
+  }
+  .sort-row.active .sort-row-check { border-color: var(--accent-strong); background: var(--accent-strong); }
+  .sort-row.active .sort-row-check::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: #fff;
+  }
 
   .filter-group { margin-bottom: 12px; }
   .filter-group:last-child { margin-bottom: 0; }
@@ -950,34 +1025,6 @@
     outline: none;
     border-color: var(--accent);
     background: white;
-  }
-
-  .sort-segment {
-    display: flex;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-field);
-    padding: 3px;
-    gap: 2px;
-  }
-  .sort-option {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: var(--ink-soft);
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 7px 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background .15s ease, color .15s ease;
-    white-space: nowrap;
-  }
-  .sort-option.active {
-    background: var(--accent-strong);
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(29, 52, 85, 0.26);
   }
 
   /* ردیف چیپ‌ها به‌صورت اسکرول افقی تا فضای عمودی اشغال نکنه */
@@ -1326,11 +1373,14 @@
     max-height: 88vh;
     overflow-y: auto;
     transform: translateY(100%);
-    transition: transform .38s cubic-bezier(.32,.72,0,1);
+    opacity: 0;
     will-change: transform;
     box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
   }
-  .modal-card.is-shown { transform: translateY(0); }
+  /* انیمیشن باز/بسته‌شدن دیگه با GSAP کنترل می‌شه (توابع presentSheet/closeSheet)؛
+     این کلاس فقط برای حالتی نگه داشته شده که GSAP به هر دلیلی لود نشده باشه (fallback با transition ساده) */
+  .modal-card.is-shown { transform: translateY(0); opacity: 1; }
+  .no-gsap .modal-card { transition: transform .38s cubic-bezier(.32,.72,0,1), opacity .3s ease; }
   .modal-card::before {
     content: "";
     position: absolute;
@@ -1704,19 +1754,31 @@
   </div>
 </section>
 
-<div class="filter-drawer" id="filterDrawer">
-  <div class="filter-trigger" id="filterTrigger">
-    <span class="filter-trigger-label">
-      <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
-      فیلتر و مرتب‌سازی
-    </span>
-    <span class="filter-trigger-right">
-      <span class="filter-badge" id="filterBadge"></span>
-      <span class="filter-trigger-chevron">▾</span>
-    </span>
-  </div>
-  <div class="filter-drawer-body" id="filterDrawerBody">
-    <div class="filter-drawer-inner">
+<div class="filter-toolbar" id="filterToolbar">
+  <button type="button" class="ft-btn" id="filterBtn">
+    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
+    <span class="ft-btn-label">فیلتر</span>
+    <span class="filter-badge" id="filterBadge"></span>
+  </button>
+  <button type="button" class="ft-btn" id="sortBtn">
+    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4 3.5 7.5M7 4l3.5 3.5"/><path d="M17 20V4M17 20l3.5-3.5M17 20l-3.5-3.5"/></svg></span>
+    <span class="ft-btn-label" id="sortBtnLabel">ساعت پرواز</span>
+    <span class="ft-chevron"></span>
+  </button>
+</div>
+
+<dialog class="modal-overlay" id="filterSheetOverlay">
+  <div class="modal-card filter-sheet-card">
+    <div class="sheet-handle"></div>
+    <div class="modal-sticky-top">
+      <div class="modal-header">
+        <div class="modal-header-main">
+          <div class="modal-title">فیلتر پروازها</div>
+        </div>
+        <button class="modal-close" id="filterSheetClose" type="button">✕</button>
+      </div>
+    </div>
+    <div class="modal-scroll-body">
       <div class="filter-group">
         <div class="filter-group-label">
           <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11z"/><path d="M5 11h7"/></svg></span>
@@ -1727,39 +1789,58 @@
 
       <div class="filter-group">
         <div class="filter-group-label">
-          <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
-          مرتب‌سازی
+          <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 0-1.3.4l-.7.9c-.4.5-.2 1.2.3 1.5L9 12l-2 3H4l-1 1.5 3.5 1.5L8 21.5 9 20.5v-3l3-2 2.8 6.3c.3.5 1 .7 1.5.3l.9-.7c.4-.3.5-.8.4-1.3z"/></svg></span>
+          شماره پرواز
         </div>
-        <div class="sort-segment" id="sortSegment">
-          <button type="button" class="sort-option active" data-value="time_asc">ساعت پرواز</button>
-          <button type="button" class="sort-option" data-value="change_desc">بیشترین افزایش</button>
-          <button type="button" class="sort-option" data-value="change_asc">بیشترین کاهش</button>
+        <div class="search-input-wrap">
+          <input type="text" id="flightSearch" placeholder="مثلاً 6846" inputmode="numeric">
+          <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
         </div>
       </div>
 
-      <div class="filter-row">
-        <div class="filter-group">
-          <div class="filter-group-label">
-            <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 0-1.3.4l-.7.9c-.4.5-.2 1.2.3 1.5L9 12l-2 3H4l-1 1.5 3.5 1.5L8 21.5 9 20.5v-3l3-2 2.8 6.3c.3.5 1 .7 1.5.3l.9-.7c.4-.3.5-.8.4-1.3z"/></svg></span>
-            شماره پرواز
-          </div>
-          <div class="search-input-wrap">
-            <input type="text" id="flightSearch" placeholder="مثلاً 6846" inputmode="numeric">
-            <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
-          </div>
+      <div class="filter-group">
+        <div class="filter-group-label">
+          <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="2.5"/><path d="M4 10h16M9 3v13"/><path d="M7 20h10"/></svg></span>
+          کلاس پروازی
         </div>
-
-        <div class="filter-group">
-          <div class="filter-group-label">
-            <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="13" rx="2.5"/><path d="M4 10h16M9 3v13"/><path d="M7 20h10"/></svg></span>
-            کلاس پروازی
-          </div>
-          <div class="airline-chips" id="cabinChips"></div>
-        </div>
+        <div class="airline-chips" id="cabinChips"></div>
       </div>
     </div>
+    <div class="filter-sheet-footer">
+      <button type="button" class="fs-btn-secondary" id="filterSheetReset">پاک‌کردن فیلترها</button>
+      <button type="button" class="fs-btn-primary" id="filterSheetApply">مشاهده‌ی نتایج</button>
+    </div>
   </div>
-</div>
+</dialog>
+
+<dialog class="modal-overlay" id="sortSheetOverlay">
+  <div class="modal-card sort-sheet-card">
+    <div class="sheet-handle"></div>
+    <div class="modal-header">
+      <div class="modal-header-main">
+        <div class="modal-title">مرتب‌سازی</div>
+      </div>
+      <button class="modal-close" id="sortSheetClose" type="button">✕</button>
+    </div>
+    <div class="sort-list" id="sortSegment">
+      <button type="button" class="sort-option sort-row active" data-value="time_asc">
+        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+        <span class="sort-row-label">ساعت پرواز</span>
+        <span class="sort-row-check"></span>
+      </button>
+      <button type="button" class="sort-option sort-row" data-value="change_desc">
+        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span>
+        <span class="sort-row-label">بیشترین افزایش قیمت</span>
+        <span class="sort-row-check"></span>
+      </button>
+      <button type="button" class="sort-option sort-row" data-value="change_asc">
+        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></span>
+        <span class="sort-row-label">بیشترین کاهش قیمت</span>
+        <span class="sort-row-check"></span>
+      </button>
+    </div>
+  </div>
+</dialog>
 
 <section class="movers-section" id="moversSection" style="display:none;">
   <div class="movers-header" id="moversToggle">
@@ -1833,23 +1914,42 @@ const ICONS = {
   infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
 };
 
-// ---- باز کردن نرم یک شیت: اول به DOM اضافه و showModal می‌شه (کارت هنوز translateY(100%)ه،
-// چون کلاس is-shown نداره)، بعد با دو فریم تأخیر کلاس is-shown اضافه می‌شه تا مرورگر فرصت
-// paint کردن حالت اولیه رو داشته باشه و transition واقعاً از پایین به بالا پخش بشه؛
-// بدون این تأخیر، چون [open] و کلاس همزمان اعمال می‌شدن، شیت یهو ظاهر می‌شد نه نرم ----
+// ---- انیمیشن نرمِ شیت با GSAP: به‌جای transition خام CSS (که روی خیلی از موبایل‌ها
+// به‌خاطر جهش فریم اول یا تداخل با استایل پیش‌فرض <dialog> «سفت» و پرشی به‌نظر می‌رسید)،
+// از gsap.fromTo با easing نرم و کمی overshoot طبیعی (مثل شیت‌های iOS/Android) استفاده
+// می‌کنیم. اگه به هر دلیلی GSAP لود نشده باشه، fallback روی همون transition ساده‌ی CSS ----
+const hasGSAP = typeof gsap !== 'undefined';
+if (!hasGSAP) document.documentElement.classList.add('no-gsap');
+
+// ---- باز کردن نرم یک شیت: اول به DOM اضافه و showModal می‌شه، بعد کارت از پایین با
+// یه easing نرم (خروج آروم، بدون ضربه) میاد بالا؛ سایه/بک‌دراپ هم هم‌زمان محو می‌شه ----
 function presentSheet(overlay) {
   document.body.appendChild(overlay);
   overlay.showModal();
   const card = overlay.querySelector('.modal-card');
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    if (card) card.classList.add('is-shown');
-  }));
+  if (card) {
+    if (hasGSAP) {
+      gsap.killTweensOf(card);
+      gsap.set(card, { y: '100%', opacity: 0 });
+      requestAnimationFrame(() => {
+        gsap.to(card, {
+          y: '0%',
+          opacity: 1,
+          duration: .5,
+          ease: 'power3.out',
+        });
+      });
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        card.classList.add('is-shown');
+      }));
+    }
+  }
   wireSheetDrag(overlay);
 }
 
-// ---- بستن نرم یک شیت/مودال (dialog بومی): حذف کلاس is-shown، transition تعریف‌شده
-// روی .modal-card خودش کارت رو به پایین می‌بره؛ بعد از تمومِ transition (یا مهلت fallback،
-// برای حالتی که transitionend به هر دلیلی نیاد) از DOM حذف می‌شه ----
+// ---- بستن نرم یک شیت/مودال (dialog بومی): کارت با شتاب‌گیری نرم به پایین می‌ره
+// (ease ورودی نرم، نه خطی/سفت)؛ بعد از تمومِ انیمیشن (یا مهلت fallback) از DOM حذف می‌شه ----
 // onDone (اختیاری): بعد از حذف کامل از DOM اجرا می‌شه؛ برای زنجیره‌کردن باز شدن شیت بعدی به‌کار می‌ره
 function closeSheet(overlay, onDone) {
   if (!overlay || overlay.classList.contains('closing')) return;
@@ -1864,9 +1964,20 @@ function closeSheet(overlay, onDone) {
     if (typeof onDone === 'function') onDone();
   };
   if (card) {
-    card.classList.remove('is-shown');
-    card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
-    setTimeout(finish, 450);
+    if (hasGSAP) {
+      gsap.killTweensOf(card);
+      gsap.to(card, {
+        y: '100%',
+        opacity: 0,
+        duration: .36,
+        ease: 'power2.in',
+        onComplete: finish,
+      });
+    } else {
+      card.classList.remove('is-shown');
+      card.addEventListener('transitionend', (e) => { if (e.propertyName === 'transform') finish(); }, { once: true });
+    }
+    setTimeout(finish, 550);
   } else {
     finish();
   }
@@ -1891,22 +2002,25 @@ function wireSheetDrag(overlay) {
     dragging = true;
     startY = e.clientY;
     cardH = card.getBoundingClientRect().height || 1;
-    card.style.transition = 'none';
+    if (hasGSAP) gsap.killTweensOf(card);
+    else card.style.transition = 'none';
     if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (_) {} }
   };
   const onMove = (e) => {
     if (!dragging) return;
     dragY = Math.max(0, e.clientY - startY);
-    card.style.transform = `translateY(${dragY}px)`;
+    if (hasGSAP) gsap.set(card, { y: dragY });
+    else card.style.transform = `translateY(${dragY}px)`;
   };
   const onUp = () => {
     if (!dragging) return;
     dragging = false;
     const shouldClose = dragY > cardH * 0.24;
     if (shouldClose) {
-      card.style.transition = 'transform .2s cubic-bezier(.4,0,1,1)';
-      card.style.transform = `translateY(${cardH}px)`;
       closeSheet(overlay);
+    } else if (hasGSAP) {
+      // برگشت نرم سرجاش با یه فنر ملایم، نه پرش سفت
+      gsap.to(card, { y: '0%', duration: .45, ease: 'elastic.out(1, 0.75)' });
     } else {
       card.style.transition = 'transform .22s cubic-bezier(.32,.72,0,1)';
       card.style.transform = '';
@@ -2490,7 +2604,11 @@ function bindControls() {
       state.sort = btn.dataset.value;
       document.querySelectorAll('.sort-option').forEach(b =>
         b.classList.toggle('active', b === btn));
+      const labelEl = document.getElementById('sortBtnLabel');
+      const rowLabel = btn.querySelector('.sort-row-label');
+      if (labelEl) labelEl.textContent = rowLabel ? rowLabel.textContent : btn.textContent;
       render();
+      closeSheet(document.getElementById('sortSheetOverlay'));
     });
   });
   document.getElementById('moversToggle').addEventListener('click', () => {
@@ -2502,9 +2620,21 @@ function bindControls() {
   document.getElementById('closedToggle').addEventListener('click', () => {
     document.getElementById('closedSection').classList.toggle('collapsed');
   });
-  document.getElementById('filterTrigger').addEventListener('click', () => {
-    document.getElementById('filterDrawer').classList.toggle('open');
-  });
+
+  // ---- شیت فیلتر و شیت مرتب‌سازی: دو دکمه‌ی قرصیِ نوار ابزار، هرکدوم شیت خودشون
+  // رو با presentSheet/closeSheet مشترک (همون سیستم شیت جزئیات پرواز) باز می‌کنن ----
+  const filterOverlay = document.getElementById('filterSheetOverlay');
+  const sortOverlay = document.getElementById('sortSheetOverlay');
+  wireDialogDismiss(filterOverlay);
+  wireDialogDismiss(sortOverlay);
+
+  document.getElementById('filterBtn').addEventListener('click', () => presentSheet(filterOverlay));
+  document.getElementById('sortBtn').addEventListener('click', () => presentSheet(sortOverlay));
+  document.getElementById('filterSheetClose').addEventListener('click', () => closeSheet(filterOverlay));
+  document.getElementById('sortSheetClose').addEventListener('click', () => closeSheet(sortOverlay));
+  document.getElementById('filterSheetApply').addEventListener('click', () => closeSheet(filterOverlay));
+  document.getElementById('filterSheetReset').addEventListener('click', resetAllFilters);
+
   document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
 }
 
@@ -2523,24 +2653,30 @@ function resetAllFilters() {
 
   document.querySelectorAll('.sort-option').forEach(b =>
     b.classList.toggle('active', b.dataset.value === 'time_asc'));
+  const sortLabelEl = document.getElementById('sortBtnLabel');
+  if (sortLabelEl) sortLabelEl.textContent = 'ساعت پرواز';
 
   render();
 }
 
-// ---- نشان‌دادن تعداد فیلترهای فعال روی دکمه‌ی کشو، وقتی خودِ کشو بسته‌ست هم معلوم باشه چیزی فیلتر شده ----
+// ---- نشان‌دادن تعداد فیلترهای فعال روی دکمه‌ی «فیلتر»، و حالت فعال روی دکمه‌ی «مرتب‌سازی» ----
 function updateFilterBadge() {
   let count = 0;
   if (state.airlines.size > 0) count++;
   if (state.cabins.size > 0) count++;
   if (state.flightSearch) count++;
-  if (state.sort !== 'time_asc') count++;
   const badge = document.getElementById('filterBadge');
+  const filterBtn = document.getElementById('filterBtn');
   if (count > 0) {
     badge.textContent = toFaDigits(count);
     badge.classList.add('show');
+    if (filterBtn) filterBtn.classList.add('has-active');
   } else {
     badge.classList.remove('show');
+    if (filterBtn) filterBtn.classList.remove('has-active');
   }
+  const sortBtn = document.getElementById('sortBtn');
+  if (sortBtn) sortBtn.classList.toggle('has-active', state.sort !== 'time_asc');
 }
 
 // ===========================================================
