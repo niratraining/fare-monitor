@@ -7,6 +7,10 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script type="module">
+  import { registerSheetElements } from "https://cdn.jsdelivr.net/npm/pure-web-bottom-sheet/+esm";
+  registerSheetElements();
+</script>
 <style>
   /* --- فونت اختصاصی اعداد: Yekan Bakh FaNum ---
      این فونت لایسنس‌دار/تجاریه، پس فایل باینری‌ش رو نمی‌شه به‌صورت خودکار تهیه کرد؛
@@ -888,18 +892,7 @@
   }
   .filter-badge.show { display: inline-flex; }
 
-  /* --- محتوای شیت فیلتر/مرتب‌سازی: دکمه‌های پایین ثابت می‌مونن، فقط بدنه اسکرول می‌کنه --- */
-  .filter-sheet-card {
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .filter-sheet-card .modal-scroll-body {
-    flex: 1;
-    min-height: 0;
-    padding-top: 2px;
-  }
+  /* --- محتوای شیت فیلتر/مرتب‌سازی: فوتر داخل slot="footer" کتابخانه پین می‌مونه --- */
   .filter-sheet-footer {
     flex: none;
     display: flex;
@@ -1330,6 +1323,46 @@
   .fc-price { display: flex; align-items: baseline; gap: 4px; }
   .fc-price-value { font-size: 15px; font-weight: 700; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
   .fc-price-currency { font-size: 11px; color: var(--ink-muted); font-weight: 600; }
+
+  /* --- استایل شیت‌های ساخته‌شده با کتابخانه‌ی pure-web-bottom-sheet: چون این
+     کتابخانه محتوا رو در light DOM (با slot) نگه می‌داره، همون کلاس‌های موجود
+     (.modal-header, .filter-group, ...) روی محتوای داخلش هم کار می‌کنه؛ اینجا
+     فقط ظاهر خودِ کارت (پس‌زمینه، شعاع گوشه، حداکثر ارتفاع) رو ست می‌کنیم --- */
+  bottom-sheet-dialog-manager dialog {
+    max-width: 480px;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 100%;
+  }
+  bottom-sheet-dialog-manager dialog::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  bottom-sheet.app-sheet {
+    --sheet-background: var(--paper);
+    --sheet-border-radius: 20px 20px 0 0;
+    --sheet-max-height: 88dvh;
+    width: 100%;
+    max-width: 480px;
+  }
+  bottom-sheet.app-sheet::part(sheet) {
+    box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.28);
+  }
+  bottom-sheet.app-sheet::part(handle) {
+    background: var(--line);
+  }
+  bottom-sheet.app-sheet::part(content) {
+    padding: 12px 18px 22px;
+  }
+  bottom-sheet.app-sheet::part(header) {
+    padding: 0 18px;
+  }
+  bottom-sheet.app-sheet::part(footer) {
+    padding: 0 18px 18px;
+  }
 
   dialog.modal-overlay {
     position: fixed;
@@ -1764,18 +1797,16 @@
   </button>
 </div>
 
-<dialog class="modal-overlay" id="filterSheetOverlay" data-ephemeral="false">
-  <div class="modal-card filter-sheet-card">
-    <div class="sheet-handle"></div>
-    <div class="modal-sticky-top">
-      <div class="modal-header">
+<bottom-sheet-dialog-manager>
+  <dialog id="filterSheetOverlay">
+    <bottom-sheet class="app-sheet" swipe-to-dismiss tabindex="0">
+      <div slot="header" class="modal-header">
         <div class="modal-header-main">
           <div class="modal-title">فیلتر پروازها</div>
         </div>
         <button class="modal-close" id="filterSheetClose" type="button">✕</button>
       </div>
-    </div>
-    <div class="modal-scroll-body">
+
       <div class="filter-group">
         <div class="filter-group-label">
           <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11z"/><path d="M5 11h7"/></svg></span>
@@ -1802,42 +1833,45 @@
         </div>
         <div class="airline-chips" id="cabinChips"></div>
       </div>
-    </div>
-    <div class="filter-sheet-footer">
-      <button type="button" class="fs-btn-secondary" id="filterSheetReset">پاک‌کردن فیلترها</button>
-      <button type="button" class="fs-btn-primary" id="filterSheetApply">مشاهده‌ی نتایج</button>
-    </div>
-  </div>
-</dialog>
 
-<dialog class="modal-overlay" id="sortSheetOverlay" data-ephemeral="false">
-  <div class="modal-card sort-sheet-card">
-    <div class="sheet-handle"></div>
-    <div class="modal-header">
-      <div class="modal-header-main">
-        <div class="modal-title">مرتب‌سازی</div>
+      <div slot="footer" class="filter-sheet-footer">
+        <button type="button" class="fs-btn-secondary" id="filterSheetReset">پاک‌کردن فیلترها</button>
+        <button type="button" class="fs-btn-primary" id="filterSheetApply">مشاهده‌ی نتایج</button>
       </div>
-      <button class="modal-close" id="sortSheetClose" type="button">✕</button>
-    </div>
-    <div class="sort-list" id="sortSegment">
-      <button type="button" class="sort-option sort-row active" data-value="time_asc">
-        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
-        <span class="sort-row-label">ساعت پرواز</span>
-        <span class="sort-row-check"></span>
-      </button>
-      <button type="button" class="sort-option sort-row" data-value="change_desc">
-        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span>
-        <span class="sort-row-label">بیشترین افزایش قیمت</span>
-        <span class="sort-row-check"></span>
-      </button>
-      <button type="button" class="sort-option sort-row" data-value="change_asc">
-        <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></span>
-        <span class="sort-row-label">بیشترین کاهش قیمت</span>
-        <span class="sort-row-check"></span>
-      </button>
-    </div>
-  </div>
-</dialog>
+    </bottom-sheet>
+  </dialog>
+</bottom-sheet-dialog-manager>
+
+<bottom-sheet-dialog-manager>
+  <dialog id="sortSheetOverlay">
+    <bottom-sheet class="app-sheet" swipe-to-dismiss tabindex="0">
+      <div slot="header" class="modal-header">
+        <div class="modal-header-main">
+          <div class="modal-title">مرتب‌سازی</div>
+        </div>
+        <button class="modal-close" id="sortSheetClose" type="button">✕</button>
+      </div>
+
+      <div class="sort-list" id="sortSegment">
+        <button type="button" class="sort-option sort-row active" data-value="time_asc">
+          <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+          <span class="sort-row-label">ساعت پرواز</span>
+          <span class="sort-row-check"></span>
+        </button>
+        <button type="button" class="sort-option sort-row" data-value="change_desc">
+          <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span>
+          <span class="sort-row-label">بیشترین افزایش قیمت</span>
+          <span class="sort-row-check"></span>
+        </button>
+        <button type="button" class="sort-option sort-row" data-value="change_asc">
+          <span class="sort-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></span>
+          <span class="sort-row-label">بیشترین کاهش قیمت</span>
+          <span class="sort-row-check"></span>
+        </button>
+      </div>
+    </bottom-sheet>
+  </dialog>
+</bottom-sheet-dialog-manager>
 
 <section class="movers-section" id="moversSection" style="display:none;">
   <div class="movers-header" id="moversToggle">
@@ -2596,7 +2630,8 @@ function bindControls() {
       const rowLabel = btn.querySelector('.sort-row-label');
       if (labelEl) labelEl.textContent = rowLabel ? rowLabel.textContent : btn.textContent;
       render();
-      closeSheet(document.getElementById('sortSheetOverlay'));
+      const sortOverlay = document.getElementById('sortSheetOverlay');
+      if (sortOverlay) sortOverlay.close();
     });
   });
   document.getElementById('moversToggle').addEventListener('click', () => {
@@ -2609,18 +2644,18 @@ function bindControls() {
     document.getElementById('closedSection').classList.toggle('collapsed');
   });
 
-  // ---- شیت فیلتر و شیت مرتب‌سازی: دو دکمه‌ی قرصیِ نوار ابزار، هرکدوم شیت خودشون
-  // رو با presentSheet/closeSheet مشترک (همون سیستم شیت جزئیات پرواز) باز می‌کنن ----
+  // ---- شیت فیلتر و شیت مرتب‌سازی: این دو با کتابخانه‌ی pure-web-bottom-sheet
+  // ساخته شدن (bottom-sheet-dialog-manager) که خودش کلیک روی بک‌دراپ و
+  // کشیدن-برای-بستن (swipe-to-dismiss) رو مدیریت می‌کنه؛ فقط کافیه dialog
+  // بومی رو باز/بسته کنیم، بدون نیاز به presentSheet/closeSheet دستی ----
   const filterOverlay = document.getElementById('filterSheetOverlay');
   const sortOverlay = document.getElementById('sortSheetOverlay');
-  wireDialogDismiss(filterOverlay);
-  wireDialogDismiss(sortOverlay);
 
-  document.getElementById('filterBtn').addEventListener('click', () => presentSheet(filterOverlay));
-  document.getElementById('sortBtn').addEventListener('click', () => presentSheet(sortOverlay));
-  document.getElementById('filterSheetClose').addEventListener('click', () => closeSheet(filterOverlay));
-  document.getElementById('sortSheetClose').addEventListener('click', () => closeSheet(sortOverlay));
-  document.getElementById('filterSheetApply').addEventListener('click', () => closeSheet(filterOverlay));
+  document.getElementById('filterBtn').addEventListener('click', () => filterOverlay.showModal());
+  document.getElementById('sortBtn').addEventListener('click', () => sortOverlay.showModal());
+  document.getElementById('filterSheetClose').addEventListener('click', () => filterOverlay.close());
+  document.getElementById('sortSheetClose').addEventListener('click', () => sortOverlay.close());
+  document.getElementById('filterSheetApply').addEventListener('click', () => filterOverlay.close());
   document.getElementById('filterSheetReset').addEventListener('click', resetAllFilters);
 
   document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
