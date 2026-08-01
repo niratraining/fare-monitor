@@ -679,6 +679,13 @@
   }
   .date-card.active .daynum { color: var(--accent-strong); }
   .date-card.active .cardprice { color: var(--accent-strong); }
+  .date-card.past {
+    opacity: 0.45;
+    box-shadow: none;
+  }
+  .date-card.past .daynum { color: var(--ink-soft); }
+  .date-card.past .cardprice { color: var(--ink-muted); }
+  .date-card.past.active { opacity: 1; }
 
   /* --- ویجت پرتغییرترین پروازها (Movers leaderboard) --- */
   .movers-section {
@@ -724,56 +731,65 @@
   .movers-list::-webkit-scrollbar { display: none; }
   .mover-card {
     flex: 0 0 auto;
-    min-width: 132px;
-    max-width: 152px;
+    width: 88px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
     background: var(--paper);
     border: 1px solid var(--line);
-    border-radius: var(--radius-card-sm);
-    padding: 11px 12px;
+    border-radius: 18px;
+    padding: 14px 8px 12px;
     cursor: pointer;
-    transition: transform .16s var(--ease-smooth), background .15s ease, box-shadow .16s ease;
+    transition: transform .16s var(--ease-smooth), background .15s ease, box-shadow .16s ease, border-color .16s ease;
   }
-  .mover-card:active { transform: scale(0.96); background: #E4ECEA; }
+  .mover-card:active { transform: scale(0.95); background: #E4ECEA; }
   @media (hover: hover) {
-    .mover-card:hover { transform: translateY(-2px); background: #ffffff; box-shadow: var(--shadow-sm); }
+    .mover-card:hover { transform: translateY(-3px); background: #ffffff; box-shadow: var(--shadow-sm); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
   }
-  .mover-rank {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--ink-soft);
-    margin-bottom: 3px;
-    direction: ltr;
-    font-variant-numeric: tabular-nums;
-  }
-  .mover-route {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ink);
-    white-space: nowrap;
+  .mover-logo {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 2px;
+  }
+  .mover-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .mover-logo-fallback {
+    display: none;
+    width: 100%; height: 100%;
+    align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    color: var(--ink-soft);
+    background: var(--line);
   }
   .mover-flightno {
-    font-size: 10px;
+    font-size: 10.5px;
     color: var(--ink-soft);
-    font-weight: 600;
+    font-weight: 700;
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 6px;
   }
   .mover-change {
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    direction: ltr;
   }
-  .mover-change .fc-change-icon { width: 11px; height: 11px; }
-  .mover-change.up { color: var(--danger); }
-  .mover-change.down { color: var(--success); }
+  .mover-change .fc-change-icon { width: 10px; height: 10px; }
+  .mover-change.up { color: var(--danger-strong); background: var(--danger-tint); }
+  .mover-change.down { color: var(--success-strong); background: var(--success-tint); }
   .movers-empty {
     font-size: 12px;
     color: var(--ink-muted);
@@ -2729,7 +2745,10 @@ function buildDateCards() {
   const dates = [...new Set(
     allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
   )].sort();
-  state.date = dates[0] || null;
+  const today = todayDateStrLocal();
+  // پیش‌فرض: امروز، وگرنه نزدیک‌ترین تاریخ آینده‌ی موجود، وگرنه اولین تاریخ لیست
+  // (نه همیشه dates[0] — چون ممکنه چند روز گذشته هم تو لیست باشن)
+  state.date = dates.includes(today) ? today : (dates.find(d => d >= today) || dates[0] || null);
   updateRouteCompactRow();
 
   const el = document.getElementById('dateCards');
@@ -2738,9 +2757,10 @@ function buildDateCards() {
     const dayFlights = allFlights.filter(f => f.route === state.route && f.flight_date === d);
     const openDayFlights = dayFlights.filter(f => !isFlightArchived(f));
     const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
+    const isPast = d < today;
 
     const card = document.createElement('div');
-    card.className = 'date-card' + (d === state.date ? ' active' : '');
+    card.className = 'date-card' + (d === state.date ? ' active' : '') + (isPast ? ' past' : '');
     card.dataset.date = d;
     card.innerHTML = `
       <div class="daynum">${formatDateCardCompact(d)}</div>
@@ -2756,13 +2776,15 @@ function buildDateCards() {
     el.appendChild(card);
   });
 
-  // اسکرول خودکار به کارت انتخاب‌شده — فقط افقی، داخل همون نوار تاریخ‌ها
+  // اسکرول خودکار به کارت امروز — تراز به لبه‌ی شروع (نه وسط)، تا روزهای
+  // گذشته (که کم‌رنگ‌ترن و سمت راستِ امروز قرار می‌گیرن) بیرون از دیدِ اولیه
+  // بمونن و کاربر در صورت نیاز با اسکرول به راست بتونه ببینتشون.
   // (بدون block:'nearest'، مرورگر سعی می‌کنه کارت رو عمودی هم وسط صفحه بیاره
   // و کل صفحه رو اسکرول می‌ده؛ همین باعث می‌شد موقع لود اول، باکس
   // «پرتغییرترین پروازها» زیر هدر sticky بره)
   requestAnimationFrame(() => {
     const active = el.querySelector('.date-card.active');
-    if (active) active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'instant' });
+    if (active) active.scrollIntoView({ inline: 'start', block: 'nearest', behavior: 'instant' });
   });
 }
 
@@ -2937,9 +2959,11 @@ function buildMoversList() {
     const card = document.createElement('div');
     card.className = 'mover-card';
     card.innerHTML = `
-      <span class="mover-rank">#${toFaDigits(idx + 1)}</span>
-      <div class="mover-route">${f.route || ''}</div>
-      <div class="mover-flightno">${f.airline || ''} · پرواز ${f.flight_no || ''}</div>
+      <span class="mover-logo">
+        <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="mover-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
+      </span>
+      <div class="mover-flightno">${f.flight_no || ''}</div>
       <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceShort(Math.abs(change.diff))}</div>`;
     card.onclick = () => openHistoryModal(f);
     list.appendChild(card);
