@@ -686,6 +686,23 @@
   .date-card.past .daynum { color: var(--ink-soft); }
   .date-card.past .cardprice { color: var(--ink-muted); }
   .date-card.past.active { opacity: 1; }
+  .date-card.unavailable {
+    cursor: pointer;
+    background: transparent;
+    border-style: dashed;
+    box-shadow: none;
+  }
+  .date-card.unavailable .daynum { color: var(--ink-soft); }
+  .date-card.unavailable .cardprice.cardprice-empty {
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: 10.5px;
+  }
+  .date-card.unavailable.active {
+    background: var(--paper);
+    border-color: var(--ink-muted);
+  }
+  .date-card.unavailable.active .daynum { color: var(--ink); }
 
   /* --- ویجت پرتغییرترین پروازها (Movers leaderboard) --- */
   .movers-section {
@@ -2742,29 +2759,47 @@ function openRoutePicker(type) {
 }
 
 function buildDateCards() {
-  const dates = [...new Set(
-    allFlights.filter(f => f.route === state.route).map(f => f.flight_date)
-  )].sort();
+  // تقویم کامل: اتحاد تاریخ‌های همه‌ی مسیرها، نه فقط مسیر فعلی —
+  // این‌جوری با عوض‌شدن مسیر، کارت‌های تاریخ حذف/اضافه نمی‌شن و ثابت می‌مونن
+  const allDates = [...new Set(allFlights.map(f => f.flight_date))].sort();
+  const routeFlights = allFlights.filter(f => f.route === state.route);
+  const routeDatesSet = new Set(routeFlights.map(f => f.flight_date));
   const today = todayDateStrLocal();
-  // پیش‌فرض: امروز، وگرنه نزدیک‌ترین تاریخ آینده‌ی موجود، وگرنه اولین تاریخ لیست
-  // (نه همیشه dates[0] — چون ممکنه چند روز گذشته هم تو لیست باشن)
-  state.date = dates.includes(today) ? today : (dates.find(d => d >= today) || dates[0] || null);
+
+  // پیش‌فرض: امروز اگه تو این مسیر پرواز داره، وگرنه نزدیک‌ترین تاریخ آینده‌ای
+  // که پرواز داره، وگرنه هر تاریخی که پرواز داره، وگرنه اولین تاریخ تقویم
+  const routeAvailableDates = allDates.filter(d => routeDatesSet.has(d));
+  state.date = routeDatesSet.has(today)
+    ? today
+    : (routeAvailableDates.find(d => d >= today) || routeAvailableDates[0] || allDates[0] || null);
   updateRouteCompactRow();
 
   const el = document.getElementById('dateCards');
   el.innerHTML = '';
-  dates.forEach(d => {
-    const dayFlights = allFlights.filter(f => f.route === state.route && f.flight_date === d);
-    const openDayFlights = dayFlights.filter(f => !isFlightArchived(f));
-    const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
+  allDates.forEach(d => {
     const isPast = d < today;
+    const hasFlights = routeDatesSet.has(d);
 
     const card = document.createElement('div');
-    card.className = 'date-card' + (d === state.date ? ' active' : '') + (isPast ? ' past' : '');
+    card.className = 'date-card'
+      + (d === state.date ? ' active' : '')
+      + (isPast ? ' past' : '')
+      + (hasFlights ? '' : ' unavailable');
     card.dataset.date = d;
-    card.innerHTML = `
-      <div class="daynum">${formatDateCardCompact(d)}</div>
-      <div class="cardprice">${formatPriceCompact(minPrice)}</div>`;
+
+    if (hasFlights) {
+      const dayFlights = routeFlights.filter(f => f.flight_date === d);
+      const openDayFlights = dayFlights.filter(f => !isFlightArchived(f));
+      const minPrice = Math.min(...(openDayFlights.length ? openDayFlights : dayFlights).map(f => toPriceNumber(f.adult_price)));
+      card.innerHTML = `
+        <div class="daynum">${formatDateCardCompact(d)}</div>
+        <div class="cardprice">${formatPriceCompact(minPrice)}</div>`;
+    } else {
+      card.innerHTML = `
+        <div class="daynum">${formatDateCardCompact(d)}</div>
+        <div class="cardprice cardprice-empty">ناموجود</div>`;
+    }
+
     card.onclick = () => {
       state.date = d;
       document.querySelectorAll('.date-card').forEach(c =>
