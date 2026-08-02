@@ -3272,12 +3272,16 @@ function updateFilterBadge() {
 // این‌جوری هم به تعداد دفعات تغییر حساسه و هم به بزرگی هرکدوم، و یه
 // فروشنده‌ای که فقط یه‌بار (ولی خیلی بزرگ) تغییر کرده رو با یه فروشنده‌ی
 // دیگه که چندبار (ولی هرکدوم کوچیک) تغییر کرده، منصفانه مقایسه می‌کنه.
+//
+// این سایت تحلیل داده‌ست نه فروش: نوسان یه پیشنهاد در طول کل روز مهمه،
+// نه فقط اونایی که هنوز فعالن — پس پروازهای بسته‌شده/ساعت‌گذشته‌ی همون
+// تاریخ هم عمداً وارد این رتبه‌بندی می‌شن (isFlightArchived فیلتر نمی‌شه)
 function computeMovers(limit) {
   limit = limit || 10;
   const items = [];
-  // فقط پروازهای همون مسیر + همون تاریخ فعال (تب تاریخ انتخاب‌شده)، نه کل تاریخ‌ها با هم قاطی
+  // فقط پروازهای همون مسیر + همون تاریخِ تب انتخاب‌شده، نه کل تاریخ‌ها با هم قاطی
   allFlights
-    .filter(f => f.route === state.route && f.flight_date === state.date && !isFlightArchived(f))
+    .filter(f => f.route === state.route && f.flight_date === state.date)
     .forEach(f => {
       const points = getHistoryPoints(f);
       if (points.length < 2) return; // حداقل یه تغییر واقعی لازمه
@@ -3889,14 +3893,16 @@ function render() {
     buildKpiStrip(rows, closedRows);
   }
 
-  // فیلتر کلیکی روی کارت افزایش/کاهش قیمت در نوار KPI: فقط روی فهرست فعال
-  // اعمال می‌شه (بسته‌شده‌ها دست‌نخورده می‌مونن)، با کلیک دوباره پاک می‌شه
+  // فیلتر کلیکی روی کارت افزایش/کاهش قیمت در نوار KPI: چون خودِ عدد این کارت‌ها
+  // حالا کل روز رو حساب می‌کنه (فعال + بسته‌شده)، فهرست فیلترشده هم باید همون
+  // مجموعه رو نشون بده تا عدد و فهرست هم‌خونی داشته باشن؛ کارت‌های بسته‌شده‌ای که
+  // این‌جا نشون داده می‌شن با همون نشان «ساعت پرواز گذشته»شون مشخص می‌مونن
   let displayRows = rows;
   if (!pastDayMode) {
     if (state.kpiFilter === 'up') {
-      displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff > 0; });
+      displayRows = rows.concat(closedRows).filter(f => { const c = getLatestChange(f); return c && c.diff > 0; });
     } else if (state.kpiFilter === 'down') {
-      displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff < 0; });
+      displayRows = rows.concat(closedRows).filter(f => { const c = getLatestChange(f); return c && c.diff < 0; });
     }
   }
 
@@ -4126,8 +4132,12 @@ function buildKpiStrip(rows, closedRows) {
   }
   strip.style.display = 'grid';
 
+  // این سایت تحلیل داده‌ست نه فروش: گزارش افزایش/کاهش قیمت باید کل
+  // پروازهای این تاریخ رو مبنا بگیره (چه هنوز فعال، چه ساعتش گذشته/بسته‌شده)،
+  // نه فقط فهرست فعال — نوسانی که یه پرواز قبل از بسته‌شدنش داشته هم
+  // بخشی از گزارش همون روزه
   let upCount = 0, downCount = 0;
-  rows.forEach(f => {
+  rows.concat(closedRows || []).forEach(f => {
     const change = getLatestChange(f);
     if (change && change.diff > 0) upCount++;
     else if (change && change.diff < 0) downCount++;
