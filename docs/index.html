@@ -1057,6 +1057,115 @@
   .cst-sub { font-size: 11px; font-weight: 700; color: var(--ink-muted); }
   .cst-who { font-size: 11.5px; font-weight: 600; color: var(--ink-soft); }
 
+  /* --- گزارش تحلیلی روز: برای تاریخ‌هایی که کاملاً گذشته و تموم شدن،
+     به‌جای نوار KPI و ابزارهای فیلتر/مرتب‌سازی (که برای فهرست فعال معنا دارن
+     و روی یه تاریخ گذشته خالی از پروازِ فعاله)، یک کارت خلاصه‌ی تحلیلیِ
+     یک‌نگاه از کل اون روز نشون داده می‌شه: تعداد پرواز/ایرلاین/فروشنده،
+     کمترین و بیشترین نرخ اکونومی و پرنوسان‌ترین پیشنهاد — هرکدوم با
+     مشخص‌کردن ایرلاین و فروشنده‌ش. زبان بصری‌ش عمداً از بقیه‌ی صفحه متمایزه
+     (زمینه‌ی تیره‌ی سرمه‌ای برند) تا حس «گزارش پایان روز» رو بده، نه یه
+     پنل فیلتر دیگه. */
+  .day-report {
+    margin: 18px 18px 0;
+    background: linear-gradient(165deg, var(--navy-900), var(--navy-800) 60%, var(--accent-strong));
+    border-radius: var(--radius-panel);
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    animation: fcIn .32s var(--ease-smooth) both;
+  }
+  .day-report::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120px 120px at calc(100% + 20px) -20px, rgba(212, 166, 42, .28), transparent 70%),
+      radial-gradient(160px 160px at -30px 100%, rgba(255,255,255,.06), transparent 70%);
+    pointer-events: none;
+  }
+  .dr-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+  .dr-head-icon {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .1);
+    color: var(--accent-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,.14);
+  }
+  .dr-head-icon svg { width: 16px; height: 16px; display: block; }
+  .dr-head-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .dr-head-title { font-size: 13.5px; font-weight: 800; color: #fff; }
+  .dr-head-date { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.62); }
+  .dr-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .dr-tile {
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: var(--radius-card-sm);
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-align: center;
+  }
+  .dr-tile-value {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--accent-bright);
+    direction: ltr;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .dr-tile-label { font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,.68); }
+  .dr-rows {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .dr-row {
+    background: rgba(255, 255, 255, .96);
+    border-radius: var(--radius-card-sm);
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .dr-row-icon {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .dr-row-good .dr-row-icon { background: var(--success-tint); color: var(--success-strong); }
+  .dr-row-bad .dr-row-icon { background: var(--danger-tint); color: var(--danger-strong); }
+  .dr-row-warn .dr-row-icon { background: var(--warn-tint); color: var(--warn); }
+  .dr-row-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .dr-row-label { font-size: 11px; font-weight: 700; color: var(--ink-muted); }
+  .dr-row-value { font-size: 14px; font-weight: 800; color: var(--ink); }
+  .dr-row-who { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+
   .fc-closed-badge {
     position: absolute;
     top: 42px;
@@ -2021,6 +2130,22 @@
 </div>
 </header>
 <p class="page-subtitle">پایش لحظه‌ای نرخ‌گذاری در مسیرهای فعال و مقایسه با میانگین بازار</p>
+
+<section class="day-report" id="dayReport" style="display:none;">
+  <div class="dr-head">
+    <span class="dr-head-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="m8.5 14 2 2 4.5-4.5"/></svg></span>
+    <div class="dr-head-text">
+      <div class="dr-head-title">گزارش تحلیلی روز</div>
+      <div class="dr-head-date" id="drDate">—</div>
+    </div>
+  </div>
+  <div class="dr-grid">
+    <div class="dr-tile"><span class="dr-tile-value" id="drFlights">—</span><span class="dr-tile-label">پرواز</span></div>
+    <div class="dr-tile"><span class="dr-tile-value" id="drAirlines">—</span><span class="dr-tile-label">ایرلاین</span></div>
+    <div class="dr-tile"><span class="dr-tile-value" id="drSellers">—</span><span class="dr-tile-label">فروشنده</span></div>
+  </div>
+  <div class="dr-rows" id="drRows"></div>
+</section>
 
 <section class="kpi-strip" id="kpiStrip" style="display:none;">
   <div class="kpi-card kpi-total">
@@ -3748,15 +3873,31 @@ function render() {
   // فقط رو صدر لیست شلوغ نمی‌کنن
   const closedRows = rows.filter(isFlightArchived);
   rows = rows.filter(f => !isFlightArchived(f));
-  buildKpiStrip(rows, closedRows);
+
+  // تاریخ کاملاً گذشته و تموم‌شده (نه امروز): این سایت تحلیلیه نه فروش،
+  // پس روی چنین تاریخی به‌جای نوار KPI و فیلتر/مرتب‌سازی (که برای یه
+  // فهرست فعال معنا دارن و اینجا خالی از پرواز فعاله)، یه گزارش تحلیلی
+  // یک‌نگاه از کل اون روز نشون داده می‌شه
+  const pastDayMode = !!(state.date && state.date < todayDateStrLocal() && closedRows.length);
+
+  document.getElementById('toolsToolbar').style.display = pastDayMode ? 'none' : '';
+  if (pastDayMode) {
+    document.getElementById('kpiStrip').style.display = 'none';
+    buildDayReport(closedRows);
+  } else {
+    buildDayReport(null);
+    buildKpiStrip(rows, closedRows);
+  }
 
   // فیلتر کلیکی روی کارت افزایش/کاهش قیمت در نوار KPI: فقط روی فهرست فعال
   // اعمال می‌شه (بسته‌شده‌ها دست‌نخورده می‌مونن)، با کلیک دوباره پاک می‌شه
   let displayRows = rows;
-  if (state.kpiFilter === 'up') {
-    displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff > 0; });
-  } else if (state.kpiFilter === 'down') {
-    displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff < 0; });
+  if (!pastDayMode) {
+    if (state.kpiFilter === 'up') {
+      displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff > 0; });
+    } else if (state.kpiFilter === 'down') {
+      displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff < 0; });
+    }
   }
 
   displayRows.forEach((f, idx) => {
@@ -3766,8 +3907,8 @@ function render() {
   });
 
   list.style.display = displayRows.length ? 'flex' : 'none';
-  document.getElementById('empty').style.display = (displayRows.length === 0 && closedRows.length === 0) ? 'block' : 'none';
-  buildClosedSection(closedRows);
+  document.getElementById('empty').style.display = (displayRows.length === 0 && closedRows.length === 0 && !pastDayMode) ? 'block' : 'none';
+  buildClosedSection(closedRows, pastDayMode);
   updateFilterBadge();
 }
 
@@ -3869,8 +4010,91 @@ function buildClosedStatsHtml(stats) {
   </div>`;
 }
 
+// ---- گزارش تحلیلی یک تاریخِ کاملاً گذشته: تعداد پرواز/ایرلاین/فروشنده،
+// کمترین و بیشترین نرخ اکونومی (با ایرلاین/فروشنده‌ش)، و پرنوسان‌ترین
+// پیشنهاد همون روز (همون معیار Total Variation بالا، مستقل از کلاس پروازی
+// چون نوسان قیمت هر پیشنهاد به‌خودی‌خود مهمه، نه فقط اکونومی‌ها) ----
+function computeDayReportStats(dayRows) {
+  if (!dayRows || !dayRows.length) return null;
+
+  const airlineSet = new Set(), sellerSet = new Set();
+  dayRows.forEach(f => {
+    if (f.airline) airlineSet.add(f.airline);
+    if (f.seller) sellerSet.add(f.seller);
+  });
+
+  const enriched = dayRows.map(f => {
+    const points = getHistoryPoints(f);
+    const lastPrice = points.length ? points[points.length - 1].price : toPriceNumber(f.adult_price);
+    const changesCount = Math.max(0, points.length - 1);
+    let totalVariation = 0;
+    for (let i = 1; i < points.length; i++) totalVariation += Math.abs(points[i].price - points[i - 1].price);
+    return { f, lastPrice, changesCount, totalVariation };
+  }).filter(e => isFinite(e.lastPrice));
+
+  if (!enriched.length) return null;
+
+  const economyRows = enriched.filter(e => normalizeCabin(e.f.cabin) === 'economy');
+  const minEconomy = economyRows.length ? economyRows.reduce((a, b) => (b.lastPrice < a.lastPrice ? b : a)) : null;
+  const maxEconomy = economyRows.length ? economyRows.reduce((a, b) => (b.lastPrice > a.lastPrice ? b : a)) : null;
+
+  const withChanges = enriched.filter(e => e.changesCount > 0);
+  const mostVolatile = withChanges.length
+    ? withChanges.reduce((a, b) => (b.totalVariation > a.totalVariation ? b : a))
+    : null;
+
+  return {
+    count: countUniqueFlights(dayRows),
+    airlineCount: airlineSet.size,
+    sellerCount: sellerSet.size,
+    minEconomy, maxEconomy, mostVolatile
+  };
+}
+
+function drRowHtml(label, value, who, icon, tone) {
+  return `<div class="dr-row dr-row-${tone}">
+    <span class="dr-row-icon">${icon}</span>
+    <span class="dr-row-body">
+      <span class="dr-row-label">${label}</span>
+      <span class="dr-row-value">${value}</span>
+      <span class="dr-row-who">${who}</span>
+    </span>
+  </div>`;
+}
+
+// ---- ساخت/مخفی‌کردن کارت گزارش تحلیلی روز؛ فقط وقتی صدا زده می‌شه که
+// render() تشخیص بده تاریخ انتخاب‌شده کاملاً گذشته و تموم شده ----
+function buildDayReport(dayRows) {
+  const section = document.getElementById('dayReport');
+  const stats = computeDayReportStats(dayRows);
+  if (!stats) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  const { weekday, label } = formatDateCard(state.date);
+  document.getElementById('drDate').textContent = `${weekday} · ${label}`;
+  document.getElementById('drFlights').textContent = toFaDigits(stats.count);
+  document.getElementById('drAirlines').textContent = toFaDigits(stats.airlineCount);
+  document.getElementById('drSellers').textContent = toFaDigits(stats.sellerCount);
+
+  let rows = '';
+  if (stats.minEconomy) {
+    rows += drRowHtml('کمترین نرخ اکونومی', formatPriceShort(stats.minEconomy.lastPrice) + ' تومان', closedFlightWho(stats.minEconomy.f), ICONS.trendDown, 'good');
+  }
+  if (stats.maxEconomy) {
+    rows += drRowHtml('بیشترین نرخ اکونومی', formatPriceShort(stats.maxEconomy.lastPrice) + ' تومان', closedFlightWho(stats.maxEconomy.f), ICONS.trendUp, 'bad');
+  }
+  if (stats.mostVolatile) {
+    rows += drRowHtml(
+      `پرنوسان‌ترین پیشنهاد <span class="cst-sub">(${toFaDigits(stats.mostVolatile.changesCount)} بار تغییر)</span>`,
+      formatPriceShort(stats.mostVolatile.totalVariation) + ' تومان',
+      closedFlightWho(stats.mostVolatile.f), ICONS.warn, 'warn'
+    );
+  }
+  document.getElementById('drRows').innerHTML = rows;
+}
+
 // ---- پروازهایی که دیگه تو آخرین رصد سپهر نبودن (بسته‌شده/فروش تموم‌شده) — جمع‌شده، ولی کارت‌هاشون دست‌نخورده و با کلیک تاریخچه‌شون قابل مشاهده‌ست ----
-function buildClosedSection(closedRows) {
+function buildClosedSection(closedRows, skipStatsCard) {
   const section = document.getElementById('closedSection');
   const list = document.getElementById('closedList');
   const countEl = document.getElementById('closedCount');
@@ -3882,7 +4106,7 @@ function buildClosedSection(closedRows) {
 
   section.style.display = 'block';
   countEl.textContent = `(${toFaDigits(closedRows.length)} پرواز)`;
-  list.innerHTML = buildClosedStatsHtml(computeClosedDateStats(closedRows));
+  list.innerHTML = skipStatsCard ? '' : buildClosedStatsHtml(computeClosedDateStats(closedRows));
   closedRows.forEach((f, idx) => {
     const card = buildFlightCard(f, getLatestChange(f));
     card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
