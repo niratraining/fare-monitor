@@ -1667,6 +1667,21 @@
     border-radius: 999px;
     padding: 3px 10px;
   }
+  .modal-chip-extra-group { display: none; }
+  .modal-chip-extra-group.is-shown { display: contents; }
+  .modal-chip-toggle {
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--ink-muted);
+    background: transparent;
+    border: 1px dashed var(--line);
+  }
+  .modal-chip-toggle svg { width: 9px; height: 9px; transition: transform .18s ease; }
+  .modal-chip-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .modal-chip-toggle:active { background: var(--paper); }
   .modal-close {
     border: none;
     background: var(--card);
@@ -1735,35 +1750,34 @@
   .trend-badge.down { background: var(--success-tint); color: var(--success-strong); }
   .trend-badge.flat { background: var(--paper); color: var(--ink-muted); }
 
-  /* --- ردیف‌های بینش (نوسان غیرعادی/جایگاه بازار): کارت‌های رنگی مجزا به‌جای یک لیست خطی --- */
-  .insight-list { margin-bottom: 12px; display: flex; flex-direction: column; gap: 7px; }
+  /* --- ردیف‌های بینش (نوسان غیرعادی/جایگاه بازار): سبک و کم‌رنگ — فقط متن +
+     آیکون کوچیک با یه نوار باریک رنگی سمت راست، به‌جای کارت رنگی پر که چون
+     همیشه با هم میان، حس هشدار پشت‌سرهم و شلوغ می‌ساخت --- */
+  .insight-list { margin-bottom: 12px; display: flex; flex-direction: column; gap: 2px; }
   .insight-row {
     display: flex;
     align-items: flex-start;
-    gap: 9px;
+    gap: 8px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.65;
-    padding: 10px 11px;
-    border-radius: var(--radius-card-sm);
+    padding: 8px 4px 8px 2px;
     color: var(--ink-soft);
-    background: var(--card);
-    border: 1px solid var(--line);
+    border-right: 2px solid transparent;
   }
-  .insight-row.warn { background: var(--warn-tint); border-color: var(--warn-line); }
-  .insight-row.info { background: var(--accent-tint); border-color: rgba(69, 95, 91, .18); }
+  .insight-row.warn { border-right-color: var(--warn); }
+  .insight-row.info { border-right-color: var(--accent); }
   .insight-icon {
     flex: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 9px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 1px;
   }
-  .insight-row.warn .insight-icon { background: #ffffff; color: var(--warn); box-shadow: 0 1px 3px rgba(166, 121, 14, .18); }
-  .insight-row.info .insight-icon { background: #ffffff; color: var(--accent-strong); box-shadow: 0 1px 3px rgba(69, 95, 91, .18); }
+  .insight-row.warn .insight-icon { color: var(--warn); }
+  .insight-row.info .insight-icon { color: var(--accent-strong); }
 
   /* --- چیدمان شیت تاریخچه: سرِ کارت (هدر+قیمت) ثابت می‌مونه، فقط بخش پایینی
      (نمودار+تاریخچه) خودش اسکرول می‌کنه. این چیزیه که مشکل «اسکرول نامناسب وقتی
@@ -1790,14 +1804,14 @@
   .modal-scroll-body::-webkit-scrollbar-track { background: transparent; }
   .modal-scroll-body::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 
-  /* --- نمودار: بخش مجزا با عنوان و برچسب بازه‌ی قیمت --- */
+  /* --- نمودار: بدون قاب مجزا (بردر/سایه)، چون خودش داخل کارت مودال قرار
+     داره و باکس‌تو‌باکس غیرضروریه؛ فقط با یه خط جداکننده‌ی نازک از بخش‌های
+     بالا/پایین جدا می‌شه --- */
   .modal-chart-section {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card-sm);
-    padding: 14px 14px 8px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
+    padding: 14px 0;
+    margin: 2px 0 4px;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
   }
   .modal-chart-title {
     display: flex;
@@ -4130,11 +4144,17 @@ function openHistoryModal(f) {
           </div>
           <div class="modal-header-main">
             <div class="modal-title">${f.airline || ''} <bdi class="modal-flightno">#${f.flight_no || ''}</bdi></div>
-            <div class="modal-meta-row">
+            <div class="modal-meta-row" id="metaRow">
               ${f.route ? `<span class="modal-chip">${f.route}</span>` : ''}
               ${dateChip ? `<span class="modal-chip">${dateChip}</span>` : ''}
-              ${cabinBadge(f.cabin)}
-              ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
+              <span class="modal-chip-extra-group" id="metaExtraGroup">
+                ${cabinBadge(f.cabin)}
+                ${f.seller ? `<span class="modal-chip">${f.seller}</span>` : ''}
+              </span>
+              <button type="button" class="modal-chip modal-chip-toggle" id="metaMoreBtn" aria-expanded="false">
+                جزئیات بیشتر
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
           </div>
           <button class="modal-close" type="button" aria-label="بستن">✕</button>
@@ -4177,6 +4197,15 @@ function openHistoryModal(f) {
     </div>`;
 
   overlay.querySelector('.modal-close').onclick = () => closeSheet(overlay);
+  const metaMoreBtn = overlay.querySelector('#metaMoreBtn');
+  const metaExtraGroup = overlay.querySelector('#metaExtraGroup');
+  if (metaMoreBtn && metaExtraGroup) {
+    metaMoreBtn.onclick = () => {
+      const isShown = metaExtraGroup.classList.toggle('is-shown');
+      metaMoreBtn.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+      metaMoreBtn.firstChild.textContent = isShown ? 'بستن ' : 'جزئیات بیشتر ';
+    };
+  }
   const expandBtn = overlay.querySelector('#historyExpandBtn');
   if (expandBtn) {
     expandBtn.onclick = () => {
