@@ -89,6 +89,76 @@ function normalizeSellerName(s) {
 }
 
 // ===========================================================
+// ابزارهای آماری مشترک (میانه/MAD) — برای baseline نوسان مسیر و Price
+// Index. عیناً همون پیاده‌سازی‌ای که قبلاً تو docs/index.html بود؛ حالا
+// این محاسبات یک‌بار اینجا (سمت Worker) انجام می‌شن، نه هر بار تو کلاینت.
+// ===========================================================
+function median(arr) {
+  if (!arr.length) return null;
+  const s = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+function mad(arr, med) {
+  if (!arr.length) return 0;
+  const m = med !== undefined && med !== null ? med : median(arr);
+  return median(arr.map((x) => Math.abs(x - m))) || 0;
+}
+
+function normalizeCabin(raw) {
+  const key = String(raw || "").toLowerCase();
+  if (key.includes("first")) return "first";
+  if (key.includes("business")) return "business";
+  if (key.includes("premium")) return "premium";
+  return "economy";
+}
+
+// تبدیل میلادی به شمسی — فقط برای تشخیص نوروز/شب یلدا تو isSeasonalDate.
+// عیناً همون الگوریتم index.html/fare_monitor.py؛ اگه اونجا عوض شد، اینجا
+// هم دستی سینک کن (کپی جدا شده چون Worker و پنل دو باندل مجزان).
+function gregorianToJalali(gy, gm, gd) {
+  const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  gy = gy - 1600; gm = gm - 1; gd = gd - 1;
+  let g_day_no = 365 * gy + Math.floor((gy + 3) / 4) - Math.floor((gy + 99) / 100) + Math.floor((gy + 399) / 400);
+  g_day_no += g_d_m[gm] + gd;
+  if (gm > 1 && ((gy + 1600) % 4 === 0 && ((gy + 1600) % 100 !== 0 || (gy + 1600) % 400 === 0))) g_day_no += 1;
+  let j_day_no = g_day_no - 79;
+  const j_np = Math.floor(j_day_no / 12053);
+  j_day_no %= 12053;
+  let jy = 979 + 33 * j_np + 4 * Math.floor(j_day_no / 1461);
+  j_day_no %= 1461;
+  if (j_day_no >= 366) {
+    jy += Math.floor((j_day_no - 1) / 365);
+    j_day_no = (j_day_no - 1) % 365;
+  }
+  const j_days_in_month = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
+  let jm = 0, jd = j_day_no;
+  for (; jm < 11; jm++) {
+    if (jd < j_days_in_month[jm]) break;
+    jd -= j_days_in_month[jm];
+  }
+  return [jy, jm + 1, jd + 1];
+}
+
+// همون لیست تعطیلات قمری هاردکد که تو index.html هست — دستی سینک نگه دار
+const LUNAR_HOLIDAYS_GREGORIAN = [
+  // 'YYYY-MM-DD',
+];
+
+function isSeasonalDate(dateStr) {
+  if (!dateStr) return false;
+  if (LUNAR_HOLIDAYS_GREGORIAN.includes(dateStr)) return true;
+  const d = new Date(dateStr + "T00:00:00Z");
+  const dow = d.getUTCDay(); // ۴=پنج‌شنبه، ۵=جمعه
+  if (dow === 4 || dow === 5) return true;
+  const [, jm, jd] = gregorianToJalali(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+  if (jm === 1 && jd <= 13) return true; // نوروز
+  if (jm === 9 && jd === 30) return true; // شب یلدا
+  return false;
+}
+
+// ===========================================================
 // پاک‌سازی خودکار fare_snapshots/check_state برای تاریخ‌های خیلی
 // گذشته — بدون این، جدول با گذشت ماه‌ها (چون هر رصد حتی بدون تغییر
 // قیمت یک ردیف خام ثبت می‌کنه) بی‌نهایت بزرگ می‌شه و کوئری‌های export
@@ -275,6 +345,43 @@ async function handleExportData(env) {
      ORDER BY f.route, f.flight_date, f.dep_time`
   ).all();
 
+  // ===========================================================
+  // Price Index: قیمت هر پرواز باز رو با میانه‌ی بقیه‌ی پیشنهادهای همون
+  // (route, flight_date, cabin) تو همین اسنپ‌شات مقایسه می‌کنه. قبلاً این
+  // مقایسه هر بار تو کلاینت، با فیلتر روی کل allFlights، برای هر کارت
+  // دوباره محاسبه می‌شد؛ حالا یک‌بار همین‌جا حساب و به‌عنوان فیلد آماده
+  // (price_index: {pct, count, low_sample}) به خود ردیف flight اضافه
+  // می‌شه — index.html فقط می‌خونتش، دوباره محاسبه نمی‌کنه.
+  // ===========================================================
+  const PRICE_INDEX_MIN_FULL_SAMPLE = 4;
+  const peerGroups = new Map(); // "route|flight_date|cabin" -> [{row, price}]
+  for (const f of openFlights) {
+    const price = priceNum(f.adult_price);
+    if (price === null) continue;
+    const key = [f.route, f.flight_date, normalizeCabin(f.cabin)].join("|");
+    if (!peerGroups.has(key)) peerGroups.set(key, []);
+    peerGroups.get(key).push({ row: f, price });
+  }
+  for (const entries of peerGroups.values()) {
+    for (const entry of entries) {
+      const peerPrices = entries.filter((e) => e !== entry).map((e) => e.price);
+      if (peerPrices.length < 1) {
+        entry.row.price_index = null;
+        continue;
+      }
+      const med = median(peerPrices);
+      if (!med) {
+        entry.row.price_index = null;
+        continue;
+      }
+      entry.row.price_index = {
+        pct: Math.round(((entry.price - med) / med) * 100),
+        count: peerPrices.length,
+        low_sample: peerPrices.length < PRICE_INDEX_MIN_FULL_SAMPLE,
+      };
+    }
+  }
+
   const todayStr = new Date(Date.now() + IRAN_OFFSET_MS).toISOString().slice(0, 10);
 
   const { results: closedFlights } = await env.DB.prepare(
@@ -385,9 +492,46 @@ async function handleExportHistory(env) {
     history.push(p);
   }
 
+  // ===========================================================
+  // baseline نوسان هر مسیر: میانه/MAD نوسان قیمت بین رصدهای پیاپیِ هر گروه
+  // (پرواز+فروشنده+کلاس)، بدون تاریخ‌های فصلی/پرتقاضا. این عدد برای
+  // تشخیص «نوسان غیرعادی» پروازهایی که تاریخچه‌ی خودشون هنوز کوتاهه
+  // (cold start) استفاده می‌شه. قبلاً کلاینت برای هر پرواز cold-start
+  // این باشلاین رو از روی کل allHistory دوباره می‌ساخت (سنگین با رشد
+  // تاریخچه)؛ حالا یک‌بار همین‌جا به‌ازای هر route حساب می‌شه.
+  // ===========================================================
+  const baselineGroups = new Map(); // route -> Map(groupKey -> points[])
+  for (const p of history) {
+    if (isSeasonalDate(p.flight_date)) continue;
+    if (!baselineGroups.has(p.route)) baselineGroups.set(p.route, new Map());
+    const routeGroups = baselineGroups.get(p.route);
+    const gk = [p.flight_date, p.flight_no, p.airline, normalizeCabin(p.cabin), p.seller].join("|");
+    if (!routeGroups.has(gk)) routeGroups.set(gk, []);
+    routeGroups.get(gk).push(p);
+  }
+
+  const route_baselines = {};
+  for (const [route, groups] of baselineGroups) {
+    const absDiffs = [];
+    for (const points of groups.values()) {
+      const sorted = [...points].sort((a, b) => (a.captured_at || "").localeCompare(b.captured_at || ""));
+      for (let i = 1; i < sorted.length; i++) {
+        const d = sorted[i].price - sorted[i - 1].price;
+        if (d !== 0) absDiffs.push(Math.abs(d));
+      }
+    }
+    const med = median(absDiffs);
+    route_baselines[route] = {
+      median_abs_diff: med,
+      mad_abs_diff: mad(absDiffs, med),
+      sample_size: absDiffs.length,
+    };
+  }
+
   return json({
     generated_at: new Date().toISOString().slice(0, 16),
     history,
+    route_baselines,
   });
 }
 
