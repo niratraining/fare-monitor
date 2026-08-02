@@ -382,7 +382,21 @@ async function handleExportData(env) {
     }
   }
 
-  const todayStr = new Date(Date.now() + IRAN_OFFSET_MS).toISOString().slice(0, 10);
+  // نکته‌ی مهم: قبلاً این دو فیلتر روی «todayStr» بودن (فقط امروز/آینده)، که یعنی
+  // به‌محض رد شدن یه flight_date از امروز به دیروز، کل تاریخچه‌ی پروازهایی که
+  // اون روز باز و بسته شده بودن (و هنوز تو fare_snapshots هستن) از این کوئری
+  // می‌افتاد بیرون — فقط تک‌اسنپ‌شات آخرِ همون روز (از openFlights بی‌فیلتر بالا)
+  // می‌موند و بقیه بدون این‌که «بسته‌شده» حساب بشن، ناپدید می‌شدن.
+  // به‌جاش همون بازه‌ای که fare_snapshots واقعاً نگه‌داشته می‌شه (رجوع کن به
+  // CLEANUP_RETENTION_DAYS/maybeRunCleanup) رو پوشش می‌دیم؛ چون ردیف‌های قدیمی‌تر
+  // از اون بازه به‌مرور توسط cleanup پاک می‌شن، این فیلتر عملاً هیچ‌وقت بیشتر از
+  // حجم موجود تو دیتابیس رو برنمی‌گردونه — فقط اجازه می‌ده یه تاریخ تازه‌گذشته
+  // حداقل یک‌بار روستر کامل closed خودش رو کامل نشون بده.
+  const closedLookbackStr = new Date(
+    Date.now() + IRAN_OFFSET_MS - (CLEANUP_RETENTION_DAYS - 1) * 86400000
+  )
+    .toISOString()
+    .slice(0, 10);
 
   const { results: closedFlights } = await env.DB.prepare(
     `SELECT f.*
@@ -406,7 +420,7 @@ async function handleExportData(env) {
      ON f.route = latestOfDay.route AND f.flight_date = latestOfDay.flight_date
      WHERE f.captured_at != latestOfDay.max_captured
      ORDER BY f.route, f.flight_date, f.dep_time`
-  ).bind(todayStr, todayStr).all();
+  ).bind(closedLookbackStr, closedLookbackStr).all();
 
   const flights = [
     ...openFlights.map((f) => ({ ...f, closed: 0 })),
