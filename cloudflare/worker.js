@@ -159,14 +159,19 @@ function isSeasonalDate(dateStr) {
 }
 
 // ===========================================================
-// پاک‌سازی خودکار fare_snapshots/check_state برای تاریخ‌های خیلی
-// گذشته — بدون این، جدول با گذشت ماه‌ها (چون هر رصد حتی بدون تغییر
-// قیمت یک ردیف خام ثبت می‌کنه) بی‌نهایت بزرگ می‌شه و کوئری‌های export
-// کند می‌شن. اجرا فقط حداکثر هر ۲۰ ساعت یک‌بار واقعاً کار می‌کنه (وضعیتش
-// تو maintenance_state ذخیره می‌شه)، پس صدا زدنش از هر /ingest تقریباً
-// بی‌هزینه‌ست (یک SELECT ساده در بیشتر اجراها) و نیازی به cron جدا نداره.
-// ۳ روز بعد از تاریخ پرواز نگه داشته می‌شه (حاشیه‌ی کافی برای بج
-// «اتمام نرخ‌گذاری»/بررسی دستی)، نه بیشتر.
+// پاک‌سازی خودکار check_state برای تاریخ‌های خیلی گذشته — فقط جدول
+// زمان‌بندی (last_checked_at)، نه دیتای قیمت. اجرا فقط حداکثر هر ۲۰
+// ساعت یک‌بار واقعاً کار می‌کنه (وضعیتش تو maintenance_state ذخیره
+// می‌شه)، پس صدا زدنش از هر /ingest تقریباً بی‌هزینه‌ست.
+//
+// نکته‌ی مهم: fare_snapshots دیگه اینجا پاک نمی‌شه. این سایت به‌عنوان
+// آرشیوِ کامل تغییرات نرخ برای آموزش مدل استفاده می‌شه، پس هیچ ردیف
+// خامی نباید حذف بشه — حتی برای تاریخ‌های خیلی گذشته. جدول با گذشت
+// زمان بزرگ می‌شه (D1 free tier سقفش ۵ گیگ ذخیره‌سازیه، پلن پولی تا
+// ۱۰ گیگ در هر دیتابیس)، پس رشدش رو از داشبورد Cloudflare (D1 →
+// Metrics) هرازگاهی چک کن؛ اگه به سقف نزدیک شدی، راه‌حل بعدی dump
+// دوره‌ای fare_snapshots به R2 (ارزون‌تر و بدون سقف عملیه) به‌جای
+// حذفشه، نه پاک کردن.
 const CLEANUP_RETENTION_DAYS = 3;
 const CLEANUP_MIN_INTERVAL_HOURS = 20;
 
@@ -186,9 +191,6 @@ async function maybeRunCleanup(env) {
     .toISOString()
     .slice(0, 10);
 
-  const delSnap = await env.DB.prepare(`DELETE FROM fare_snapshots WHERE flight_date < ?`)
-    .bind(cutoffStr)
-    .run();
   const delState = await env.DB.prepare(`DELETE FROM check_state WHERE flight_date < ?`)
     .bind(cutoffStr)
     .run();
@@ -200,7 +202,6 @@ async function maybeRunCleanup(env) {
 
   return {
     cutoff: cutoffStr,
-    deleted_snapshots: delSnap.meta?.changes ?? null,
     deleted_check_state: delState.meta?.changes ?? null,
   };
 }
@@ -317,33 +318,49 @@ async function handleIngest(request, env) {
 }
 
 // ===========================================================
-// GET /export/data — آخرین اسنپ‌شات هر (route, flight_date)، به‌علاوه‌ی
-// پروازهایی که از آخرین رصد همون (route, flight_date) بیرون افتادن —
-// یعنی سپهر دیگه نشونشون نمی‌ده (نرخ‌گذاری/فروششون تموم شده). این‌ها
-// closed:1 می‌گیرن تا تو پنل به‌جای ناپدید شدن، برن تو آرشیو.
-// فقط برای تاریخ‌های امروز/آینده محاسبه می‌شه تا حجم خروجی با گذشت
-// زمان و انباشته‌شدن fare_snapshots بی‌نهایت بزرگ نشه.
+// GET /export/data — آخرین اسنپ‌شات هر (route, flight_date) در بازه‌ی
+// اخیر (EXPORT_LOOKBACK_DAYS)، به‌علاوه‌ی پروازهایی که از آخرین رصد
+// همون (route, flight_date) بیرون افتادن — یعنی سپهر دیگه نشونشون
+// نمی‌ده (نرخ‌گذاری/فروششون تموم شده). این‌ها closed:1 می‌گیرن تا تو
+// پنل به‌جای ناپدید شدن، برن تو آرشیو.
+//
+// نکته: از وقتی fare_snapshots دیگه هیچ‌وقت پاک نمی‌شه (رجوع کن به
+// maybeRunCleanup — این آرشیو کامله و برای آموزش مدل نگه داشته می‌شه)،
+// این export دیگه از رو کل جدول نمی‌خونه — فقط EXPORT_LOOKBACK_DAYS
+// روز اخیر رو برای پنل زنده محاسبه می‌کنه، وگرنه با بزرگ‌تر شدن آرشیو
+// در طول ماه‌ها/سال‌ها، هر export (هر ۲۰ دقیقه) کندتر و پرهزینه‌تر
+// می‌شد. تاریخ‌های قدیمی‌تر از این بازه فقط از خودِ fare_snapshots یا
+// export/history قابل‌دسترسین، نه از این پنل.
 // ===========================================================
+const EXPORT_LOOKBACK_DAYS = 2;
+
 async function handleExportData(env) {
+  const exportLookbackStr = new Date(Date.now() + IRAN_OFFSET_MS - EXPORT_LOOKBACK_DAYS * 86400000)
+    .toISOString()
+    .slice(0, 10);
+
   // نکته: گروه‌بندی seller تو کوئری‌های زیر مستقیماً SQL هست (نه از طریق
   // normalizeSellerName جاوااسکریپتی)، چون از این به بعد seller همیشه در
-  // لحظه‌ی ingest نرمال شده ذخیره می‌شه؛ ردیف‌های قدیمی‌تر که قبل از این
-  // تغییر با نام نرمال‌نشده ثبت شدن، حداکثر تا CLEANUP_RETENTION_DAYS روز
-  // دیگه خودشون پاک می‌شن (رجوع کن به maybeRunCleanup)، پس این مشکل به‌مرور
-  // خودش برطرف می‌شه، بدون نیاز به migration دستی.
+  // لحظه‌ی ingest نرمال شده ذخیره می‌شه. ردیف‌های قدیمی‌تر که قبل از این
+  // تغییر با نام نرمال‌نشده ثبت شدن، دیگه خودشون پاک نمی‌شن (fare_snapshots
+  // آرشیو دائمیه)، ولی چون از بازه‌ی EXPORT_LOOKBACK_DAYS بیرونن، تو همین
+  // export دیده نمی‌شن؛ اگه لازم شد رو کل آرشیو (مثلاً برای export/history
+  // یا دیتای آموزش) کار کنی، این ناهماهنگی نام seller قدیمی رو جداگانه
+  // در نظر بگیر.
   const { results: openFlights } = await env.DB.prepare(
     `SELECT f.*
      FROM fare_snapshots f
      INNER JOIN (
        SELECT route, flight_date, MAX(captured_at) AS max_captured
        FROM fare_snapshots
+       WHERE flight_date >= ?
        GROUP BY route, flight_date
      ) latest
      ON f.route = latest.route
         AND f.flight_date = latest.flight_date
         AND f.captured_at = latest.max_captured
      ORDER BY f.route, f.flight_date, f.dep_time`
-  ).all();
+  ).bind(exportLookbackStr).all();
 
   // ===========================================================
   // Price Index: قیمت هر پرواز باز رو با میانه‌ی بقیه‌ی پیشنهادهای همون
@@ -385,19 +402,10 @@ async function handleExportData(env) {
   // نکته‌ی مهم: قبلاً این دو فیلتر روی «todayStr» بودن (فقط امروز/آینده)، که یعنی
   // به‌محض رد شدن یه flight_date از امروز به دیروز، کل تاریخچه‌ی پروازهایی که
   // اون روز باز و بسته شده بودن (و هنوز تو fare_snapshots هستن) از این کوئری
-  // می‌افتاد بیرون — فقط تک‌اسنپ‌شات آخرِ همون روز (از openFlights بی‌فیلتر بالا)
-  // می‌موند و بقیه بدون این‌که «بسته‌شده» حساب بشن، ناپدید می‌شدن.
-  // به‌جاش همون بازه‌ای که fare_snapshots واقعاً نگه‌داشته می‌شه (رجوع کن به
-  // CLEANUP_RETENTION_DAYS/maybeRunCleanup) رو پوشش می‌دیم؛ چون ردیف‌های قدیمی‌تر
-  // از اون بازه به‌مرور توسط cleanup پاک می‌شن، این فیلتر عملاً هیچ‌وقت بیشتر از
-  // حجم موجود تو دیتابیس رو برنمی‌گردونه — فقط اجازه می‌ده یه تاریخ تازه‌گذشته
-  // حداقل یک‌بار روستر کامل closed خودش رو کامل نشون بده.
-  const closedLookbackStr = new Date(
-    Date.now() + IRAN_OFFSET_MS - (CLEANUP_RETENTION_DAYS - 1) * 86400000
-  )
-    .toISOString()
-    .slice(0, 10);
-
+  // می‌افتاد بیرون — فقط تک‌اسنپ‌شات آخرِ همون روز می‌موند و بقیه بدون این‌که
+  // «بسته‌شده» حساب بشن، ناپدید می‌شدن. به‌جاش از همون exportLookbackStr بالا
+  // استفاده می‌کنیم تا یه تاریخ تازه‌گذشته حداقل یک‌بار روستر کامل closed
+  // خودش رو کامل نشون بده، قبل از این‌که از بازه‌ی پنل بیفته بیرون.
   const { results: closedFlights } = await env.DB.prepare(
     `SELECT f.*
      FROM fare_snapshots f
@@ -420,7 +428,7 @@ async function handleExportData(env) {
      ON f.route = latestOfDay.route AND f.flight_date = latestOfDay.flight_date
      WHERE f.captured_at != latestOfDay.max_captured
      ORDER BY f.route, f.flight_date, f.dep_time`
-  ).bind(closedLookbackStr, closedLookbackStr).all();
+  ).bind(exportLookbackStr, exportLookbackStr).all();
 
   const flights = [
     ...openFlights.map((f) => ({ ...f, closed: 0 })),
