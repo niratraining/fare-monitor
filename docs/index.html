@@ -725,57 +725,67 @@
   }
   .date-card.unavailable.active .daynum { color: var(--ink); }
 
-  /* --- نوار ابزارهای تحلیلی (پرتغییرترین‌ها/منحنی DTD/دنباله‌روی فروشنده‌ها و هر ابزار
-     بعدی که اضافه بشه): به‌جای اینکه هر ابزار یه بخش دائم-باز و جدا رو صفحه اشغال کنه
-     و هی شلوغ‌تر بشه، هر ابزار فقط یه چیپ فشرده تو این نوار می‌گیره؛ با تپ روی چیپ،
-     محتواش تو همون شیت مشترک پایین صفحه (insight-sheet) باز می‌شه — دقیقاً همون
-     مکانیزم شیت فیلتر/مرتب‌سازی. اضافه‌کردن ابزار جدید یعنی فقط یه چیپ دیگه اینجا،
-     نه یه بخش/CSS/JS جدید --- */
-  .insights-toolbar {
+  /* --- نوار واحد ابزارها: فیلتر، مرتب‌سازی، و ابزارهای تحلیلی (پرتغییرترین‌ها/
+     منحنی DTD/دنباله‌روی فروشنده‌ها و هر ابزار بعدی) همه یه چیپ فشرده‌ی هم‌شکل تو
+     همین یه ردیفن — به‌جای یه پنل قاب‌دار برای فیلتر/مرتب‌سازی + یه ردیف جدا برای
+     ابزارها. با تپ روی هر چیپ، همون شیت مخصوص خودش (فیلتر/مرتب‌سازی/تحلیلی) باز
+     می‌شه. اضافه‌کردن ابزار جدید یعنی فقط یه چیپ دیگه اینجا، نه یه بخش/CSS/JS جدید --- */
+  .tools-toolbar {
     display: flex;
-    gap: 8px;
-    margin: 16px 18px 0;
+    align-items: center;
+    gap: 7px;
+    margin: 14px 18px 0;
     overflow-x: auto;
     padding: 2px 2px 4px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-  .insights-toolbar::-webkit-scrollbar { display: none; }
-  .insight-chip {
+  .tools-toolbar::-webkit-scrollbar { display: none; }
+  .tool-chip {
     flex: none;
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 9px 14px 9px 10px;
+    gap: 6px;
+    padding: 8px 12px 8px 9px;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: var(--card);
     color: var(--ink);
     font-family: inherit;
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     box-shadow: var(--shadow-sm);
-    transition: background .16s ease, transform .12s ease, box-shadow .16s ease;
+    transition: background .16s ease, border-color .16s ease, transform .12s ease, color .16s ease, box-shadow .16s ease;
   }
-  .insight-chip:active { transform: scale(.97); }
+  .tool-chip:active { transform: scale(.97); }
   @media (hover: hover) {
-    .insight-chip:hover { background: var(--paper); box-shadow: var(--shadow-md); }
+    .tool-chip:not(.has-active):hover { background: var(--paper); }
   }
-  .insight-chip .fi {
+  .tool-chip.has-active {
+    background: linear-gradient(180deg, var(--card), var(--accent-tint));
+    border-color: var(--accent-bright);
+    color: var(--accent-strong);
+    box-shadow: 0 3px 10px -4px rgba(69, 95, 91, .35);
+  }
+  .tool-chip .fi {
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--paper);
     color: var(--accent);
+    transition: background .16s ease, color .16s ease;
   }
-  .insight-chip[data-tone="danger"] .fi { color: var(--danger); }
+  .tool-chip .fi svg { width: 11px; height: 11px; display: block; }
+  .tool-chip.has-active .fi { background: var(--accent-strong); color: #fff; }
+  .tool-chip[data-tone="danger"] .fi { color: var(--danger); }
+  .tool-chip-sep { flex: none; width: 1px; align-self: stretch; margin: 3px 1px; background: var(--line); }
   .movers-list {
     display: flex;
     gap: 8px;
@@ -992,64 +1002,7 @@
     box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
 
-  /* --- نوار ابزار فیلتر/مرتب‌سازی: الگوی استاندارد اپ‌های رزرو (دو دکمه‌ی قرصی
-     زیر نوار KPI، چسبان زیر هدر)؛ هرکدوم یه شیت پایین‌رونده‌ی جدا باز می‌کنن --- */
-  .filter-toolbar {
-    display: flex;
-    gap: 8px;
-    margin: 16px 18px 0;
-    padding: 7px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: var(--shadow-sm), inset 0 0 0 1px rgba(255,255,255,.4);
-  }
-  .ft-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 10px 14px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--ink-soft);
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: background .16s ease, border-color .16s ease, transform .12s ease, color .16s ease, box-shadow .16s ease;
-    position: relative;
-    min-width: 0;
-  }
-  .ft-btn:active { transform: scale(.97); }
-  @media (hover: hover) {
-    .ft-btn:not(.has-active):hover { background: var(--paper); color: var(--ink); }
-  }
-  .ft-btn.has-active {
-    background: linear-gradient(180deg, var(--card), var(--accent-tint));
-    border-color: var(--accent-bright);
-    color: var(--accent-strong);
-    box-shadow: 0 3px 10px -4px rgba(69, 95, 91, .35);
-  }
-  .ft-btn .fi {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--paper);
-    color: var(--accent);
-    transition: background .16s ease, color .16s ease;
-  }
-  .ft-btn .fi svg { width: 12px; height: 12px; display: block; }
-  .ft-btn.has-active .fi { background: var(--accent-strong); color: #fff; }
-  .ft-btn-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ft-chevron { flex: none; width: 8px; height: 8px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); margin-top: -3px; opacity: .5; }
+  .tool-chip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .filter-badge {
     display: none;
     min-width: 16px;
@@ -2018,19 +1971,6 @@
   </div>
 </section>
 
-<div class="filter-toolbar" id="filterToolbar">
-  <button type="button" class="ft-btn" id="filterBtn">
-    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
-    <span class="ft-btn-label">فیلتر</span>
-    <span class="filter-badge" id="filterBadge"></span>
-  </button>
-  <button type="button" class="ft-btn" id="sortBtn">
-    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4 3.5 7.5M7 4l3.5 3.5"/><path d="M17 20V4M17 20l3.5-3.5M17 20l-3.5-3.5"/></svg></span>
-    <span class="ft-btn-label" id="sortBtnLabel">ساعت پرواز</span>
-    <span class="ft-chevron"></span>
-  </button>
-</div>
-
 <dialog class="modal-overlay filter-sheet" id="filterSheetOverlay" data-ephemeral="false">
   <div class="modal-card">
     <div class="sheet-handle"></div>
@@ -2117,16 +2057,27 @@
   </div>
 </dialog>
 
-<!-- نوار ابزارهای تحلیلی: هر ابزار (پرتغییرترین‌ها/DTD/دنباله‌روی فروشنده و هر ابزار
-     بعدی) فقط یه چیپه؛ هیچ‌کدوم دائم رو صفحه باز نیستن. تپ می‌کنی، باز می‌شه. -->
-<div class="insights-toolbar" id="insightsToolbar">
-  <button type="button" class="insight-chip" id="insightChip-movers" style="display:none;" data-tone="danger">
+<!-- نوار واحد ابزارها: فیلتر، مرتب‌سازی، و ابزارهای تحلیلی (پرتغییرترین‌ها/DTD/
+     دنباله‌روی فروشنده و هر ابزار بعدی) همه یه چیپ فشرده‌ی هم‌شکلن؛ هیچ‌کدوم دائم
+     رو صفحه باز نیستن، تپ می‌کنی، شیت مخصوص خودش باز می‌شه. -->
+<div class="tools-toolbar" id="toolsToolbar">
+  <button type="button" class="tool-chip" id="filterBtn">
+    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11M3 12h7M3 17h4"/><path d="m17 4 3 3-3 3M20 7h-9"/></svg></span>
+    <span class="tool-chip-label">فیلتر</span>
+    <span class="filter-badge" id="filterBadge"></span>
+  </button>
+  <button type="button" class="tool-chip" id="sortBtn">
+    <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 4 3.5 7.5M7 4l3.5 3.5"/><path d="M17 20V4M17 20l3.5-3.5M17 20l-3.5-3.5"/></svg></span>
+    <span class="tool-chip-label" id="sortBtnLabel">ساعت پرواز</span>
+  </button>
+  <span class="tool-chip-sep" aria-hidden="true"></span>
+  <button type="button" class="tool-chip" id="insightChip-movers" style="display:none;" data-tone="danger">
     <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span> پرتغییرترین‌ها
   </button>
-  <button type="button" class="insight-chip" id="insightChip-dtd" style="display:none;">
+  <button type="button" class="tool-chip" id="insightChip-dtd" style="display:none;">
     <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg></span> روند قیمت تا پرواز
   </button>
-  <button type="button" class="insight-chip" id="insightChip-sb" style="display:none;">
+  <button type="button" class="tool-chip" id="insightChip-sb" style="display:none;">
     <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6"/><path d="M13.5 7.5 19 6a3 3 0 0 1 3 3l-1.5 5.5a3 3 0 0 1-3.6 2.1L15 16"/><path d="M10.5 16.5 5 18a3 3 0 0 1-3-3l1.5-5.5A3 3 0 0 1 7.1 7.4L9 8"/></svg></span> دنباله‌روی فروشنده‌ها
   </button>
 </div>
@@ -2317,7 +2268,8 @@ function wireSheetDrag(overlay) {
 // ابزارهای تحلیلی (insight tools): پرتغییرترین‌ها/منحنی DTD/دنباله‌روی فروشنده‌ها،
 // و هر ابزار تحلیلی که بعداً اضافه بشه. این‌ها به‌جای اینکه هر کدوم یه section
 // دائم-باز رو صفحه باشن (که هر ابزار جدید صفحه رو شلوغ‌تر می‌کرد)، فقط یه چیپ
-// تو نوار insights-toolbar می‌گیرن؛ محتواشون فقط با تپ روی چیپ، تو همون شیت
+// تو نوار واحد ابزارها (tools-toolbar، همون‌جایی که فیلتر/مرتب‌سازی هم هستن) می‌گیرن؛
+// محتواشون فقط با تپ روی چیپ، تو همون شیت
 // مشترک پایین صفحه (insightSheetOverlay) رندر می‌شه — با همون presentSheet/
 // closeSheet که فیلتر/مرتب‌سازی استفاده می‌کنن، برای حس یکدست.
 //
