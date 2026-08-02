@@ -848,6 +848,15 @@
   .fc-position.cheap { background: var(--success-tint); color: var(--success-strong); }
   .fc-position.expensive { background: var(--danger-tint); color: var(--danger-strong); }
   .fc-position.flat { background: var(--paper); color: var(--ink-soft); }
+  .fc-position-low {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    opacity: .75;
+    margin-right: 3px;
+    border-right: 1px solid currentColor;
+    padding-right: 4px;
+  }
 
   /* --- نشان نوسان غیرعادی قیمت روی کارت: زیر نشان افزایش/کاهش، هم‌سمت با اون
      (نه سمت لوگوی ایرلاین) تا هیچ‌وقت روی لوگو نیفته --- */
@@ -3129,75 +3138,175 @@ function buildMoversList() {
 }
 
 // ===========================================================
+// ابزارهای آماری مشترک: میانه و MAD (Median Absolute Deviation) — هر دو
+// نسبت به outlier مقاوم‌ترن از میانگین/انحراف‌معیار، مخصوصاً رو نمونه‌های
+// کوچیک (یه پیشنهاد چارتری خیلی ارزون یا تبلیغاتی خیلی گرون نباید کل
+// شاخص رو کج کنه)
+// ===========================================================
+function median(arr) {
+  if (!arr.length) return null;
+  const s = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+function mad(arr, med) {
+  if (!arr.length) return 0;
+  const m = med !== undefined ? med : median(arr);
+  return median(arr.map(x => Math.abs(x - m))) || 0;
+}
+
+// ===========================================================
+// روزهای «فصلی/پرتقاضا»: پنج‌شنبه/جمعه و بازه‌های تعطیلات ثابت شمسی
+// (نوروز، شب یلدا) ذاتاً قیمت بالاتری دارن — این نباید به‌عنوان «نوسان
+// غیرعادی» یا بخشی از baseline نوسان عادی حساب بشه، چون فصلیه نه رفتار
+// غیرمعمول. تعطیلات قمری (اربعین/عاشورا/تاسوعا/عید فطر/قربان) هر سال
+// جابه‌جا می‌شن و اینجا هاردکد نشدن — اگه لازم شد، تاریخ میلادی دقیقشون
+// رو به LUNAR_HOLIDAYS_GREGORIAN اضافه کن (فرمت 'YYYY-MM-DD').
+// ===========================================================
+const LUNAR_HOLIDAYS_GREGORIAN = [
+  // 'YYYY-MM-DD',
+];
+
+function isSeasonalDate(dateStr) {
+  if (!dateStr) return false;
+  if (LUNAR_HOLIDAYS_GREGORIAN.includes(dateStr)) return true;
+  const d = new Date(dateStr + 'T00:00:00');
+  const dow = d.getDay(); // ۴=پنج‌شنبه، ۵=جمعه
+  if (dow === 4 || dow === 5) return true;
+  const [, jm, jd] = gregorianToJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  if (jm === 1 && jd <= 13) return true;   // نوروز: فروردین ۱ تا ۱۳
+  if (jm === 9 && jd === 30) return true;  // شب یلدا
+  return false;
+}
+
+// ===========================================================
 // شاخص جایگاه قیمتی: مقایسه‌ی قیمت این پیشنهاد با میانگین بقیه‌ی
 // پیشنهادهای همون مسیر/تاریخ/کلاس پروازی در آخرین اسنپ‌شات (نه با
 // تاریخچه‌ی خودش) — همون چیزی که ابزارهای رصد رقبا بهش «Price Index» می‌گن
 // ===========================================================
+const PRICE_INDEX_MIN_FULL_SAMPLE = 4; // کمتر از این، شاخص با برچسب «نمونه کم» نشون داده می‌شه (ولی حذف نمی‌شه)
+
 function getMarketPosition(f) {
   const price = toPriceNumber(f.adult_price);
   if (!isFinite(price)) return null;
   const cabinKey = normalizeCabin(f.cabin);
   const peerPrices = allFlights
-    .filter(x => x.route === f.route && x.flight_date === f.flight_date && !isFlightArchived(x) && normalizeCabin(x.cabin) === cabinKey)
+    .filter(x => x !== f && x.route === f.route && x.flight_date === f.flight_date && !isFlightArchived(x) && normalizeCabin(x.cabin) === cabinKey)
     .map(x => toPriceNumber(x.adult_price))
     .filter(p => isFinite(p));
-  if (peerPrices.length < 2) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
+  if (peerPrices.length < 1) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
 
-  const avg = peerPrices.reduce((a, b) => a + b, 0) / peerPrices.length;
-  if (!avg) return null;
-  const pct = Math.round(((price - avg) / avg) * 100);
-  return { price, avg, pct, count: peerPrices.length };
+  // میانه به‌جای میانگین: یه پیشنهاد عجیب (چارتری خیلی ارزون یا تبلیغاتی
+  // خیلی گرون) نباید کل شاخص رو کج کنه — همون رویکرد ابزارهای صنعتی
+  // rate-shopping (سبک Infare/ATPCO)
+  const med = median(peerPrices);
+  if (!med) return null;
+  const pct = Math.round(((price - med) / med) * 100);
+  const lowSample = peerPrices.length < PRICE_INDEX_MIN_FULL_SAMPLE;
+  return { price, median: med, pct, count: peerPrices.length, lowSample };
 }
 
 function buildPositionBadge(pos) {
   if (!pos) return '';
+  const lowTag = pos.lowSample ? '<span class="fc-position-low">نمونه کم</span>' : '';
   if (Math.abs(pos.pct) < 2) {
-    return `<span class="fc-position flat">≈ میانگین بازار</span>`;
+    return `<span class="fc-position flat">${lowTag}≈ میانه بازار</span>`;
   }
   if (pos.pct < 0) {
-    return `<span class="fc-position cheap">٪${toFaDigits(Math.abs(pos.pct))} زیر میانگین</span>`;
+    return `<span class="fc-position cheap">${lowTag}٪${toFaDigits(Math.abs(pos.pct))} زیر میانه</span>`;
   }
-  return `<span class="fc-position expensive">٪${toFaDigits(pos.pct)} بالای میانگین</span>`;
+  return `<span class="fc-position expensive">${lowTag}٪${toFaDigits(pos.pct)} بالای میانه</span>`;
 }
 
 function positionNoteHtml(pos) {
   if (!pos) return '';
-  const others = toFaDigits(pos.count - 1);
+  const others = toFaDigits(pos.count);
+  const sampleNote = pos.lowSample ? ` (نمونه کم — فقط ${others} رقیب، شاخص ممکنه دقیق نباشه)` : '';
   let text;
   if (Math.abs(pos.pct) < 2) {
-    text = `این قیمت تقریباً هم‌سطح میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.`;
+    text = `این قیمت تقریباً هم‌سطح میانه‌ی ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه${sampleNote}.`;
   } else if (pos.pct < 0) {
-    text = `این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه.`;
+    text = `این قیمت ٪${toFaDigits(Math.abs(pos.pct))} پایین‌تر از میانه‌ی ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه — جایگاه رقابتی خوبیه${sampleNote}.`;
   } else {
-    text = `این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانگین ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه.`;
+    text = `این قیمت ٪${toFaDigits(pos.pct)} بالاتر از میانه‌ی ${others} پیشنهاد دیگه‌ی همین مسیر و تاریخه${sampleNote}.`;
   }
   return `<div class="insight-row info"><span class="insight-icon">${ICONS.chart}</span><span>${text}</span></div>`;
 }
 
 // ===========================================================
-// تشخیص نوسان غیرعادی: آخرین تغییر قیمت این پرواز رو با نوسان معمول
-// خودِ همون پرواز (نه بقیه) مقایسه می‌کنه؛ اگه از حد معمولش خیلی
-// بیشتر بود یا حداقل ٪۱۲ جهش داشت (هر کدوم بزرگ‌تر بود)، پرچم می‌خوره
+// baseline نوسان کل مسیر: برای پروازهایی که تاریخچه‌ی خودشون هنوز کوتاهه
+// (cold start)، به‌جای قضاوت نکردن یا استفاده از ۲-۳ تا داده‌ی بی‌معنی،
+// از نوسان معمول همه‌ی پروازها/فروشنده‌های همون مسیر استفاده می‌کنیم.
+// تاریخ‌های فصلی/پرتقاضا (نوروز، یلدا، پنج‌شنبه/جمعه) از این baseline
+// کنار گذاشته می‌شن چون نوسانشون فصلیه، نه معیار «روز عادی».
+// نتیجه به‌ازای هر مسیر کش می‌شه چون allHistory بین رندرهای یک صفحه ثابته.
 // ===========================================================
+let routeVolatilityCache = { route: null, absDiffs: null };
+
+function getRouteVolatilityBaseline(route) {
+  if (routeVolatilityCache.route === route) return routeVolatilityCache;
+  const byKey = new Map();
+  for (const h of allHistory) {
+    if (h.route !== route || isSeasonalDate(h.flight_date)) continue;
+    const key = [h.flight_date, h.flight_no, h.airline, normalizeCabin(h.cabin), h.seller].join('|');
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(h);
+  }
+  const absDiffs = [];
+  for (const points of byKey.values()) {
+    const sorted = [...points].sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
+    for (let i = 1; i < sorted.length; i++) {
+      const d = sorted[i].price - sorted[i - 1].price;
+      if (d !== 0) absDiffs.push(Math.abs(d));
+    }
+  }
+  routeVolatilityCache = { route, absDiffs };
+  return routeVolatilityCache;
+}
+
+// ===========================================================
+// تشخیص نوسان غیرعادی: آخرین تغییر قیمت این پرواز رو با نوسان معمول
+// مقایسه می‌کنه — با نمونه‌ی کافی از خودِ همون پرواز، وگرنه (cold start)
+// از نوسان معمول کل مسیر. به‌جای میانگین/انحراف‌معیار (که با نمونه‌ی
+// کم بی‌معنی می‌شن) از میانه و MAD استفاده می‌کنه که جلوی outlier
+// مقاوم‌تره. آستانه: باید هم از حد آماری (میانه+۳×MAD) و هم از حداقل
+// ٪۱۲ نسبت به قیمت قبلی رد بشه — هر کدوم سخت‌گیرتر بود، ملاکه.
+// ===========================================================
+const ANOMALY_MIN_OWN_DIFFS = 6;  // کمتر از این، به baseline مسیر رجوع می‌کنیم
+const ANOMALY_MIN_BASELINE_DIFFS = 5; // حداقل نمونه‌ی لازم رو baseline مسیر برای قضاوت
+const ANOMALY_MAD_K = 3;
+const ANOMALY_MIN_PCT = 0.12;
+
 function detectAnomaly(f) {
   const points = getHistoryPoints(f);
-  if (points.length < 4) return null; // برای یه خط‌مبنای معنادار حداقل چند نقطه لازمه
+  if (points.length < 3) return null; // حداقل یه تغییر قبلی + تغییر آخر لازمه
 
   const diffs = [];
   for (let i = 1; i < points.length - 1; i++) {
     diffs.push(points[i].price - points[i - 1].price);
   }
-  if (diffs.length < 2) return null;
-
-  const meanAbs = diffs.reduce((s, d) => s + Math.abs(d), 0) / diffs.length;
-  const variance = diffs.reduce((s, d) => s + Math.pow(Math.abs(d) - meanAbs, 2), 0) / diffs.length;
-  const std = Math.sqrt(variance);
 
   const prevPrice = points[points.length - 2].price;
   const lastDiff = points[points.length - 1].price - prevPrice;
   if (!prevPrice || lastDiff === 0) return null;
 
-  const threshold = Math.max(meanAbs + 2 * std, prevPrice * 0.12);
+  let absDiffs = diffs.map(Math.abs);
+  if (absDiffs.length < ANOMALY_MIN_OWN_DIFFS) {
+    // خودِ پرواز نمونه‌ی کافی نداره — سراغ نوسان معمول کل مسیر می‌ریم.
+    // اگه خودِ این پرواز هم تو یه تاریخ فصلی/پرتقاضاست، این baseline
+    // (که عمداً روزهای فصلی رو کنار گذاشته) قابل مقایسه نیست — قضاوت
+    // نمی‌کنیم تا هشدار کاذب ندیم.
+    if (isSeasonalDate(f.flight_date)) return null;
+    const routeBase = getRouteVolatilityBaseline(f.route);
+    if (routeBase.absDiffs.length < ANOMALY_MIN_BASELINE_DIFFS) return null;
+    absDiffs = routeBase.absDiffs;
+  }
+
+  const medianAbs = median(absDiffs);
+  const madAbs = mad(absDiffs, medianAbs);
+  const statBoundary = medianAbs + ANOMALY_MAD_K * madAbs;
+  const threshold = Math.max(statBoundary, prevPrice * ANOMALY_MIN_PCT);
   if (Math.abs(lastDiff) <= threshold) return null;
 
   const pct = Math.round((lastDiff / prevPrice) * 100);
@@ -3243,21 +3352,39 @@ function computeDtdSeries() {
     const [dy, dm, dd] = d.split('-').map(Number);
     const flightUtcMs = Date.UTC(dy, dm - 1, dd);
     const dtd = Math.round((flightUtcMs - todayUtcMs) / 86400000);
-    return { date: d, dtd, min };
+    return { date: d, dtd, min, seasonal: isSeasonalDate(d) };
   }).filter(Boolean);
 }
 
+// منحنی قیمت-به-DTD در واقعیت پله‌ایه (به‌خاطر بسته‌شدن کلاس‌های رزرو)،
+// نه خطی — میانگین نیمه‌نزدیک/نیمه‌دور این پله‌ها رو محو می‌کرد. به‌جاش
+// تو بازه‌های استاندارد DTD میانه می‌گیریم، که هم به outlier مقاوم‌تره
+// هم شکل واقعی (پله‌ای/S-شکل) رو بهتر نشون می‌ده. تاریخ‌های فصلی/پرتقاضا
+// (نوروز، یلدا، پنج‌شنبه/جمعه) از این مقایسه کنار گذاشته می‌شن چون
+// قیمتشون به‌خاطر تقاضای فصلیه، نه فاصله تا پرواز.
+const DTD_BUCKETS = [
+  { key: '0-3', min: 0, max: 3 },
+  { key: '4-7', min: 4, max: 7 },
+  { key: '8-14', min: 8, max: 14 },
+  { key: '15-30', min: 15, max: 30 },
+  { key: '30+', min: 31, max: Infinity },
+];
+
 function describeDtdTrend(series) {
-  if (series.length < 3) return null;
-  const sorted = [...series].sort((a, b) => a.dtd - b.dtd); // نزدیک به پرواز -> دور
-  const half = Math.max(1, Math.floor(sorted.length / 2));
-  const near = sorted.slice(0, half);
-  const far = sorted.slice(sorted.length - half);
-  const avgNear = near.reduce((s, p) => s + p.min, 0) / near.length;
-  const avgFar = far.reduce((s, p) => s + p.min, 0) / far.length;
-  if (!avgFar) return null;
-  const diffPct = Math.round(((avgNear - avgFar) / avgFar) * 100);
-  return { avgNear, avgFar, diffPct };
+  const clean = series.filter(p => p.dtd >= 0 && !p.seasonal);
+  if (clean.length < 3) return null;
+
+  const buckets = DTD_BUCKETS.map(b => {
+    const vals = clean.filter(p => p.dtd >= b.min && p.dtd <= b.max).map(p => p.min);
+    return vals.length ? { key: b.key, median: median(vals), count: vals.length } : null;
+  }).filter(Boolean);
+  if (buckets.length < 2) return null; // برای مقایسه حداقل دو بازه‌ی پرداده لازمه
+
+  const nearest = buckets[0];
+  const farthest = buckets[buckets.length - 1];
+  if (!farthest.median) return null;
+  const diffPct = Math.round(((nearest.median - farthest.median) / farthest.median) * 100);
+  return { nearest, farthest, diffPct, buckets, excludedSeasonal: series.length - clean.length };
 }
 
 function buildDtdChart(series) {
@@ -3338,12 +3465,17 @@ function buildDtdSection() {
   const trend = describeDtdTrend(series);
   if (!trend) {
     noteEl.innerHTML = '';
-  } else if (trend.diffPct > 5) {
-    noteEl.innerHTML = `${ICONS.infoUp} هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانگین ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره.`;
-  } else if (trend.diffPct < -5) {
-    noteEl.innerHTML = `${ICONS.infoDown} برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه.`;
   } else {
-    noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره.`;
+    const seasonalNote = trend.excludedSeasonal > 0
+      ? ` (${toFaDigits(trend.excludedSeasonal)} تاریخ تعطیل/آخر هفته از این مقایسه کنار گذاشته شد)`
+      : '';
+    if (trend.diffPct > 5) {
+      noteEl.innerHTML = `${ICONS.infoUp} هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانه ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره${seasonalNote}.`;
+    } else if (trend.diffPct < -5) {
+      noteEl.innerHTML = `${ICONS.infoDown} برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه${seasonalNote}.`;
+    } else {
+      noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره${seasonalNote}.`;
+    }
   }
 }
 
