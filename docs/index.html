@@ -1007,6 +1007,41 @@
   }
   .closed-list .flight-card { opacity: .72; }
 
+  /* --- کارت خلاصه‌ی آماری بالای فهرست بسته‌شده‌ها: تعداد پرواز، بالاترین/پایین‌ترین
+     نرخ فروخته‌شده، و پرنوسان‌ترین پیشنهاد همون تاریخ --- */
+  .closed-stats-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card-sm);
+    padding: 12px 14px;
+    margin-bottom: 2px;
+  }
+  .cst-total {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .cst-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+  }
+  .cst-row + .cst-row { border-top: 1px solid var(--line-soft); }
+  .cst-icon {
+    flex: none;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+  .cst-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .cst-label { font-size: 11.5px; font-weight: 700; color: var(--ink-muted); }
+  .cst-value { font-size: 13px; font-weight: 800; color: var(--ink); }
+  .cst-sub { font-size: 11px; font-weight: 700; color: var(--ink-muted); }
+  .cst-who { font-size: 11.5px; font-weight: 600; color: var(--ink-soft); }
+
   .fc-closed-badge {
     position: absolute;
     top: 42px;
@@ -3629,11 +3664,21 @@ function currentHHMM() {
   return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 
-// ---- پرواز الان بسته حساب می‌شه (باید بره تو کشوی آرشیو) اگه یا دیگه
-// تو آخرین رصد نبوده (نرخ‌گذاری‌ش تموم شده)، یا (فقط برای تاریخ امروز)
-// ساعت حرکتش گذشته — دو تا سیگنال مستقل، هرکدوم زودتر برسه کافیه ----
+// ---- تاریخ پرواز از خودِ امروز گذشته (نه فقط ساعتش) —
+// مستقل از فیلد closed چک می‌شه، چون اسکرِیپر برای تاریخ‌های گذشته
+// دیگه رکورد رو آپدیت نمی‌کنه و closed می‌تونه برای همیشه 0 بمونه ----
+function isFlightDatePast(f) {
+  return !!(f.flight_date && f.flight_date < todayDateStrLocal());
+}
+
+// ---- پرواز الان بسته حساب می‌شه (باید بره تو کشوی آرشیو) اگه یکی از
+// این سه سیگنالِ مستقل برقرار باشه (هرکدوم زودتر برسه کافیه):
+// ۱) دیگه تو آخرین رصد نبوده (نرخ‌گذاری‌ش تموم شده، closed=1)
+// ۲) خودِ تاریخ پروازش از امروز گذشته (فارغ از closed)
+// ۳) امروزه ولی ساعت حرکتش گذشته ----
 function isFlightArchived(f) {
   if (f.closed) return true;
+  if (isFlightDatePast(f)) return true;
   if (f.flight_date !== todayDateStrLocal()) return false;
   return !!(f.dep_time && f.dep_time <= currentHHMM());
 }
@@ -3713,6 +3758,89 @@ function countUniqueFlights(rows) {
   return set.size;
 }
 
+// ---- گزارش آماری تاریخ بسته‌شده: تعداد پرواز، بالاترین/پایین‌ترین نرخ
+// فروخته‌شده (با ایرلاین/فروشنده/شماره پروازش)، و «پرنوسان‌ترین پیشنهاد».
+//
+// معیار «بیشترین تغییر» عمداً نه صرفاً بزرگ‌ترین یک جهش تنهاست (که می‌تونه
+// یه اتفاق تصادفی یا خطای داده باشه و بقیه‌ی تاریخچه‌ش کاملاً ساکت باشه)
+// و نه صرفاً تعداد دفعات تغییره (که یه فروشنده با ۱۰ بار تغییر ۱۰۰
+// تومانی رو بی‌جهت جلوی یه فروشنده‌ی دیگه که یه‌بار ۲ میلیون تومان
+// جهش کرده می‌ندازه). به‌جاش از «مجموع قدرمطلق تغییرات پی‌درپی» (Total
+// Variation / Realized Volatility — معیار استاندارد سری‌های زمانی برای
+// سنجش میزان «حرکت» یه مسیر قیمتی از اول تا آخرش) استفاده می‌کنیم:
+// جمعِ اندازه‌ی همه‌ی جهش‌های قیمت اون پیشنهاد. این مجموع خودش هم به
+// تعداد تغییرات حساسه (هر تغییر یه جمله‌ی جدید به جمع اضافه می‌کنه) و
+// هم به بزرگی هرکدوم — بدون نیاز به یه وزن‌دهی دستی/سلیقه‌ای بین این دو.
+function computeClosedDateStats(closedRows) {
+  if (!closedRows || !closedRows.length) return null;
+
+  const enriched = closedRows.map(f => {
+    const points = getHistoryPoints(f);
+    const lastPrice = points.length ? points[points.length - 1].price : toPriceNumber(f.adult_price);
+    const changesCount = Math.max(0, points.length - 1);
+    let totalVariation = 0;
+    for (let i = 1; i < points.length; i++) totalVariation += Math.abs(points[i].price - points[i - 1].price);
+    return { f, lastPrice, changesCount, totalVariation };
+  }).filter(e => isFinite(e.lastPrice));
+
+  if (!enriched.length) return null;
+
+  const highest = enriched.reduce((a, b) => (b.lastPrice > a.lastPrice ? b : a));
+  const lowest = enriched.reduce((a, b) => (b.lastPrice < a.lastPrice ? b : a));
+
+  // فقط پیشنهادهایی که واقعاً حداقل یه بار تغییر کردن وارد رقابت «پرنوسان‌ترین» می‌شن
+  const withChanges = enriched.filter(e => e.changesCount > 0);
+  const mostVolatile = withChanges.length
+    ? withChanges.reduce((a, b) => (b.totalVariation > a.totalVariation ? b : a))
+    : null;
+
+  return { count: countUniqueFlights(closedRows), highest, lowest, mostVolatile };
+}
+
+function closedFlightWho(f) {
+  return `${f.airline || '؟'}${f.seller ? ' · ' + f.seller : ''}${f.flight_no ? ' · پرواز ' + f.flight_no : ''}`;
+}
+
+function buildClosedStatsHtml(stats) {
+  if (!stats) return '';
+  const { highest, lowest, mostVolatile } = stats;
+
+  let rows = `
+    <div class="cst-row">
+      <span class="cst-icon">${ICONS.trendUp}</span>
+      <span class="cst-body">
+        <span class="cst-label">بالاترین نرخ فروخته‌شده</span>
+        <span class="cst-value">${formatPriceShort(highest.lastPrice)} تومان</span>
+        <span class="cst-who">${closedFlightWho(highest.f)}</span>
+      </span>
+    </div>
+    <div class="cst-row">
+      <span class="cst-icon">${ICONS.trendDown}</span>
+      <span class="cst-body">
+        <span class="cst-label">پایین‌ترین نرخ فروخته‌شده</span>
+        <span class="cst-value">${formatPriceShort(lowest.lastPrice)} تومان</span>
+        <span class="cst-who">${closedFlightWho(lowest.f)}</span>
+      </span>
+    </div>`;
+
+  if (mostVolatile) {
+    rows += `
+    <div class="cst-row">
+      <span class="cst-icon">${ICONS.warn}</span>
+      <span class="cst-body">
+        <span class="cst-label">پرنوسان‌ترین پیشنهاد <span class="cst-sub">(مجموع تغییرات · ${toFaDigits(mostVolatile.changesCount)} بار تغییر)</span></span>
+        <span class="cst-value">${formatPriceShort(mostVolatile.totalVariation)} تومان</span>
+        <span class="cst-who">${closedFlightWho(mostVolatile.f)}</span>
+      </span>
+    </div>`;
+  }
+
+  return `<div class="closed-stats-card">
+    <div class="cst-total">${toFaDigits(stats.count)} پرواز در این تاریخ بسته شد</div>
+    ${rows}
+  </div>`;
+}
+
 // ---- پروازهایی که دیگه تو آخرین رصد سپهر نبودن (بسته‌شده/فروش تموم‌شده) — جمع‌شده، ولی کارت‌هاشون دست‌نخورده و با کلیک تاریخچه‌شون قابل مشاهده‌ست ----
 function buildClosedSection(closedRows) {
   const section = document.getElementById('closedSection');
@@ -3726,7 +3854,7 @@ function buildClosedSection(closedRows) {
 
   section.style.display = 'block';
   countEl.textContent = `(${toFaDigits(closedRows.length)} پرواز)`;
-  list.innerHTML = '';
+  list.innerHTML = buildClosedStatsHtml(computeClosedDateStats(closedRows));
   closedRows.forEach((f, idx) => {
     const card = buildFlightCard(f, getLatestChange(f));
     card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
@@ -3836,7 +3964,9 @@ function buildFlightCard(f, change) {
   card.className = 'flight-card';
   const archivedBadge = f.closed
     ? `<span class="fc-closed-badge">${ICONS.lock} اتمام نرخ‌گذاری</span>`
-    : (isFlightArchived(f) ? `<span class="fc-closed-badge">${ICONS.clock} ساعت پرواز گذشته</span>` : buildAnomalyBadge(anomaly));
+    : (isFlightDatePast(f)
+        ? `<span class="fc-closed-badge">${ICONS.clock} تاریخ پرواز گذشته</span>`
+        : (isFlightArchived(f) ? `<span class="fc-closed-badge">${ICONS.clock} ساعت پرواز گذشته</span>` : buildAnomalyBadge(anomaly)));
   card.innerHTML = `
     ${buildChangeBadge(change)}
     ${archivedBadge}
