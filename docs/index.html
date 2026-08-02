@@ -2621,8 +2621,10 @@ async function load() {
       const histRes = await fetch('history.json?t=' + Date.now());
       const histData = await histRes.json();
       allHistory = histData.history || [];
+      routeBaselines = histData.route_baselines || {};
     } catch (e2) {
       allHistory = [];
+      routeBaselines = {};
     }
 
     generatedAtRaw = data.generated_at || null;
@@ -3185,26 +3187,14 @@ function isSeasonalDate(dateStr) {
 // پیشنهادهای همون مسیر/تاریخ/کلاس پروازی در آخرین اسنپ‌شات (نه با
 // تاریخچه‌ی خودش) — همون چیزی که ابزارهای رصد رقبا بهش «Price Index» می‌گن
 // ===========================================================
-const PRICE_INDEX_MIN_FULL_SAMPLE = 4; // کمتر از این، شاخص با برچسب «نمونه کم» نشون داده می‌شه (ولی حذف نمی‌شه)
-
+// این شاخص دیگه اینجا محاسبه نمی‌شه — worker.js موقع /export/data برای
+// هر پرواز باز حساب می‌کنه و به‌عنوان فیلد آماده‌ی price_index تو
+// data.json می‌فرسته ({pct, count, low_sample} یا null). اینجا فقط
+// می‌خونیمش (و برای سازگاری با بقیه‌ی کد، lowSample رو هم نگه می‌داریم).
 function getMarketPosition(f) {
-  const price = toPriceNumber(f.adult_price);
-  if (!isFinite(price)) return null;
-  const cabinKey = normalizeCabin(f.cabin);
-  const peerPrices = allFlights
-    .filter(x => x !== f && x.route === f.route && x.flight_date === f.flight_date && !isFlightArchived(x) && normalizeCabin(x.cabin) === cabinKey)
-    .map(x => toPriceNumber(x.adult_price))
-    .filter(p => isFinite(p));
-  if (peerPrices.length < 1) return null; // برای مقایسه‌ی معنادار حداقل یه رقیب دیگه لازمه
-
-  // میانه به‌جای میانگین: یه پیشنهاد عجیب (چارتری خیلی ارزون یا تبلیغاتی
-  // خیلی گرون) نباید کل شاخص رو کج کنه — همون رویکرد ابزارهای صنعتی
-  // rate-shopping (سبک Infare/ATPCO)
-  const med = median(peerPrices);
-  if (!med) return null;
-  const pct = Math.round(((price - med) / med) * 100);
-  const lowSample = peerPrices.length < PRICE_INDEX_MIN_FULL_SAMPLE;
-  return { price, median: med, pct, count: peerPrices.length, lowSample };
+  const pi = f.price_index;
+  if (!pi) return null;
+  return { pct: pi.pct, count: pi.count, lowSample: pi.low_sample };
 }
 
 function buildPositionBadge(pos) {
@@ -3240,29 +3230,15 @@ function positionNoteHtml(pos) {
 // از نوسان معمول همه‌ی پروازها/فروشنده‌های همون مسیر استفاده می‌کنیم.
 // تاریخ‌های فصلی/پرتقاضا (نوروز، یلدا، پنج‌شنبه/جمعه) از این baseline
 // کنار گذاشته می‌شن چون نوسانشون فصلیه، نه معیار «روز عادی».
-// نتیجه به‌ازای هر مسیر کش می‌شه چون allHistory بین رندرهای یک صفحه ثابته.
-// ===========================================================
-let routeVolatilityCache = { route: null, absDiffs: null };
+// این baseline دیگه اینجا از روی allHistory ساخته نمی‌شه — worker.js
+// موقع /export/history یک‌بار به‌ازای هر route حساب می‌کنه و تو فیلد
+// route_baselines خروجی history.json می‌فرسته. اینجا فقط می‌خونیمش (و
+// شکل قبلی {route, absDiffs:[...]} رو دیگه نداریم؛ به‌جاش میانه/MAD
+// آماده‌ست، پس detectAnomaly هم مطابق این تغییر کرده).
+let routeBaselines = {}; // از histData.route_baselines پر می‌شه (تو load())
 
 function getRouteVolatilityBaseline(route) {
-  if (routeVolatilityCache.route === route) return routeVolatilityCache;
-  const byKey = new Map();
-  for (const h of allHistory) {
-    if (h.route !== route || isSeasonalDate(h.flight_date)) continue;
-    const key = [h.flight_date, h.flight_no, h.airline, normalizeCabin(h.cabin), h.seller].join('|');
-    if (!byKey.has(key)) byKey.set(key, []);
-    byKey.get(key).push(h);
-  }
-  const absDiffs = [];
-  for (const points of byKey.values()) {
-    const sorted = [...points].sort((a, b) => (a.captured_at || '').localeCompare(b.captured_at || ''));
-    for (let i = 1; i < sorted.length; i++) {
-      const d = sorted[i].price - sorted[i - 1].price;
-      if (d !== 0) absDiffs.push(Math.abs(d));
-    }
-  }
-  routeVolatilityCache = { route, absDiffs };
-  return routeVolatilityCache;
+  return routeBaselines[route] || null;
 }
 
 // ===========================================================
@@ -3291,20 +3267,24 @@ function detectAnomaly(f) {
   const lastDiff = points[points.length - 1].price - prevPrice;
   if (!prevPrice || lastDiff === 0) return null;
 
-  let absDiffs = diffs.map(Math.abs);
+  const absDiffs = diffs.map(Math.abs);
+  let medianAbs, madAbs;
   if (absDiffs.length < ANOMALY_MIN_OWN_DIFFS) {
-    // خودِ پرواز نمونه‌ی کافی نداره — سراغ نوسان معمول کل مسیر می‌ریم.
+    // خودِ پرواز نمونه‌ی کافی نداره — سراغ نوسان معمول کل مسیر می‌ریم
+    // (میانه/MAD آماده‌ای که worker.js تو route_baselines فرستاده).
     // اگه خودِ این پرواز هم تو یه تاریخ فصلی/پرتقاضاست، این baseline
     // (که عمداً روزهای فصلی رو کنار گذاشته) قابل مقایسه نیست — قضاوت
     // نمی‌کنیم تا هشدار کاذب ندیم.
     if (isSeasonalDate(f.flight_date)) return null;
     const routeBase = getRouteVolatilityBaseline(f.route);
-    if (routeBase.absDiffs.length < ANOMALY_MIN_BASELINE_DIFFS) return null;
-    absDiffs = routeBase.absDiffs;
+    if (!routeBase || routeBase.sample_size < ANOMALY_MIN_BASELINE_DIFFS) return null;
+    medianAbs = routeBase.median_abs_diff;
+    madAbs = routeBase.mad_abs_diff;
+  } else {
+    medianAbs = median(absDiffs);
+    madAbs = mad(absDiffs, medianAbs);
   }
 
-  const medianAbs = median(absDiffs);
-  const madAbs = mad(absDiffs, medianAbs);
   const statBoundary = medianAbs + ANOMALY_MAD_K * madAbs;
   const threshold = Math.max(statBoundary, prevPrice * ANOMALY_MIN_PCT);
   if (Math.abs(lastDiff) <= threshold) return null;
