@@ -1827,76 +1827,74 @@
     direction: ltr;
   }
 
-  /* --- تایم‌لاین تاریخچه: خط عمودی متصل‌کننده + نقاط رنگی --- */
+  /* --- جدول تاریخچه: فشرده، هم‌تراز با گرید، بدون تایم‌لاین نقطه‌ای؛ هر ردیف
+     یک نوار باریک رنگی سمت راست داره که جهت تغییر رو نشون می‌ده (هم‌زبان با
+     الگوی fc-change روی کارت‌های اصلی)، به‌جای پیل رنگی بزرگ قبلی --- */
   .history-section-title {
     font-size: 12px;
     font-weight: 800;
     color: var(--ink-soft);
     margin: 4px 2px 8px;
   }
-  .history-list {
-    position: relative;
-    padding-right: 4px;
+  .history-table {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
   }
-  .history-list::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    bottom: 4px;
-    right: 15px;
-    width: 2px;
-    background: var(--line);
+  .history-row-head, .history-item {
+    display: grid;
+    grid-template-columns: 78px 1fr 92px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
   }
+  .history-row-head {
+    height: 30px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+  .history-row-head span:nth-child(2) { text-align: center; }
+  .history-row-head span:nth-child(3) { text-align: left; }
+  .history-list { position: relative; }
   .history-item {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 4px 9px 2px;
+    height: 42px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--line-soft);
+    border-right: 3px solid transparent;
+    transition: background .12s ease;
   }
-  .history-dot {
-    flex: none;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--line);
-    border: 2px solid var(--paper);
-    box-shadow: 0 0 0 2px var(--paper);
-    z-index: 1;
-    margin-right: 11px;
-  }
-  .history-dot.up { background: var(--danger); box-shadow: 0 0 0 2px var(--danger-tint); }
-  .history-dot.down { background: var(--success); box-shadow: 0 0 0 2px var(--success-tint); }
+  .history-item:last-child { border-bottom: none; }
+  .history-item:nth-child(even) { background: rgba(69, 95, 91, .025); }
+  .history-item.is-latest { background: var(--accent-tint); }
+  .history-item.dir-up { border-right-color: var(--danger); }
+  .history-item.dir-down { border-right-color: var(--success); }
   .history-date {
     color: var(--ink-soft);
-    flex: 1.15;
     display: flex;
-    flex-direction: column;
-    gap: 1px;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
   }
-  .history-date .hd-date { font-size: 10px; color: var(--ink-soft); font-weight: 700; }
-  .history-date .hd-time { font-size: 13px; color: var(--ink); font-weight: 700; direction: ltr; }
-  .history-price { font-weight: 700; flex: 1; text-align: center; font-size: 13px; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
+  .history-date .hd-time { font-size: 12px; color: var(--ink); font-weight: 700; direction: ltr; }
+  .history-date .hd-date { font-size: 10px; color: var(--ink-muted); font-weight: 600; white-space: nowrap; }
+  .history-price { font-weight: 700; text-align: center; font-size: 12px; color: var(--ink); direction: ltr; font-variant-numeric: tabular-nums; }
+  .history-item.is-latest .history-price { color: var(--accent-strong); }
   .history-delta {
-    flex: 1;
     text-align: left;
-    font-weight: 800;
-    font-size: 12px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  .history-delta-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 3px 9px;
-    border-radius: 10px;
+    font-weight: 700;
+    font-size: 11px;
     direction: ltr;
   }
-  .history-delta-chip.up { background: var(--danger-tint); color: var(--danger-strong); }
-  .history-delta-chip.down { background: var(--success-tint); color: var(--success-strong); }
-  .history-delta-chip.flat { background: var(--card); color: var(--ink-soft); }
-  .history-item.is-latest .history-price { color: var(--accent-strong); }
+  .history-delta-chip { display: inline-flex; align-items: center; gap: 3px; }
+  .history-delta-chip.up { color: var(--danger-strong); }
+  .history-delta-chip.down { color: var(--success-strong); }
+  .history-delta-chip.flat { color: var(--ink-muted); font-weight: 600; }
 
   /* --- جمع‌کردن پیش‌فرض تاریخچه‌های بلند: فقط چند ثبت اخیر نشون داده می‌شه،
      بقیه پشت یه دکمه‌ی «نمایش بیشتر»ان — هم صفحه شلوغ نمی‌شه، هم با اسکرول
@@ -1908,7 +1906,7 @@
     justify-content: center;
     gap: 6px;
     width: 100%;
-    margin-top: 4px;
+    margin-top: 10px;
     padding: 10px;
     font-family: inherit;
     font-size: 12px;
@@ -3699,12 +3697,16 @@ function render() {
 
 // ---- شناسه‌ی یکتای هر پرواز صرف‌نظر از فروشنده: یک ایرلاین + یک شماره پرواز
 // یک پرواز حساب می‌شه، حتی اگه چند فروشنده براش نرخ ثبت کرده باشن ----
-function flightUid(f) {
-  return (f.airline || '') + '|' + (f.flight_no || '');
+function flightUid(f, idx) {
+  const no = (f.flight_no || '').toString().trim();
+  // اگه شماره پرواز ثبت نشده، نمی‌شه فرض کرد این رکورد با بقیه‌ی رکوردهای
+  // بدون‌شماره‌ی همون ایرلاین یک پروازن؛ برای جلوگیری از قاطی‌شدنشون زیر یه
+  // کلید مشترک، هرکدوم رو با اندیس خودش جداگانه (یکتا) حساب می‌کنیم
+  return no ? (f.airline || '') + '|' + no : '__no_flightno__|' + idx;
 }
 function countUniqueFlights(rows) {
   const set = new Set();
-  rows.forEach(f => set.add(flightUid(f)));
+  rows.forEach((f, idx) => set.add(flightUid(f, idx)));
   return set.size;
 }
 
@@ -4089,21 +4091,20 @@ function openHistoryModal(f) {
   reversed.forEach((p, idx) => {
     const chronoIdx = points.length - 1 - idx;
     const prev = points[chronoIdx - 1];
-    let dotCls = 'flat';
+    let dirCls = 'flat';
     let deltaHtml = '<span class="history-delta-chip flat">—</span>';
     if (prev) {
       const diff = p.price - prev.price;
-      if (diff > 0) { dotCls = 'up'; deltaHtml = `<span class="history-delta-chip up">▲ ${formatPriceShort(diff)}</span>`; }
-      else if (diff < 0) { dotCls = 'down'; deltaHtml = `<span class="history-delta-chip down">▼ ${formatPriceShort(Math.abs(diff))}</span>`; }
+      if (diff > 0) { dirCls = 'up'; deltaHtml = `<span class="history-delta-chip up">▲ ${formatPriceShort(diff)}</span>`; }
+      else if (diff < 0) { dirCls = 'down'; deltaHtml = `<span class="history-delta-chip down">▼ ${formatPriceShort(Math.abs(diff))}</span>`; }
       else deltaHtml = '<span class="history-delta-chip flat">بدون تغییر</span>';
     }
     const dt = toJalaliDateTime(p.captured_at);
     const dateHtml = dt
-      ? `<span class="hd-date">${dt.dateLabelShort}</span><span class="hd-time">${dt.timeLabel}</span>`
+      ? `<span class="hd-time">${dt.timeLabel}</span><span class="hd-date">${dt.dateLabelShort}</span>`
       : `<bdi style="direction:ltr">${p.captured_at || ''}</bdi>`;
     const isLatest = idx === 0;
-    listHtml += `<div class="history-item${isLatest ? ' is-latest' : ''}">
-      <span class="history-dot ${dotCls}"></span>
+    listHtml += `<div class="history-item dir-${dirCls}${isLatest ? ' is-latest' : ''}">
       <span class="history-date">${dateHtml}</span>
       <span class="history-price">${formatPriceShort(p.price)}</span>
       <span class="history-delta">${deltaHtml}</span>
@@ -4176,8 +4177,11 @@ function openHistoryModal(f) {
         </div>
 
         <div class="history-section-title">تاریخچه‌ی کامل رصد (${toFaDigits(points.length)} ثبت)</div>
-        <div class="history-list${shouldCollapse ? ' is-collapsed' : ''}" id="historyList">
-          ${listHtml || '<div style="text-align:center;color:#6E7C79;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+        <div class="history-table">
+          <div class="history-row-head"><span>زمان</span><span>قیمت</span><span>تغییر</span></div>
+          <div class="history-list${shouldCollapse ? ' is-collapsed' : ''}" id="historyList">
+            ${listHtml || '<div style="text-align:center;color:#6E7C79;padding:20px;">تاریخچه‌ای ثبت نشده</div>'}
+          </div>
         </div>
         ${shouldCollapse ? `<button type="button" class="history-expand-btn" id="historyExpandBtn">نمایش ${toFaDigits(points.length - collapseThreshold)} ثبت قدیمی‌تر</button>` : ''}
       </div>
