@@ -725,39 +725,57 @@
   }
   .date-card.unavailable.active .daynum { color: var(--ink); }
 
-  /* --- ویجت پرتغییرترین پروازها (Movers leaderboard) --- */
-  .movers-section {
-    background: var(--card);
+  /* --- نوار ابزارهای تحلیلی (پرتغییرترین‌ها/منحنی DTD/دنباله‌روی فروشنده‌ها و هر ابزار
+     بعدی که اضافه بشه): به‌جای اینکه هر ابزار یه بخش دائم-باز و جدا رو صفحه اشغال کنه
+     و هی شلوغ‌تر بشه، هر ابزار فقط یه چیپ فشرده تو این نوار می‌گیره؛ با تپ روی چیپ،
+     محتواش تو همون شیت مشترک پایین صفحه (insight-sheet) باز می‌شه — دقیقاً همون
+     مکانیزم شیت فیلتر/مرتب‌سازی. اضافه‌کردن ابزار جدید یعنی فقط یه چیپ دیگه اینجا،
+     نه یه بخش/CSS/JS جدید --- */
+  .insights-toolbar {
+    display: flex;
+    gap: 8px;
     margin: 16px 18px 0;
-    border-radius: var(--radius-panel);
-    padding: 18px 18px 16px;
+    overflow-x: auto;
+    padding: 2px 2px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .insights-toolbar::-webkit-scrollbar { display: none; }
+  .insight-chip {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px 9px 10px;
     border: 1px solid var(--line);
-    box-shadow: var(--shadow-sm);
-  }
-  .movers-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .movers-title {
-    font-size: 13px;
-    font-weight: 800;
+    border-radius: 999px;
+    background: var(--card);
     color: var(--ink);
-    display: flex;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow-sm);
+    transition: background .16s ease, transform .12s ease, box-shadow .16s ease;
+  }
+  .insight-chip:active { transform: scale(.97); }
+  @media (hover: hover) {
+    .insight-chip:hover { background: var(--paper); box-shadow: var(--shadow-md); }
+  }
+  .insight-chip .fi {
+    display: inline-flex;
+    flex: none;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--accent);
   }
-  .movers-title .sec-icon { color: var(--danger); }
-  .movers-toggle-icon {
-    font-size: 11px;
-    color: var(--ink-muted);
-    transition: transform .2s ease;
-  }
-  .movers-section.collapsed .movers-toggle-icon { transform: rotate(-90deg); }
-  .movers-section.collapsed .movers-list { display: none; }
+  .insight-chip[data-tone="danger"] .fi { color: var(--danger); }
   .movers-list {
     display: flex;
     gap: 8px;
@@ -875,40 +893,8 @@
     border-radius: 12px 0 0 12px;
     box-shadow: 0 2px 6px rgba(30, 41, 38, 0.22);
   }
-  /* --- بخش منحنی DTD (قیمت بر اساس فاصله تا پرواز)، هم‌سبک ویجت پرتغییرترین‌ها --- */
-  .dtd-section {
-    background: var(--card);
-    margin: 16px 18px 0;
-    border-radius: var(--radius-panel);
-    padding: 18px 18px 16px;
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow-sm);
-  }
-  .dtd-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .dtd-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .dtd-title .sec-icon { color: var(--accent); }
-  .dtd-toggle-icon {
-    font-size: 11px;
-    color: var(--ink-muted);
-    transition: transform .2s ease;
-  }
-  .dtd-section.collapsed .dtd-toggle-icon { transform: rotate(-90deg); }
-  .dtd-section.collapsed .dtd-body { display: none; }
-  .dtd-body { padding-top: 10px; }
+  /* --- محتوای ابزار «منحنی DTD»، حالا داخل بدنه‌ی شیت مشترک ابزارها --- */
+  .dtd-body { padding-top: 2px; }
   .dtd-chart-wrap { width: 100%; }
   .dtd-note {
     font-size: 12px;
@@ -921,40 +907,8 @@
     line-height: 1.7;
   }
 
-  /* --- بخش رفتارشناسی فروشنده‌ها (دنباله‌روی قیمت / spiral-down)، هم‌سبک dtd-section --- */
-  .sb-section {
-    background: var(--card);
-    margin: 16px 18px 0;
-    border-radius: var(--radius-panel);
-    padding: 18px 18px 16px;
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow-sm);
-  }
-  .sb-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .sb-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .sb-title .sec-icon { color: var(--accent); }
-  .sb-toggle-icon {
-    font-size: 11px;
-    color: var(--ink-muted);
-    transition: transform .2s ease;
-  }
-  .sb-section.collapsed .sb-toggle-icon { transform: rotate(-90deg); }
-  .sb-section.collapsed .sb-body { display: none; }
-  .sb-body { padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  /* --- محتوای ابزار «رفتار فروشنده‌ها»، حالا داخل بدنه‌ی شیت مشترک ابزارها --- */
+  .sb-body { padding-top: 2px; display: flex; flex-direction: column; gap: 8px; }
   .sb-card {
     background: var(--paper);
     border-radius: var(--radius-card-sm);
@@ -1859,7 +1813,8 @@
      تعداد ثبت‌ها زیاد بشه» رو حل می‌کنه: قبلاً کل کارت با هم اسکرول می‌شد و با
      هر ثبت جدید، عنوان/قیمت هم از دید خارج می‌شد؛ الان فقط لیست رشد می‌کنه. --- */
   .modal-overlay.history-sheet .modal-card,
-  .modal-overlay.filter-sheet .modal-card {
+  .modal-overlay.filter-sheet .modal-card,
+  .modal-overlay.insight-sheet .modal-card {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -2162,35 +2117,40 @@
   </div>
 </dialog>
 
-<section class="movers-section" id="moversSection" style="display:none;">
-  <div class="movers-header" id="moversToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="moversList">
-    <span class="movers-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg> پرتغییرترین پروازهای امروز</span>
-    <span class="movers-toggle-icon" id="moversToggleIcon">▾</span>
-  </div>
-  <div class="movers-list" id="moversList"></div>
-</section>
+<!-- نوار ابزارهای تحلیلی: هر ابزار (پرتغییرترین‌ها/DTD/دنباله‌روی فروشنده و هر ابزار
+     بعدی) فقط یه چیپه؛ هیچ‌کدوم دائم رو صفحه باز نیستن. تپ می‌کنی، باز می‌شه. -->
+<div class="insights-toolbar" id="insightsToolbar">
+  <button type="button" class="insight-chip" id="insightChip-movers" style="display:none;" data-tone="danger">
+    <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span> پرتغییرترین‌ها
+  </button>
+  <button type="button" class="insight-chip" id="insightChip-dtd" style="display:none;">
+    <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg></span> روند قیمت تا پرواز
+  </button>
+  <button type="button" class="insight-chip" id="insightChip-sb" style="display:none;">
+    <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6"/><path d="M13.5 7.5 19 6a3 3 0 0 1 3 3l-1.5 5.5a3 3 0 0 1-3.6 2.1L15 16"/><path d="M10.5 16.5 5 18a3 3 0 0 1-3-3l1.5-5.5A3 3 0 0 1 7.1 7.4L9 8"/></svg></span> دنباله‌روی فروشنده‌ها
+  </button>
+</div>
 
-<section class="dtd-section" id="dtdSection" style="display:none;">
-  <div class="dtd-header" id="dtdToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="dtdBody">
-    <span class="dtd-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg> منحنی قیمت بر اساس فاصله تا پرواز</span>
-    <span class="dtd-toggle-icon" id="dtdToggleIcon">▾</span>
+<dialog class="modal-overlay insight-sheet" id="insightSheetOverlay" data-ephemeral="false">
+  <div class="modal-card">
+    <div class="sheet-handle"></div>
+    <div class="modal-sticky-top">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <span class="modal-title-icon" id="insightSheetIcon"></span>
+          <div class="modal-title-text">
+            <div class="modal-title" id="insightSheetTitle"></div>
+            <div class="modal-sub" id="insightSheetSub"></div>
+          </div>
+        </div>
+        <button class="modal-close" id="insightSheetClose" type="button" aria-label="بستن">✕</button>
+      </div>
+    </div>
+    <div class="modal-scroll-body">
+      <div id="insightSheetBody"></div>
+    </div>
   </div>
-  <div class="dtd-body" id="dtdBody">
-    <div class="dtd-chart-wrap" id="dtdChartWrap"></div>
-    <div class="dtd-note" id="dtdNote"></div>
-  </div>
-</section>
-
-<section class="sb-section" id="sellerBehaviorSection" style="display:none;">
-  <div class="sb-header" id="sbToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="sbBody">
-    <span class="sb-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6"/><path d="M13.5 7.5 19 6a3 3 0 0 1 3 3l-1.5 5.5a3 3 0 0 1-3.6 2.1L15 16"/><path d="M10.5 16.5 5 18a3 3 0 0 1-3-3l1.5-5.5A3 3 0 0 1 7.1 7.4L9 8"/></svg> رفتار فروشنده‌ها — دنباله‌روی قیمت</span>
-    <span class="sb-toggle-icon" id="sbToggleIcon">▾</span>
-  </div>
-  <div class="sb-body" id="sbBody">
-    <div class="dtd-note" style="margin-top:0;">بر اساس تغییرات قیمت این مسیر، این‌ها فروشنده‌هایی هستن که معمولاً با یه تاخیر مشخص، جهت تغییر قیمت یه فروشنده‌ی دیگه رو تکرار می‌کنن.</div>
-    <div id="sbList"></div>
-  </div>
-</section>
+</dialog>
 
 <main>
   <div id="loading">
@@ -2351,6 +2311,44 @@ function wireSheetDrag(overlay) {
   handle.addEventListener('pointermove', onMove);
   handle.addEventListener('pointerup', onUp);
   handle.addEventListener('pointercancel', onUp);
+}
+
+// ===========================================================
+// ابزارهای تحلیلی (insight tools): پرتغییرترین‌ها/منحنی DTD/دنباله‌روی فروشنده‌ها،
+// و هر ابزار تحلیلی که بعداً اضافه بشه. این‌ها به‌جای اینکه هر کدوم یه section
+// دائم-باز رو صفحه باشن (که هر ابزار جدید صفحه رو شلوغ‌تر می‌کرد)، فقط یه چیپ
+// تو نوار insights-toolbar می‌گیرن؛ محتواشون فقط با تپ روی چیپ، تو همون شیت
+// مشترک پایین صفحه (insightSheetOverlay) رندر می‌شه — با همون presentSheet/
+// closeSheet که فیلتر/مرتب‌سازی استفاده می‌کنن، برای حس یکدست.
+//
+// اضافه‌کردن ابزار جدید یعنی: ۱) یه چیپ تو HTML نوار ابزارها با id به شکل
+// insightChip-<id>، ۲) یه ورودی این‌جا تو insightTools با title/icon، ۳) یه
+// تابع build که computeXxx رو صدا می‌زنه و insightTools[id].bodyHTML رو پر
+// می‌کنه و چیپ رو نشون/مخفی می‌کنه. هیچ CSS یا منطق باز/بسته‌شدن جدیدی لازم نیست.
+// ===========================================================
+const insightTools = {
+  movers: { title: 'پرتغییرترین پروازها', sub: '', bodyHTML: '' },
+  dtd:    { title: 'روند قیمت بر اساس فاصله تا پرواز', sub: '', bodyHTML: '' },
+  sb:     { title: 'رفتار فروشنده‌ها — دنباله‌روی قیمت', sub: 'بر اساس تغییرات قیمت این مسیر، این‌ها فروشنده‌هایی هستن که معمولاً با یه تاخیر مشخص، جهت تغییر قیمت یه فروشنده‌ی دیگه رو تکرار می‌کنن.', bodyHTML: '' },
+};
+let currentMoverItems = []; // برای دسترسیِ کلیک روی هر کارت «پرتغییرترین‌ها» به آبجکت پرواز، بدون سریالایز کردنش تو HTML
+
+function setInsightChipVisible(id, visible) {
+  const chip = document.getElementById('insightChip-' + id);
+  if (chip) chip.style.display = visible ? '' : 'none';
+}
+
+function openInsightSheet(id) {
+  const data = insightTools[id];
+  const overlay = document.getElementById('insightSheetOverlay');
+  if (!data || !overlay) return;
+  const chip = document.getElementById('insightChip-' + id);
+  document.getElementById('insightSheetIcon').innerHTML = chip ? chip.querySelector('.fi').innerHTML : '';
+  document.getElementById('insightSheetTitle').textContent = data.title;
+  document.getElementById('insightSheetSub').textContent = data.sub || '';
+  document.getElementById('insightSheetBody').innerHTML = data.bodyHTML || '';
+  overlay.dataset.activeInsight = id;
+  presentSheet(overlay);
 }
 
 // ---- کلاس پرواز: نرمال‌سازی مقدار خام cabinType سپهر۳۶۰ به یه کلید ثابت ----
@@ -3022,9 +3020,6 @@ function bindControls() {
       }
     });
   }
-  wireCollapsible('moversToggle', 'moversSection');
-  wireCollapsible('dtdToggle', 'dtdSection');
-  wireCollapsible('sbToggle', 'sellerBehaviorSection');
   wireCollapsible('closedToggle', 'closedSection');
 
   // ---- شیت فیلتر و شیت مرتب‌سازی: هر دو روی همون سیستم شیت بومی پروژه
@@ -3045,6 +3040,25 @@ function bindControls() {
   document.getElementById('filterSheetReset').addEventListener('click', resetAllFilters);
 
   document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
+
+  // ---- شیت مشترک ابزارهای تحلیلی: همون مکانیزم شیت فیلتر/مرتب‌سازی؛ هر چیپ
+  // فقط id ابزار رو به openInsightSheet می‌ده. اضافه‌کردن ابزار جدید نیازی به
+  // سیم‌کشی جدید این‌جا نداره، غیر از یه خط addEventListener برای چیپ جدید ----
+  const insightOverlay = document.getElementById('insightSheetOverlay');
+  wireDialogDismiss(insightOverlay);
+  document.getElementById('insightSheetClose').addEventListener('click', () => closeSheet(insightOverlay));
+  Object.keys(insightTools).forEach(id => {
+    const chip = document.getElementById('insightChip-' + id);
+    if (chip) chip.addEventListener('click', () => openInsightSheet(id));
+  });
+  // کلیک روی کارت‌های «پرتغییرترین‌ها» داخل شیت (delegation، چون بدنه‌ی شیت
+  // با innerHTML رندر می‌شه نه createElement، پس خودِ کارت‌ها listener ندارن)
+  document.getElementById('insightSheetBody').addEventListener('click', (e) => {
+    const card = e.target.closest('.mover-card');
+    if (!card) return;
+    const item = currentMoverItems[Number(card.dataset.idx)];
+    if (item) openHistoryModal(item.f);
+  });
 }
 
 // ---- پاک‌کردن همه‌ی فیلترهای فعال (چیپ‌های ایرلاین/کلاس، جستجوی شماره پرواز، مرتب‌سازی) و رندر دوباره ----
@@ -3106,37 +3120,38 @@ function computeMovers(limit) {
 }
 
 function buildMoversList() {
-  const section = document.getElementById('moversSection');
-  const list = document.getElementById('moversList');
-  const titleEl = document.querySelector('#moversToggle .movers-title');
   const items = computeMovers(10);
+  currentMoverItems = items;
 
-  if (titleEl && state.date) {
+  if (state.date) {
     const { weekday, label } = formatDateCard(state.date);
-    titleEl.innerHTML = `${ICONS.fire} پرتغییرترین پروازهای ${weekday} ${label}`;
+    insightTools.movers.title = `پرتغییرترین پروازهای ${weekday} ${label}`;
   }
 
   if (items.length === 0) {
-    section.style.display = 'none';
+    insightTools.movers.bodyHTML = '';
+    setInsightChipVisible('movers', false);
     return;
   }
 
-  section.style.display = 'block';
-  list.innerHTML = '';
-  items.forEach(({ f, change }, idx) => {
+  setInsightChipVisible('movers', true);
+  insightTools.movers.bodyHTML = '<div class="movers-list">' + items.map(({ f, change }, idx) => {
     const up = change.diff > 0;
-    const card = document.createElement('div');
-    card.className = 'mover-card';
-    card.innerHTML = `
+    return `<div class="mover-card" data-idx="${idx}">
       <span class="mover-logo">
         <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <span class="mover-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
       </span>
       <div class="mover-flightno">${f.flight_no || ''}</div>
-      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceUltraCompact(Math.abs(change.diff))}</div>`;
-    card.onclick = () => openHistoryModal(f);
-    list.appendChild(card);
-  });
+      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceUltraCompact(Math.abs(change.diff))}</div>
+    </div>`;
+  }).join('') + '</div>';
+
+  // اگه شیت همین الان روی «پرتغییرترین‌ها»س، محتوا رو زنده به‌روز کن (مثلاً بعد از رفرش داده)
+  const overlay = document.getElementById('insightSheetOverlay');
+  if (overlay && overlay.open && overlay.dataset.activeInsight === 'movers') {
+    document.getElementById('insightSheetBody').innerHTML = insightTools.movers.bodyHTML;
+  }
 }
 
 // ===========================================================
@@ -3428,34 +3443,38 @@ function buildDtdChart(series) {
 }
 
 function buildDtdSection() {
-  const section = document.getElementById('dtdSection');
-  const wrap = document.getElementById('dtdChartWrap');
-  const noteEl = document.getElementById('dtdNote');
   const series = computeDtdSeries();
 
   if (series.length < 3) {
-    section.style.display = 'none';
+    insightTools.dtd.bodyHTML = '';
+    setInsightChipVisible('dtd', false);
     return;
   }
-  section.style.display = 'block';
+  setInsightChipVisible('dtd', true);
 
   const chronoSeries = [...series].sort((a, b) => a.date.localeCompare(b.date));
-  wrap.innerHTML = buildDtdChart(chronoSeries);
+  const chartHTML = `<div class="dtd-chart-wrap">${buildDtdChart(chronoSeries)}</div>`;
 
   const trend = describeDtdTrend(series);
-  if (!trend) {
-    noteEl.innerHTML = '';
-  } else {
+  let noteHTML = '';
+  if (trend) {
     const seasonalNote = trend.excludedSeasonal > 0
       ? ` (${toFaDigits(trend.excludedSeasonal)} تاریخ تعطیل/آخر هفته از این مقایسه کنار گذاشته شد)`
       : '';
     if (trend.diffPct > 5) {
-      noteEl.innerHTML = `${ICONS.infoUp} هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانه ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره${seasonalNote}.`;
+      noteHTML = `${ICONS.infoUp} هر چه فاصله تا تاریخ پرواز کمتر می‌شه، قیمت به‌طور میانه ٪${toFaDigits(trend.diffPct)} بالاتره — رزرو زودتر معمولاً به‌صرفه‌تره${seasonalNote}.`;
     } else if (trend.diffPct < -5) {
-      noteEl.innerHTML = `${ICONS.infoDown} برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه${seasonalNote}.`;
+      noteHTML = `${ICONS.infoDown} برخلاف الگوی معمول، قیمت نزدیک به تاریخ پرواز ٪${toFaDigits(Math.abs(trend.diffPct))} پایین‌تره — می‌تونه فرصت رزرو دیرهنگام باشه${seasonalNote}.`;
     } else {
-      noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره${seasonalNote}.`;
+      noteHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره${seasonalNote}.`;
     }
+  }
+
+  insightTools.dtd.bodyHTML = `<div class="dtd-body">${chartHTML}<div class="dtd-note">${noteHTML}</div></div>`;
+
+  const overlay = document.getElementById('insightSheetOverlay');
+  if (overlay && overlay.open && overlay.dataset.activeInsight === 'dtd') {
+    document.getElementById('insightSheetBody').innerHTML = insightTools.dtd.bodyHTML;
   }
 }
 
@@ -3579,18 +3598,15 @@ function computeSellerBehavior() {
 }
 
 function buildSellerBehaviorSection() {
-  const section = document.getElementById('sellerBehaviorSection');
-  const list = document.getElementById('sbList');
-  if (!section || !list) return;
-
   const pairs = computeSellerBehavior();
   if (pairs.length === 0) {
-    section.style.display = 'none';
+    insightTools.sb.bodyHTML = '';
+    setInsightChipVisible('sb', false);
     return;
   }
-  section.style.display = 'block';
+  setInsightChipVisible('sb', true);
 
-  list.innerHTML = pairs.map(p => {
+  const cardsHTML = pairs.map(p => {
     const spiral = p.downRatio >= 0.6;
     const dirLabel = spiral ? 'کاهش قیمت' : (p.downRatio <= 0.4 ? 'افزایش قیمت' : 'تغییر قیمت');
     const lagLabel = p.avgLagHours == null ? '—'
@@ -3604,6 +3620,13 @@ function buildSellerBehaviorSection() {
       <div class="sb-detail">با میانگین تاخیر <b>${lagLabel}</b>، ٪${toFaDigits(Math.round(p.followRate * 100))} از تغییرات <b>${dirLabel}</b> فروشنده‌ی دوم رو دنبال می‌کنه (از ${toFaDigits(p.totalMoves)} رویداد مشترک)${spiral ? ' — الگوی دنباله‌روی کاهشی' : ''}</div>
     </div>`;
   }).join('');
+
+  insightTools.sb.bodyHTML = `<div class="sb-body">${cardsHTML}</div>`;
+
+  const overlay = document.getElementById('insightSheetOverlay');
+  if (overlay && overlay.open && overlay.dataset.activeInsight === 'sb') {
+    document.getElementById('insightSheetBody').innerHTML = insightTools.sb.bodyHTML;
+  }
 }
 
 // ---- تاریخ و ساعت «الان» به وقت خودِ گوشی (که برای این پنل یعنی وقت ایران) ----
