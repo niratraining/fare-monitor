@@ -453,6 +453,28 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -.01em;
   }
+  .kpi-value-sub {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    margin-right: 3px;
+    letter-spacing: 0;
+  }
+  /* --- کارت‌های افزایش/کاهش قیمت هم برای فیلتر کردن فهرست قابل‌کلیک‌اند --- */
+  .kpi-card.kpi-clickable { cursor: pointer; }
+  .kpi-card.kpi-clickable:active { transform: scale(.96); }
+  .kpi-up.is-active {
+    background: linear-gradient(180deg, var(--card), var(--danger-tint));
+    border-color: var(--danger);
+    box-shadow: 0 3px 10px -4px rgba(193, 68, 58, .35);
+  }
+  .kpi-up.is-active .kpi-icon { background: var(--danger); color: #fff; }
+  .kpi-down.is-active {
+    background: linear-gradient(180deg, var(--card), var(--success-tint));
+    border-color: var(--success);
+    box-shadow: 0 3px 10px -4px rgba(47, 122, 93, .35);
+  }
+  .kpi-down.is-active .kpi-icon { background: var(--success); color: #fff; }
   .kpi-label {
     font-size: 10px;
     font-weight: 600;
@@ -1433,13 +1455,6 @@
   }
   .flight-card:has(.fc-change.up) { border-right-color: var(--danger); }
   .flight-card:has(.fc-change.down) { border-right-color: var(--success); }
-  /* وقتی نشان دوم (نوسان غیرعادی/بسته‌شده) هم زیر نشان تغییر قیمت ظاهر می‌شه،
-     ردیف ایرلاین رو کمی پایین‌تر می‌بریم تا دو نشان روی هم یا روی محتوای بعدی نیفتن */
-  .flight-card:has(.fc-anomaly) .fc-top,
-  .flight-card:has(.fc-closed-badge) .fc-top {
-    margin-top: 58px;
-  }
-
   .fc-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .fc-airline { display: flex; align-items: center; gap: 10px; min-width: 0; }
   .fc-logo {
@@ -1959,13 +1974,13 @@
 <section class="kpi-strip" id="kpiStrip" style="display:none;">
   <div class="kpi-card kpi-total">
     <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16l3-1 5.5 2 3-1-8-8 2-2 11 6.5 4-1.5a2 2 0 0 1 2 3.5L11 22l-2-5-7-1z"/></svg></span>
-    <span class="kpi-text"><span class="kpi-value" id="kpiTotal">—</span><span class="kpi-label">پرواز در این تاریخ</span></span>
+    <span class="kpi-text"><span class="kpi-value"><span id="kpiTotal">—</span><span class="kpi-value-sub" id="kpiTotalAll"></span></span><span class="kpi-label">پرواز فعال</span></span>
   </div>
-  <div class="kpi-card kpi-up">
+  <div class="kpi-card kpi-up kpi-clickable" id="kpiUpCard" role="button" tabindex="0" aria-pressed="false">
     <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span>
     <span class="kpi-text"><span class="kpi-value" id="kpiUp">—</span><span class="kpi-label">افزایش قیمت</span></span>
   </div>
-  <div class="kpi-card kpi-down">
+  <div class="kpi-card kpi-down kpi-clickable" id="kpiDownCard" role="button" tabindex="0" aria-pressed="false">
     <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg></span>
     <span class="kpi-text"><span class="kpi-value" id="kpiDown">—</span><span class="kpi-label">کاهش قیمت</span></span>
   </div>
@@ -2138,6 +2153,7 @@ let state = {
   sort: 'time_asc',
   airlines: new Set(),
   cabins: new Set(),
+  kpiFilter: null, // 'up' | 'down' | null — با کلیک روی کارت افزایش/کاهش قیمت در نوار KPI فعال می‌شه
 };
 
 // ---- مجموعه آیکن‌های SVG یکدست به‌جای ایموجی‌های رنگی، برای ظاهر حرفه‌ای و رسمی ----
@@ -2993,6 +3009,22 @@ function bindControls() {
 
   document.getElementById('emptyResetBtn').addEventListener('click', resetAllFilters);
 
+  // ---- کارت‌های افزایش/کاهش قیمت در نوار KPI: کلیک یا Enter/Space برای فیلتر ----
+  const kpiUpCard = document.getElementById('kpiUpCard');
+  const kpiDownCard = document.getElementById('kpiDownCard');
+  if (kpiUpCard) {
+    kpiUpCard.addEventListener('click', () => toggleKpiFilter('up'));
+    kpiUpCard.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleKpiFilter('up'); }
+    });
+  }
+  if (kpiDownCard) {
+    kpiDownCard.addEventListener('click', () => toggleKpiFilter('down'));
+    kpiDownCard.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleKpiFilter('down'); }
+    });
+  }
+
   // ---- شیت مشترک ابزارهای تحلیلی: همون مکانیزم شیت فیلتر/مرتب‌سازی؛ هر چیپ
   // فقط id ابزار رو به openInsightSheet می‌ده. اضافه‌کردن ابزار جدید نیازی به
   // سیم‌کشی جدید این‌جا نداره، غیر از یه خط addEventListener برای چیپ جدید ----
@@ -3019,6 +3051,7 @@ function resetAllFilters() {
   state.airlines.clear();
   state.cabins.clear();
   state.sort = 'time_asc';
+  state.kpiFilter = null;
 
   const searchInput = document.getElementById('flightSearch');
   if (searchInput) searchInput.value = '';
@@ -3641,18 +3674,38 @@ function render() {
   // فقط رو صدر لیست شلوغ نمی‌کنن
   const closedRows = rows.filter(isFlightArchived);
   rows = rows.filter(f => !isFlightArchived(f));
-  buildKpiStrip(rows);
+  buildKpiStrip(rows, closedRows);
 
-  rows.forEach((f, idx) => {
+  // فیلتر کلیکی روی کارت افزایش/کاهش قیمت در نوار KPI: فقط روی فهرست فعال
+  // اعمال می‌شه (بسته‌شده‌ها دست‌نخورده می‌مونن)، با کلیک دوباره پاک می‌شه
+  let displayRows = rows;
+  if (state.kpiFilter === 'up') {
+    displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff > 0; });
+  } else if (state.kpiFilter === 'down') {
+    displayRows = rows.filter(f => { const c = getLatestChange(f); return c && c.diff < 0; });
+  }
+
+  displayRows.forEach((f, idx) => {
     const card = buildFlightCard(f, getLatestChange(f));
     card.style.animationDelay = Math.min(idx, 10) * 28 + 'ms';
     list.appendChild(card);
   });
 
-  list.style.display = rows.length ? 'flex' : 'none';
-  document.getElementById('empty').style.display = (rows.length === 0 && closedRows.length === 0) ? 'block' : 'none';
+  list.style.display = displayRows.length ? 'flex' : 'none';
+  document.getElementById('empty').style.display = (displayRows.length === 0 && closedRows.length === 0) ? 'block' : 'none';
   buildClosedSection(closedRows);
   updateFilterBadge();
+}
+
+// ---- شناسه‌ی یکتای هر پرواز صرف‌نظر از فروشنده: یک ایرلاین + یک شماره پرواز
+// یک پرواز حساب می‌شه، حتی اگه چند فروشنده براش نرخ ثبت کرده باشن ----
+function flightUid(f) {
+  return (f.airline || '') + '|' + (f.flight_no || '');
+}
+function countUniqueFlights(rows) {
+  const set = new Set();
+  rows.forEach(f => set.add(flightUid(f)));
+  return set.size;
 }
 
 // ---- پروازهایی که دیگه تو آخرین رصد سپهر نبودن (بسته‌شده/فروش تموم‌شده) — جمع‌شده، ولی کارت‌هاشون دست‌نخورده و با کلیک تاریخچه‌شون قابل مشاهده‌ست ----
@@ -3676,10 +3729,13 @@ function buildClosedSection(closedRows) {
   });
 }
 
-// ---- نوار شاخص‌های گزارشی بالای صفحه: خلاصه‌ی وضعیت همون فهرست فیلترشده‌ی جاری ----
-function buildKpiStrip(rows) {
+// ---- نوار شاخص‌های گزارشی بالای صفحه: خلاصه‌ی وضعیت همون فهرست فیلترشده‌ی جاری.
+// «پرواز فعال» با شناسه‌ی یکتای ایرلاین+شماره‌پرواز شمرده می‌شه (چند فروشنده
+// برای یک پرواز = یک عدد)، و عدد کمرنگ کنارش کل پروازهای همون تاریخ
+// (فعال + بسته‌شده) رو نشون می‌ده ----
+function buildKpiStrip(rows, closedRows) {
   const strip = document.getElementById('kpiStrip');
-  if (!rows.length) {
+  if (!rows.length && !(closedRows && closedRows.length)) {
     strip.style.display = 'none';
     return;
   }
@@ -3692,9 +3748,32 @@ function buildKpiStrip(rows) {
     else if (change && change.diff < 0) downCount++;
   });
 
-  document.getElementById('kpiTotal').textContent = toFaDigits(rows.length);
+  const activeUnique = countUniqueFlights(rows);
+  const totalUnique = countUniqueFlights(rows.concat(closedRows || []));
+
+  document.getElementById('kpiTotal').textContent = toFaDigits(activeUnique);
+  const totalAllEl = document.getElementById('kpiTotalAll');
+  totalAllEl.textContent = totalUnique > activeUnique ? `از ${toFaDigits(totalUnique)}` : '';
   document.getElementById('kpiUp').textContent = toFaDigits(upCount);
   document.getElementById('kpiDown').textContent = toFaDigits(downCount);
+
+  const upCard = document.getElementById('kpiUpCard');
+  const downCard = document.getElementById('kpiDownCard');
+  if (upCard) {
+    upCard.classList.toggle('is-active', state.kpiFilter === 'up');
+    upCard.setAttribute('aria-pressed', state.kpiFilter === 'up' ? 'true' : 'false');
+  }
+  if (downCard) {
+    downCard.classList.toggle('is-active', state.kpiFilter === 'down');
+    downCard.setAttribute('aria-pressed', state.kpiFilter === 'down' ? 'true' : 'false');
+  }
+}
+
+// ---- کلیک روی کارت افزایش/کاهش قیمت در نوار KPI: فهرست رو به همون جهت
+// فیلتر می‌کنه، با کلیک دوباره (یا کلیک روی گزینه‌ی مقابل) فیلتر پاک می‌شه ----
+function toggleKpiFilter(direction) {
+  state.kpiFilter = (state.kpiFilter === direction) ? null : direction;
+  render();
 }
 
 // ---- نشان تغییر نرخ: افزایش/کاهش/بدون تغییر با آیکون مدرن روند ----
