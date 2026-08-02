@@ -912,6 +912,66 @@
     line-height: 1.7;
   }
 
+  /* --- بخش رفتارشناسی فروشنده‌ها (دنباله‌روی قیمت / spiral-down)، هم‌سبک dtd-section --- */
+  .sb-section {
+    background: var(--card);
+    margin: 16px 18px 0;
+    border-radius: var(--radius-panel);
+    padding: 18px 18px 16px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+  }
+  .sb-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sb-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sb-title .sec-icon { color: var(--accent); }
+  .sb-toggle-icon {
+    font-size: 11px;
+    color: var(--ink-muted);
+    transition: transform .2s ease;
+  }
+  .sb-section.collapsed .sb-toggle-icon { transform: rotate(-90deg); }
+  .sb-section.collapsed .sb-body { display: none; }
+  .sb-body { padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .sb-card {
+    background: var(--paper);
+    border-radius: var(--radius-card-sm);
+    padding: 10px 12px;
+    border: 1px solid transparent;
+  }
+  .sb-card.spiral { background: var(--danger-tint); border-color: rgba(193, 68, 58, 0.18); }
+  .sb-pair {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .sb-card.spiral .sb-pair { color: var(--danger-strong); }
+  .sb-arrow { color: var(--ink-muted); display: inline-flex; }
+  .sb-card.spiral .sb-arrow { color: var(--danger-strong); }
+  .sb-detail {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-top: 4px;
+  }
+
   /* --- بخش جمع‌شونده‌ی پروازهای بسته‌شده (نرخ‌گذاری‌شون تو سپهر تموم شده) --- */
   .closed-section {
     margin: 18px 18px 0;
@@ -2112,6 +2172,17 @@
   </div>
 </section>
 
+<section class="sb-section" id="sellerBehaviorSection" style="display:none;">
+  <div class="sb-header" id="sbToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="sbBody">
+    <span class="sb-title"><svg class="sec-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6"/><path d="M13.5 7.5 19 6a3 3 0 0 1 3 3l-1.5 5.5a3 3 0 0 1-3.6 2.1L15 16"/><path d="M10.5 16.5 5 18a3 3 0 0 1-3-3l1.5-5.5A3 3 0 0 1 7.1 7.4L9 8"/></svg> رفتار فروشنده‌ها — دنباله‌روی قیمت</span>
+    <span class="sb-toggle-icon" id="sbToggleIcon">▾</span>
+  </div>
+  <div class="sb-body" id="sbBody">
+    <div class="dtd-note" style="margin-top:0;">بر اساس تغییرات قیمت این مسیر، این‌ها فروشنده‌هایی هستن که معمولاً با یه تاخیر مشخص، جهت تغییر قیمت یه فروشنده‌ی دیگه رو تکرار می‌کنن.</div>
+    <div id="sbList"></div>
+  </div>
+</section>
+
 <main>
   <div id="loading">
     <div class="skeleton-card"><div class="sk-row"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line" style="width:55%;"></div><div class="sk-line" style="width:35%;"></div></div><div class="sk-line" style="width:15%;height:18px;"></div></div></div>
@@ -2163,6 +2234,7 @@ const ICONS = {
   chart: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>',
   infoUp: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>',
   infoDown: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M20 6 9 17l-5-5"/></svg>',
+  link: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.5px"><path d="M9 12h6"/><path d="M13.5 7.5 19 6a3 3 0 0 1 3 3l-1.5 5.5a3 3 0 0 1-3.6 2.1L15 16"/><path d="M10.5 16.5 5 18a3 3 0 0 1-3-3l1.5-5.5A3 3 0 0 1 7.1 7.4L9 8"/></svg>',
 };
 
 // ---- باز کردن نرم یک شیت (بدون هیچ کتابخانه‌ی خارجی؛ فقط transition خام CSS) ----
@@ -2566,6 +2638,7 @@ async function load() {
     buildCabinChips();
     buildMoversList();
     buildDtdSection();
+    buildSellerBehaviorSection();
     bindControls();
     render();
 
@@ -2646,6 +2719,7 @@ function trySwapRoute() {
   buildDateCards();
   buildMoversList();
   buildDtdSection();
+  buildSellerBehaviorSection();
   render();
 }
 
@@ -2736,6 +2810,7 @@ function openRoutePicker(type) {
     buildDateCards();
     buildMoversList();
     buildDtdSection();
+    buildSellerBehaviorSection();
     render();
     closeSheet(overlay, advanceToDest ? () => openRoutePicker('dest') : undefined);
   }
@@ -2938,6 +3013,7 @@ function bindControls() {
   }
   wireCollapsible('moversToggle', 'moversSection');
   wireCollapsible('dtdToggle', 'dtdSection');
+  wireCollapsible('sbToggle', 'sellerBehaviorSection');
   wireCollapsible('closedToggle', 'closedSection');
 
   // ---- شیت فیلتر و شیت مرتب‌سازی: هر دو روی همون سیستم شیت بومی پروژه
@@ -3269,6 +3345,153 @@ function buildDtdSection() {
   } else {
     noteEl.innerHTML = `⚪ تو بازه‌ی رصدشده، قیمت تفاوت محسوسی بر اساس فاصله تا پرواز نداره.`;
   }
+}
+
+// ===========================================================
+// رفتارشناسی فروشنده‌ها: آیا فروشنده‌ی B معمولاً با یه تاخیر مشخص،
+// همون جهتِ تغییر قیمت فروشنده‌ی A رو تکرار می‌کنه؟ («دنباله‌روی قیمت»؛
+// وقتی جهت غالبش کاهشیه، یعنی الگوی spiral-down — رقابت قیمتی خودکار).
+//
+// روش: برای هر «پرواز» (مسیر+تاریخ+شماره‌پرواز+ایرلاین+کلاس)، تاریخچه‌ی
+// هر فروشنده رو به لیست «moves» (نقاطی که قیمت واقعاً عوض شده) تبدیل
+// می‌کنیم. بعد برای هر جفت‌مرتب (رهبر، دنباله‌رو)، هر تغییر رهبر رو با
+// اولین تغییر بعدیِ دنباله‌رو (تا سقف SB_FOLLOW_WINDOW_HOURS) مقایسه
+// می‌کنیم — اگه هم‌جهت بود، «دنباله‌روی» حساب می‌شه. این آمار رو رو کل
+// پروازهای مسیر جمع می‌زنیم (نه فقط یه پرواز) تا یه اتفاق تصادفی با یه
+// الگوی رفتاری واقعی و تکرارشونده اشتباه گرفته نشه.
+//
+// نکته‌ی مهم آماری: صرف اینکه B غالباً بعد از A حرکت می‌کنه کافی نیست —
+// چون قیمت کل بازار معمولاً هم‌جهت حرکت می‌کنه (مثلاً نزدیک شدن به
+// پرواز، همه گرون‌تر می‌شن) و این خودش یه «دنباله‌روی» کاذب می‌سازه.
+// برای همین جهت عکسش (B→A) رو هم حساب می‌کنیم و فقط وقتی جفت رو نشون
+// می‌دیم که نرخ دنباله‌روی یه‌طرفه به‌وضوح از طرف مقابل بیشتره
+// (SB_MIN_LEAD_MARGIN) — یعنی واقعاً یه رهبر/دنباله‌رو مشخص وجود داره.
+// ===========================================================
+const SB_FOLLOW_WINDOW_HOURS = 72;  // فروشنده‌ای که بیش از این فاصله بگیره، «دنباله‌روی» حساب نمی‌شه
+const SB_MIN_LEADER_MOVES = 5;      // حداقل تعداد تغییر قیمت رهبر، وگرنه آمار معنادار نیست
+const SB_MIN_FOLLOW_RATE = 0.5;     // حداقل نسبت دنباله‌روی برای نمایش
+const SB_MIN_LEAD_MARGIN = 0.15;    // اختلاف نرخ دو جهت، برای رد کردن هم‌حرکتی کلی بازار
+
+function parseCapturedMsSB(str) {
+  if (!str) return NaN;
+  return Date.parse(str.length === 16 ? str + ':00Z' : str);
+}
+
+function computeSellerBehavior() {
+  // ۱) تاریخچه‌ی مسیر فعلی رو بر اساس «کلید پرواز» (بدون فروشنده) گروه‌بندی کن
+  const byFlight = new Map();
+  for (const h of allHistory) {
+    if (h.route !== state.route) continue;
+    const seller = (h.seller || '').trim();
+    const price = Number(h.price);
+    if (!seller || !isFinite(price)) continue;
+    const ms = parseCapturedMsSB(h.captured_at);
+    if (!isFinite(ms)) continue;
+    const flightKey = [h.route, h.flight_date, h.flight_no, h.airline, normalizeCabin(h.cabin)].join('|');
+    if (!byFlight.has(flightKey)) byFlight.set(flightKey, new Map());
+    const sellerMap = byFlight.get(flightKey);
+    if (!sellerMap.has(seller)) sellerMap.set(seller, []);
+    sellerMap.get(seller).push({ ms, price });
+  }
+
+  // ۲) هر فروشنده -> لیست moves (فقط نقاطی که قیمتش واقعاً نسبت به قبلی فرق کرده)
+  function movesOf(points) {
+    const sorted = [...points].sort((a, b) => a.ms - b.ms);
+    const moves = [];
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = sorted[i].price - sorted[i - 1].price;
+      if (diff !== 0) moves.push({ ms: sorted[i].ms, dir: diff > 0 ? 1 : -1 });
+    }
+    return moves;
+  }
+
+  // ۳) به‌ازای هر جفت‌مرتب (رهبر، دنباله‌رو)، رو همه‌ی پروازهای مسیر جمع بزن
+  const pairStats = new Map(); // key: "رهبر|||دنباله‌رو"
+  for (const sellerMap of byFlight.values()) {
+    const sellers = [...sellerMap.keys()];
+    if (sellers.length < 2) continue;
+    const movesBySeller = new Map(sellers.map(s => [s, movesOf(sellerMap.get(s))]));
+
+    for (const leader of sellers) {
+      const leaderMoves = movesBySeller.get(leader);
+      if (!leaderMoves.length) continue;
+      for (const follower of sellers) {
+        if (follower === leader) continue;
+        const followerMoves = movesBySeller.get(follower);
+        if (!followerMoves.length) continue;
+
+        const key = leader + '|||' + follower;
+        if (!pairStats.has(key)) {
+          pairStats.set(key, { leader, follower, totalLeaderMoves: 0, followed: 0, lagSum: 0, downFollowed: 0 });
+        }
+        const stat = pairStats.get(key);
+
+        for (const lm of leaderMoves) {
+          stat.totalLeaderMoves++;
+          // اولین تغییر دنباله‌رو که بعد از رهبره و تو پنجره‌ی زمانی مجازه
+          const fm = followerMoves.find(m => m.ms > lm.ms && (m.ms - lm.ms) <= SB_FOLLOW_WINDOW_HOURS * 3600000);
+          if (fm && fm.dir === lm.dir) {
+            stat.followed++;
+            stat.lagSum += (fm.ms - lm.ms) / 3600000;
+            if (lm.dir < 0) stat.downFollowed++;
+          }
+        }
+      }
+    }
+  }
+
+  // ۴) فیلتر: نمونه‌ی کافی، نرخ دنباله‌روی بالا، و جهت رهبری واضح (نه هم‌حرکتی بازار)
+  const results = [];
+  for (const stat of pairStats.values()) {
+    if (stat.totalLeaderMoves < SB_MIN_LEADER_MOVES) continue;
+    const followRate = stat.followed / stat.totalLeaderMoves;
+    if (followRate < SB_MIN_FOLLOW_RATE) continue;
+
+    const reverse = pairStats.get(stat.follower + '|||' + stat.leader);
+    const reverseRate = (reverse && reverse.totalLeaderMoves >= SB_MIN_LEADER_MOVES)
+      ? reverse.followed / reverse.totalLeaderMoves : 0;
+    if (followRate - reverseRate < SB_MIN_LEAD_MARGIN) continue;
+
+    results.push({
+      leader: stat.leader,
+      follower: stat.follower,
+      followRate,
+      totalMoves: stat.totalLeaderMoves,
+      avgLagHours: stat.followed ? stat.lagSum / stat.followed : null,
+      downRatio: stat.followed ? stat.downFollowed / stat.followed : 0,
+    });
+  }
+
+  results.sort((a, b) => b.followRate - a.followRate);
+  return results.slice(0, 8);
+}
+
+function buildSellerBehaviorSection() {
+  const section = document.getElementById('sellerBehaviorSection');
+  const list = document.getElementById('sbList');
+  if (!section || !list) return;
+
+  const pairs = computeSellerBehavior();
+  if (pairs.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  list.innerHTML = pairs.map(p => {
+    const spiral = p.downRatio >= 0.6;
+    const dirLabel = spiral ? 'کاهش قیمت' : (p.downRatio <= 0.4 ? 'افزایش قیمت' : 'تغییر قیمت');
+    const lagLabel = p.avgLagHours == null ? '—'
+      : (p.avgLagHours < 1 ? `${toFaDigits(Math.max(1, Math.round(p.avgLagHours * 60)))} دقیقه` : `${toFaDigits(Math.round(p.avgLagHours))} ساعت`);
+    return `<div class="sb-card${spiral ? ' spiral' : ''}">
+      <div class="sb-pair">
+        <span>${p.follower}</span>
+        <span class="sb-arrow">${ICONS.link}</span>
+        <span>${p.leader}</span>
+      </div>
+      <div class="sb-detail">با میانگین تاخیر <b>${lagLabel}</b>، ٪${toFaDigits(Math.round(p.followRate * 100))} از تغییرات <b>${dirLabel}</b> فروشنده‌ی دوم رو دنبال می‌کنه (از ${toFaDigits(p.totalMoves)} رویداد مشترک)${spiral ? ' — الگوی دنباله‌روی کاهشی' : ''}</div>
+    </div>`;
+  }).join('');
 }
 
 // ---- تاریخ و ساعت «الان» به وقت خودِ گوشی (که برای این پنل یعنی وقت ایران) ----
