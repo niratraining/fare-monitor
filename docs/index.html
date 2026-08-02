@@ -1623,7 +1623,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 13px;
   }
   .modal-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
   .modal-logo {
@@ -1685,77 +1685,66 @@
     .modal-close:hover { background: var(--paper); }
   }
 
-  /* --- بلوک قیمت اصلی: آخرین قیمت + روند در یک نگاه، کمترین/بیشترین به‌عنوان جزئیات ثانویه ---
-     جایگزین سه باکس هم‌وزن قبلی؛ چون در نگاه اول فقط «الان چند و در چه وضعیتی» مهمه،
-     نه سه عدد هم‌رتبه که چشم رو بین‌شون پخش می‌کنه. */
+  /* --- بلوک قیمت اصلی: مینیمال و هم‌جنس با بقیه‌ی کارت‌های اپ (سفید، بردر نازک)
+     به‌جای پس‌زمینه‌ی تیره‌ی قبلی که به‌خاطر تضاد زیاد، بزرگ‌تر و سنگین‌تر از
+     بقیه‌ی صفحه به‌نظر می‌رسید. آخرین قیمت هنوز کانون توجهه، ولی روند به یه
+     نشان کوچک (فقط درصد) خلاصه شده و بازه‌ی کمترین/بیشترین یه خط کم‌رنگ ثانویه‌ست --- */
   .price-hero {
     position: relative;
-    overflow: hidden;
-    background: linear-gradient(155deg, var(--navy-700) 55%, var(--accent) 130%);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: var(--radius-card-sm);
-    padding: 16px 18px 14px;
+    padding: 13px 15px;
     margin-bottom: 12px;
-    color: #ffffff;
+    box-shadow: var(--shadow-sm);
   }
-  .price-hero::before {
-    content: "";
-    position: absolute;
-    inset: -40% -20% auto auto;
-    width: 140px;
-    height: 140px;
-    background: radial-gradient(circle, var(--accent-gold-soft) 0%, transparent 68%);
-    opacity: .22;
-    pointer-events: none;
-  }
-  .price-hero > * { position: relative; z-index: 1; }
   .price-hero-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
-  .price-hero-label { font-size: 11px; font-weight: 700; color: rgba(255, 255, 255, 0.6); }
-  .price-hero-value { font-size: 26px; font-weight: 800; direction: ltr; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .price-hero-label { font-size: 11px; font-weight: 700; color: var(--ink-muted); }
+  .price-hero-value { font-size: 21px; font-weight: 800; direction: ltr; font-variant-numeric: tabular-nums; line-height: 1.2; color: var(--ink); }
   .price-hero-range {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    gap: 6px;
+    margin-top: 6px;
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--ink-muted);
   }
-  .phr-item { display: flex; align-items: center; gap: 5px; }
-  .phr-item b { font-weight: 800; color: #ffffff; direction: ltr; font-variant-numeric: tabular-nums; }
-  .phr-sep { width: 1px; height: 11px; background: rgba(255, 255, 255, 0.16); }
+  .phr-item { display: flex; align-items: center; gap: 4px; }
+  .phr-item b { font-weight: 700; color: var(--ink-soft); direction: ltr; font-variant-numeric: tabular-nums; }
+  .phr-sep { color: var(--line); }
 
   .trend-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     font-size: 11px;
     font-weight: 800;
-    padding: 5px 11px;
+    padding: 4px 9px;
     border-radius: 20px;
     letter-spacing: -.01em;
     flex: none;
+    direction: ltr;
   }
   .trend-badge.up { background: var(--danger-tint); color: var(--danger-strong); }
   .trend-badge.down { background: var(--success-tint); color: var(--success-strong); }
-  .trend-badge.flat { background: rgba(255, 255, 255, 0.12); color: #ffffff; }
+  .trend-badge.flat { background: var(--paper); color: var(--ink-muted); }
 
   /* --- ردیف‌های بینش (نوسان غیرعادی/جایگاه بازار): کارت‌های رنگی مجزا به‌جای یک لیست خطی --- */
-  .insight-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .insight-list { margin-bottom: 12px; display: flex; flex-direction: column; gap: 7px; }
   .insight-row {
     display: flex;
     align-items: flex-start;
     gap: 9px;
     font-size: 12px;
     font-weight: 600;
-    line-height: 1.7;
-    padding: 11px 12px;
+    line-height: 1.65;
+    padding: 10px 11px;
     border-radius: var(--radius-card-sm);
     color: var(--ink-soft);
     background: var(--card);
@@ -4073,15 +4062,15 @@ function openHistoryModal(f) {
     const last = points[points.length - 1].price;
     if (last > first) {
       const pct = first ? Math.round(((last - first) / first) * 100) : 0;
-      trendHtml = `<span class="trend-badge up">${ICONS.trendUp} روند افزایشی — ${formatPriceShort(last - first)}+ (٪${toFaDigits(pct)}) نسبت به اولین ثبت</span>`;
+      trendHtml = `<span class="trend-badge up">${ICONS.trendUp} ٪${toFaDigits(pct)}</span>`;
     } else if (last < first) {
       const pct = first ? Math.round(((first - last) / first) * 100) : 0;
-      trendHtml = `<span class="trend-badge down">${ICONS.trendDown} روند کاهشی — ${formatPriceShort(first - last)}- (٪${toFaDigits(pct)}) نسبت به اولین ثبت</span>`;
+      trendHtml = `<span class="trend-badge down">${ICONS.trendDown} ٪${toFaDigits(pct)}</span>`;
     } else {
-      trendHtml = `<span class="trend-badge flat">${ICONS.trendFlat} بدون تغییر نسبت به اولین ثبت</span>`;
+      trendHtml = `<span class="trend-badge flat">${ICONS.trendFlat} ثابت</span>`;
     }
   } else {
-    trendHtml = `<span class="trend-badge flat">فقط یک بار ثبت شده — هنوز تاریخچه‌ای نیست</span>`;
+    trendHtml = `<span class="trend-badge flat">ثبت اول</span>`;
   }
 
   // نمودار روند قیمت (Chart.js) در پایین همین تابع، بعد از باز شدن مودال ساخته می‌شه
@@ -4159,7 +4148,7 @@ function openHistoryModal(f) {
           <div class="price-hero-value">${currentPrice !== null ? formatPriceShort(currentPrice) : '—'}</div>
           <div class="price-hero-range">
             <span class="phr-item">کمترین <b>${minPrice !== null ? formatPriceShort(minPrice) : '—'}</b></span>
-            <span class="phr-sep"></span>
+            <span class="phr-sep">·</span>
             <span class="phr-item">بیشترین <b>${maxPrice !== null ? formatPriceShort(maxPrice) : '—'}</b></span>
           </div>
         </div>
