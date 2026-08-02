@@ -819,11 +819,11 @@
   .movers-list::-webkit-scrollbar { display: none; }
   .mover-card {
     flex: 0 0 auto;
-    width: 88px;
+    width: 104px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 9px;
+    gap: 7px;
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 18px;
@@ -865,6 +865,16 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
+  .mover-seller {
+    font-size: 9.5px;
+    color: var(--ink-muted);
+    font-weight: 700;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: -4px;
+  }
   .mover-change {
     display: inline-flex;
     align-items: center;
@@ -878,6 +888,11 @@
   .mover-change .fc-change-icon { width: 10px; height: 10px; }
   .mover-change.up { color: var(--danger-strong); background: var(--danger-tint); }
   .mover-change.down { color: var(--success-strong); background: var(--success-tint); }
+  .mover-count {
+    font-size: 9.5px;
+    font-weight: 700;
+    opacity: .8;
+  }
   .movers-empty {
     font-size: 12px;
     color: var(--ink-muted);
@@ -2123,7 +2138,7 @@
   </button>
   <span class="tool-chip-sep" aria-hidden="true"></span>
   <button type="button" class="tool-chip" id="insightChip-movers" style="display:none;" data-tone="danger">
-    <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span> پرتغییرترین‌ها
+    <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></span> پرنوسان‌ترین‌ها
   </button>
   <button type="button" class="tool-chip" id="insightChip-dtd" style="display:none;">
     <span class="fi"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 8l-5 5-3-3-4 4"/></svg></span> روند قیمت تا پرواز
@@ -2331,7 +2346,7 @@ function wireSheetDrag(overlay) {
 // می‌کنه و چیپ رو نشون/مخفی می‌کنه. هیچ CSS یا منطق باز/بسته‌شدن جدیدی لازم نیست.
 // ===========================================================
 const insightTools = {
-  movers: { title: 'پرتغییرترین پروازها', sub: '', bodyHTML: '' },
+  movers: { title: 'پرنوسان‌ترین پروازها', sub: '', bodyHTML: '' },
   dtd:    { title: 'روند قیمت بر اساس فاصله تا پرواز', sub: '', bodyHTML: '' },
   sb:     { title: 'رفتار فروشنده‌ها — دنباله‌روی قیمت', sub: 'بر اساس تغییرات قیمت این مسیر، این‌ها فروشنده‌هایی هستن که معمولاً با یه تاخیر مشخص، جهت تغییر قیمت یه فروشنده‌ی دیگه رو تکرار می‌کنن.', bodyHTML: '' },
 };
@@ -3124,8 +3139,14 @@ function updateFilterBadge() {
 }
 
 // ===========================================================
-// ویجت پرتغییرترین پروازها (Movers leaderboard) — مستقل از فیلترهای مسیر/تاریخ فعلی
+// ویجت پرنوسان‌ترین پروازها (Volatility leaderboard) — مستقل از فیلترهای مسیر/تاریخ فعلی
 // ===========================================================
+// معیار رتبه‌بندی «مجموع قدرمطلق تغییرات پی‌درپی» (Total Variation) هر
+// پیشنهاده، نه صرفاً آخرین جهش قیمت — همون معیاری که برای گزارش آماری
+// تاریخ‌های بسته‌شده هم استفاده شد (نگاه کن به computeClosedDateStats).
+// این‌جوری هم به تعداد دفعات تغییر حساسه و هم به بزرگی هرکدوم، و یه
+// فروشنده‌ای که فقط یه‌بار (ولی خیلی بزرگ) تغییر کرده رو با یه فروشنده‌ی
+// دیگه که چندبار (ولی هرکدوم کوچیک) تغییر کرده، منصفانه مقایسه می‌کنه.
 function computeMovers(limit) {
   limit = limit || 10;
   const items = [];
@@ -3133,10 +3154,16 @@ function computeMovers(limit) {
   allFlights
     .filter(f => f.route === state.route && f.flight_date === state.date && !isFlightArchived(f))
     .forEach(f => {
-      const change = getLatestChange(f);
-      if (change && change.diff !== 0) items.push({ f, change });
+      const points = getHistoryPoints(f);
+      if (points.length < 2) return; // حداقل یه تغییر واقعی لازمه
+      let totalVariation = 0;
+      for (let i = 1; i < points.length; i++) totalVariation += Math.abs(points[i].price - points[i - 1].price);
+      if (totalVariation === 0) return;
+      const changesCount = points.length - 1;
+      const lastDiff = points[points.length - 1].price - points[points.length - 2].price;
+      items.push({ f, totalVariation, changesCount, lastDiff });
     });
-  items.sort((a, b) => Math.abs(b.change.diff) - Math.abs(a.change.diff));
+  items.sort((a, b) => b.totalVariation - a.totalVariation);
   return items.slice(0, limit);
 }
 
@@ -3146,7 +3173,7 @@ function buildMoversList() {
 
   if (state.date) {
     const { weekday, label } = formatDateCard(state.date);
-    insightTools.movers.title = `پرتغییرترین پروازهای ${weekday} ${label}`;
+    insightTools.movers.title = `پرنوسان‌ترین پروازهای ${weekday} ${label}`;
   }
 
   if (items.length === 0) {
@@ -3156,19 +3183,20 @@ function buildMoversList() {
   }
 
   setInsightChipVisible('movers', true);
-  insightTools.movers.bodyHTML = '<div class="movers-list">' + items.map(({ f, change }, idx) => {
-    const up = change.diff > 0;
+  insightTools.movers.bodyHTML = '<div class="movers-list">' + items.map(({ f, totalVariation, changesCount, lastDiff }, idx) => {
+    const up = lastDiff > 0;
     return `<div class="mover-card" data-idx="${idx}">
       <span class="mover-logo">
         <img src="${airlineLogoSrc(f.airline)}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <span class="mover-logo-fallback" style="${fallbackAvatarStyle(f.airline)}">${(f.airline || '؟').charAt(0)}</span>
       </span>
       <div class="mover-flightno">${f.flight_no || ''}</div>
-      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceUltraCompact(Math.abs(change.diff))}</div>
+      <div class="mover-seller">${f.seller || f.airline || ''}</div>
+      <div class="mover-change ${up ? 'up' : 'down'}">${up ? TREND_ICON_UP : TREND_ICON_DOWN}${formatPriceUltraCompact(totalVariation)}<span class="mover-count">×${toFaDigits(changesCount)}</span></div>
     </div>`;
   }).join('') + '</div>';
 
-  // اگه شیت همین الان روی «پرتغییرترین‌ها»س، محتوا رو زنده به‌روز کن (مثلاً بعد از رفرش داده)
+  // اگه شیت همین الان روی «پرنوسان‌ترین‌ها»س، محتوا رو زنده به‌روز کن (مثلاً بعد از رفرش داده)
   const overlay = document.getElementById('insightSheetOverlay');
   if (overlay && overlay.open && overlay.dataset.activeInsight === 'movers') {
     document.getElementById('insightSheetBody').innerHTML = insightTools.movers.bodyHTML;
