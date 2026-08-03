@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T23:38",
+  "generated_at": "2026-08-03T01:13",
   "history": [
     {
       "route": "استانبول-تهران",
@@ -3050,6 +3050,16 @@
       "seller": "",
       "captured_at": "2026-08-02T08:21",
       "price": 11200000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-03",
+      "flight_no": "7341",
+      "airline": "سپهران",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-03T01:13",
+      "price": 10200000
     },
     {
       "route": "استانبول-تهران",
@@ -10980,6 +10990,16 @@
       "seller": "ریحان پرواز امین",
       "captured_at": "2026-08-02T22:35",
       "price": 28000000
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-03",
+      "flight_no": "6846",
+      "airline": "وارش",
+      "cabin": "economy",
+      "seller": "ریحان پرواز امین",
+      "captured_at": "2026-08-03T01:13",
+      "price": 35000000
     },
     {
       "route": "تهران-استانبول",
@@ -30947,6 +30967,16 @@
       "flight_no": "3115",
       "airline": "فلای کیش",
       "cabin": "economy",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "captured_at": "2026-08-03T01:13",
+      "price": 5200000
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-03",
+      "flight_no": "3115",
+      "airline": "فلای کیش",
+      "cabin": "economy",
       "seller": "مهر آگین سیر کیش",
       "captured_at": "2026-07-31T16:31",
       "price": 9000000
@@ -35116,7 +35146,7 @@
     "استانبول-تهران": {
       "median_abs_diff": 2000000,
       "mad_abs_diff": 1000000,
-      "sample_size": 358
+      "sample_size": 359
     },
     "بغداد-تهران": {
       "median_abs_diff": 2735000,
@@ -35131,7 +35161,7 @@
     "تهران-استانبول": {
       "median_abs_diff": 3000000,
       "mad_abs_diff": 2000000,
-      "sample_size": 423
+      "sample_size": 424
     },
     "تهران-بغداد": {
       "median_abs_diff": 5000000,
@@ -35186,7 +35216,7 @@
     "مشهد-تهران": {
       "median_abs_diff": 863082,
       "mad_abs_diff": 436918,
-      "sample_size": 270
+      "sample_size": 271
     },
     "نجف-تهران": {
       "median_abs_diff": 2215600,
