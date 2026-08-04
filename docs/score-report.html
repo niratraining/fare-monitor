@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>گزارش امتیاز فروشنده‌ها — رصد نرخ پرواز</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
+<style>
+  :root {
+    --ink: #2F3B39;
+    --ink-soft: #4B5A57;
+    --ink-muted: #6E7C79;
+    --line: #DDE6E4;
+    --paper: #EEF3F2;
+    --card: #ffffff;
+    --accent: #556F6B;
+    --accent-strong: #455F5B;
+    --accent-bright: #D4A62A;
+    --accent-tint: #E8EEEC;
+    --radius-panel: 22px;
+    --radius-card-sm: 16px;
+    --radius-field: 14px;
+    --danger: #C1443A;
+    --danger-tint: #FBEAE8;
+    --success: #2F7A5D;
+    --success-tint: #E7F3EC;
+    --warn: #A6790E;
+    --warn-tint: #FBF1DC;
+    --shadow-sm: 0 2px 10px rgba(69, 95, 91, 0.07);
+    --shadow-md: 0 16px 40px -16px rgba(41, 51, 47, 0.22);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-variant-numeric: tabular-nums;
+    background: var(--paper);
+    margin: 0;
+    padding: 0 0 32px;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (min-width: 760px) {
+    html { background: linear-gradient(180deg, #E4EBE9, #D7E2DF) fixed; }
+    body { max-width: 760px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px rgba(69,95,91,.06), var(--shadow-md); }
+  }
+  header {
+    background: var(--card);
+    padding: 16px 16px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .hdr-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .hdr-icon {
+    width: 34px; height: 34px; border-radius: 11px; flex: none;
+    background: var(--accent-strong); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 8px rgba(69,95,91,.26);
+  }
+  .hdr-icon svg { width: 18px; height: 18px; }
+  h1 { font-size: 15px; margin: 0; font-weight: 800; }
+  .hdr-sub { font-size: 11px; color: var(--ink-muted); margin: 2px 0 0; font-weight: 500; }
+  a.back {
+    color: var(--ink-soft); text-decoration: none; font-size: 11px; font-weight: 700;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-field);
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  a.back svg { width: 16px; height: 16px; }
+  main { padding: 14px; }
+  .intro {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-panel);
+    padding: 14px 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm); font-size: 12px; color: var(--ink-soft); line-height: 1.9;
+  }
+  .intro b { color: var(--ink); }
+  .intro-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip {
+    font-size: 10.5px; font-weight: 700; color: var(--ink-soft); background: var(--accent-tint);
+    border-radius: 999px; padding: 4px 10px;
+  }
+  #state { text-align: center; padding: 40px 10px; color: var(--ink-muted); font-size: 12.5px; }
+  .spinner {
+    width: 26px; height: 26px; border-radius: 50%; margin: 0 auto 12px;
+    border: 3px solid var(--line); border-top-color: var(--accent);
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err { color: var(--danger); background: var(--danger-tint); border-radius: var(--radius-field); padding: 12px; font-size: 12px; }
+
+  .rank-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card-sm);
+    padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .rank-num {
+    width: 28px; height: 28px; border-radius: 50%; flex: none; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; background: var(--accent-tint); color: var(--accent-strong);
+  }
+  .rank-card:nth-child(1) .rank-num { background: var(--accent-bright); color: #4a3a06; }
+  .rank-card:nth-child(2) .rank-num { background: #D9E2DF; color: var(--ink-soft); }
+  .rank-card:nth-child(3) .rank-num { background: #E7D3B8; color: #6b4a1c; }
+  .rank-main { flex: 1; min-width: 0; }
+  .rank-seller { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-stats { font-size: 10.5px; color: var(--ink-muted); margin-top: 3px; display: flex; gap: 8px; }
+  .rank-score-wrap { text-align: left; flex: none; }
+  .rank-score { font-size: 17px; font-weight: 800; color: var(--ink); }
+  .rank-score small { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+  .rank-ci { font-size: 10px; color: var(--ink-muted); direction: ltr; display: block; margin-top: 2px; }
+  .bar-track { height: 5px; border-radius: 3px; background: var(--line); margin-top: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; color: var(--ink-muted);
+    margin: 4px 2px 14px;
+  }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-title">
+    <span class="hdr-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.4 8.6 12 15l-3.5-3.5L3 17"/></svg>
+    </span>
+    <div>
+      <h1>گزارش امتیاز فروشنده‌ها</h1>
+      <p class="hdr-sub">امتیاز «تصادفی‌بودنِ» رفتار قیمت</p>
+    </div>
+  </div>
+  <a class="back" href="index.html" title="بازگشت به پنل" aria-label="بازگشت به پنل">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+  </a>
+</header>
+
+<main>
+  <div class="intro">
+    امتیاز هر فروشنده بر مبنای همبستگیِ روند قیمت با زمان محاسبه می‌شه؛ امتیازِ نزدیک به
+    <b>۱۰۰٪</b> یعنی رفتار قیمت‌گذاریِ آن فروشنده تصادفی‌تره (روند مشخصی نداره)، و نزدیک به
+    <b>۰٪</b> یعنی قیمت با یک روند نسبتاً پایدار (صعودی یا نزولی) حرکت می‌کنه.
+    محاسبه با تبدیل Fisher z و وزن‌دهی بر اساس تعداد نمونه در هر پرواز و مسیر انجام می‌شه تا
+    مسیرهای کم‌داده امتیاز را مصنوعی بالا نبرند؛ بازه‌ی کنار هر امتیاز، بازه‌اطمینان ۹۰٪ برآمده از
+    بوت‌استرپ سلسله‌مراتبی (مسیر ← پرواز) است.
+    <div class="intro-meta">
+      <span class="chip" id="metaCount">—</span>
+      <span class="chip" id="metaTime">—</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--accent-bright)"></span> امتیاز بالا = تصادفی‌تر</span>
+    <span><span class="dot" style="background:var(--ink-muted)"></span> امتیاز پایین = روند پایدارتر</span>
+  </div>
+
+  <div id="state">
+    <div class="spinner"></div>
+    در حال بارگذاری و محاسبه...
+  </div>
+
+  <div id="list"></div>
+</main>
+
+<script>
+const MIN_POINTS_PER_FLIGHT = 4;
+const MIN_FLIGHTS_PER_SELLER = 3;
+const N_BOOTSTRAP = 1000;
+
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(42);
+function choice(arr) { return arr[Math.floor(rand() * arr.length)]; }
+
+function pearson(xs, ys) {
+  const n = xs.length;
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  let cov = 0, vx = 0, vy = 0;
+  for (let i = 0; i < n; i++) {
+    cov += (xs[i] - mx) * (ys[i] - my);
+    vx += (xs[i] - mx) ** 2;
+    vy += (ys[i] - my) ** 2;
+  }
+  if (vx === 0 || vy === 0) return null;
+  return cov / Math.sqrt(vx * vy);
+}
+
+function fisherZ(r) {
+  r = Math.max(-0.999999, Math.min(0.999999, r));
+  return Math.atanh(r);
+}
+
+function loadFlights(history) {
+  const byFlight = new Map();
+  for (const row of history) {
+    const key = [row.seller, row.route, row.flight_no, row.flight_date].join('|');
+    if (!byFlight.has(key)) byFlight.set(key, []);
+    byFlight.get(key).push(row);
+  }
+  const out = new Map();
+  for (const pts of byFlight.values()) {
+    const seller = pts[0].seller;
+    const route = pts[0].route;
+    if (!seller) continue;
+    const ptsSorted = [...pts].sort((a, b) => a.captured_at < b.captured_at ? -1 : 1);
+    const n = ptsSorted.length;
+    if (n < MIN_POINTS_PER_FLIGHT) continue;
+    const xs = ptsSorted.map((_, i) => i);
+    const ys = ptsSorted.map(p => p.price);
+    const rho = pearson(xs, ys);
+    if (rho === null) continue;
+    if (!out.has(seller)) out.set(seller, new Map());
+    const sellerMap = out.get(seller);
+    if (!sellerMap.has(route)) sellerMap.set(route, []);
+    sellerMap.get(route).push([n, rho]);
+  }
+  return out;
+}
+
+function routeEffectiveAbsRho(flightList) {
+  const totalW = flightList.reduce((s, [n]) => s + Math.max(n - 3, 1), 0);
+  if (totalW === 0) return [null, 0];
+  const zAvg = flightList.reduce((s, [n, rho]) => s + Math.max(n - 3, 1) * Math.abs(fisherZ(rho)), 0) / totalW;
+  return [Math.tanh(zAvg), totalW];
+}
+
+function sellerScore(sellerData) {
+  const routeVals = [];
+  let totalFlights = 0;
+  for (const flist of sellerData.values()) {
+    const [absRho, w] = routeEffectiveAbsRho(flist);
+    if (absRho === null) continue;
+    routeVals.push([absRho, w]);
+    totalFlights += flist.length;
+  }
+  if (!routeVals.length || totalFlights < MIN_FLIGHTS_PER_SELLER) return null;
+  const totalW = routeVals.reduce((s, [, w]) => s + w, 0);
+  const meanAbsRho = routeVals.reduce((s, [absRho, w]) => s + absRho * w, 0) / totalW;
+  return { score: 1 - meanAbsRho, totalW, nRoutes: routeVals.length, nFlights: totalFlights };
+}
+
+function bootstrapCI(sellerData, nBoot = N_BOOTSTRAP) {
+  const routes = [...sellerData.keys()];
+  const scores = [];
+  for (let b = 0; b < nBoot; b++) {
+    const resampled = new Map();
+    const bootRoutes = routes.map(() => choice(routes));
+    bootRoutes.forEach((route, i) => {
+      const flist = sellerData.get(route);
+      const bootFlist = flist.map(() => choice(flist));
+      resampled.set(route + '#' + i, bootFlist);
+    });
+    const result = sellerScore(resampled);
+    if (result) scores.push(result.score);
+  }
+  if (scores.length < nBoot * 0.5) return [null, null];
+  scores.sort((a, b) => a - b);
+  const lo = scores[Math.floor(0.05 * scores.length)];
+  const hi = scores[Math.floor(0.95 * scores.length) - 1];
+  return [lo, hi];
+}
+
+function fmtPct(x) { return (x * 100).toLocaleString('fa-IR', { maximumFractionDigits: 1, minimumFractionDigits: 1 }); }
+
+async function run() {
+  const stateEl = document.getElementById('state');
+  try {
+    const res = await fetch('history.json?t=' + Date.now());
+    if (!res.ok) throw new Error('history.json در دسترس نیست (HTTP ' + res.status + ')');
+    const data = await res.json();
+
+    const bySeller = loadFlights(data.history || []);
+    const rows = [];
+    for (const [seller, sellerData] of bySeller.entries()) {
+      const result = sellerScore(sellerData);
+      if (!result) continue;
+      const [lo, hi] = bootstrapCI(sellerData);
+      rows.push({ seller, lo, hi, ...result });
+    }
+    rows.sort((a, b) => b.score - a.score);
+
+    document.getElementById('metaCount').textContent = `${rows.length.toLocaleString('fa-IR')} فروشنده‌ی واجدشرایط`;
+    if (data.generated_at) {
+      const d = new Date(data.generated_at);
+      document.getElementById('metaTime').textContent = 'به‌روزرسانی داده: ' + d.toLocaleString('fa-IR', { dateStyle: 'medium', timeStyle: 'short' });
+    } else {
+      document.getElementById('metaTime').textContent = `حداقل ${MIN_FLIGHTS_PER_SELLER} پرواز واجد شرایط`;
+    }
+
+    const listEl = document.getElementById('list');
+    if (!rows.length) {
+      stateEl.innerHTML = '<div class="err">داده‌ی کافی برای محاسبه‌ی امتیاز موجود نیست.</div>';
+      return;
+    }
+    listEl.innerHTML = rows.map((r, i) => `
+      <div class="rank-card">
+        <div class="rank-num">${(i + 1).toLocaleString('fa-IR')}</div>
+        <div class="rank-main">
+          <div class="rank-seller">${r.seller}</div>
+          <div class="rank-stats">
+            <span>${r.nRoutes.toLocaleString('fa-IR')} مسیر</span>
+            <span>${r.nFlights.toLocaleString('fa-IR')} پرواز</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(r.score * 100).toFixed(1)}%"></div></div>
+        </div>
+        <div class="rank-score-wrap">
+          <div class="rank-score">${fmtPct(r.score)}<small>٪</small></div>
+          ${r.lo !== null ? `<span class="rank-ci">${fmtPct(r.lo)}–${fmtPct(r.hi)}٪</span>` : ''}
+        </div>
+      </div>
+    `).join('');
+    stateEl.style.display = 'none';
+  } catch (e) {
+    stateEl.innerHTML = `<div class="err">خطا در بارگذاری گزارش: ${(e.message || e).toString()}</div>`;
+  }
+}
+
+run();
+</script>
+</body>
+</html>
