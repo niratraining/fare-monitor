@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>گزارش امتیاز فروشنده‌ها — رصد نرخ پرواز</title>
+<title>شاخص تصادفی‌بودن نرخ‌گذاری — رصد نرخ پرواز</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
 <style>
@@ -92,8 +92,11 @@
   .rank-card {
     background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-card-sm);
     padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-sm);
-    display: flex; align-items: center; gap: 12px;
   }
+  .rank-card summary {
+    display: flex; align-items: center; gap: 12px; cursor: pointer; list-style: none;
+  }
+  .rank-card summary::-webkit-details-marker { display: none; }
   .rank-num {
     width: 28px; height: 28px; border-radius: 50%; flex: none; font-size: 12px; font-weight: 800;
     display: flex; align-items: center; justify-content: center; background: var(--accent-tint); color: var(--accent-strong);
@@ -102,8 +105,9 @@
   .rank-card:nth-child(2) .rank-num { background: #D9E2DF; color: var(--ink-soft); }
   .rank-card:nth-child(3) .rank-num { background: #E7D3B8; color: #6b4a1c; }
   .rank-main { flex: 1; min-width: 0; }
-  .rank-seller { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rank-stats { font-size: 10.5px; color: var(--ink-muted); margin-top: 3px; display: flex; gap: 8px; }
+  .rank-seller { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+  .rank-toggle-chev { flex: none; color: var(--ink-muted); transition: transform .2s ease; }
+  .rank-card[open] .rank-toggle-chev { transform: rotate(90deg); }
   .rank-score-wrap { text-align: left; flex: none; }
   .rank-score { font-size: 17px; font-weight: 800; color: var(--ink); }
   .rank-score small { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
@@ -111,12 +115,58 @@
   .bar-track { height: 5px; border-radius: 3px; background: var(--line); margin-top: 8px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); }
 
+  .rank-detail {
+    margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line);
+    max-height: 240px; overflow-y: auto;
+  }
+  .rank-detail-summary {
+    font-size: 10.5px; color: var(--ink-muted); margin-bottom: 8px; display: flex; gap: 10px;
+  }
+  .route-group { margin-bottom: 10px; }
+  .route-group:last-child { margin-bottom: 0; }
+  .route-name {
+    font-size: 11px; font-weight: 700; color: var(--accent-strong); margin-bottom: 5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .route-name .route-count { font-weight: 500; color: var(--ink-muted); }
+  .flight-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-size: 10.5px; color: var(--ink-soft); padding: 5px 8px; background: var(--paper);
+    border-radius: 8px; margin-bottom: 4px;
+  }
+  .flight-row:last-child { margin-bottom: 0; }
+  .flight-no { font-weight: 700; color: var(--ink); direction: ltr; }
+  .flight-date { color: var(--ink-muted); }
+  .flight-n { font-size: 9.5px; color: var(--ink-muted); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; flex: none; }
+
   .legend {
     display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; color: var(--ink-muted);
     margin: 4px 2px 14px;
   }
   .legend span { display: flex; align-items: center; gap: 5px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .formula-box {
+    border: 1px solid var(--line); border-radius: var(--radius-field);
+    margin-top: 12px; background: var(--paper); overflow: hidden;
+  }
+  .formula-box summary {
+    cursor: pointer; list-style: none; padding: 10px 12px; font-size: 11.5px;
+    font-weight: 700; color: var(--accent-strong); display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; user-select: none;
+  }
+  .formula-box summary::-webkit-details-marker { display: none; }
+  .formula-box summary .chev { transition: transform .2s ease; flex: none; }
+  .formula-box[open] summary .chev { transform: rotate(90deg); }
+  .formula-box .formula-body {
+    padding: 2px 14px 14px; font-size: 11.5px; line-height: 2; color: var(--ink-soft);
+    border-top: 1px dashed var(--line);
+  }
+  .formula-body b { color: var(--ink); }
+  .formula-body code {
+    direction: ltr; display: inline-block; background: var(--card); border: 1px solid var(--line);
+    border-radius: 6px; padding: 1px 6px; font-size: 10.5px; color: var(--accent-strong);
+  }
 </style>
 </head>
 <body>
@@ -127,8 +177,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.4 8.6 12 15l-3.5-3.5L3 17"/></svg>
     </span>
     <div>
-      <h1>گزارش امتیاز فروشنده‌ها</h1>
-      <p class="hdr-sub">امتیاز «تصادفی‌بودنِ» رفتار قیمت</p>
+      <h1>شاخص تصادفی‌بودن نرخ‌گذاری</h1>
+      <p class="hdr-sub">رتبه‌بندی فروشنده‌ها بر پایه‌ی الگوی نوسان نرخ</p>
     </div>
   </div>
   <a class="back" href="index.html" title="بازگشت به پنل" aria-label="بازگشت به پنل">
@@ -141,13 +191,27 @@
     امتیاز هر فروشنده بر مبنای همبستگیِ روند قیمت با زمان محاسبه می‌شه؛ امتیازِ نزدیک به
     <b>۱۰۰٪</b> یعنی رفتار قیمت‌گذاریِ آن فروشنده تصادفی‌تره (روند مشخصی نداره)، و نزدیک به
     <b>۰٪</b> یعنی قیمت با یک روند نسبتاً پایدار (صعودی یا نزولی) حرکت می‌کنه.
-    محاسبه با تبدیل Fisher z و وزن‌دهی بر اساس تعداد نمونه در هر پرواز و مسیر انجام می‌شه تا
-    مسیرهای کم‌داده امتیاز را مصنوعی بالا نبرند؛ بازه‌ی کنار هر امتیاز، بازه‌اطمینان ۹۰٪ برآمده از
-    بوت‌استرپ سلسله‌مراتبی (مسیر ← پرواز) است.
     <div class="intro-meta">
       <span class="chip" id="metaCount">—</span>
       <span class="chip" id="metaTime">—</span>
     </div>
+    <details class="formula-box">
+      <summary>
+        <span>جزئیات فرمول محاسبه</span>
+        <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </summary>
+      <div class="formula-body">
+        برای هر <b>پرواز</b> (ترکیب فروشنده + مسیر + شماره پرواز + تاریخ)، ضریب همبستگی پیرسون
+        بین <code>شماره‌ی مشاهده</code> و <code>قیمت</code> محاسبه می‌شه (حداقل ۴ نقطه لازمه).
+        این ضریب با تبدیل <b>Fisher z</b> به فضای جمع‌پذیر منتقل می‌شه و در هر <b>مسیر</b> با وزن
+        <code>n − 3</code> (بر اساس تعداد نمونه‌ی هر پرواز) میانگین‌گیری می‌شه تا پروازهای
+        کم‌داده تأثیر کمتری بگذارن. سپس میانگینِ وزنیِ همین مقدار در همه‌ی مسیرهای یک فروشنده
+        گرفته می‌شه و امتیاز نهایی این‌طور به دست میاد: <code>امتیاز = 1 − |ρ̄|</code>.
+        بازه‌ی کنار هر امتیاز، بازه‌اطمینان ۹۰٪ برآمده از بوت‌استرپ سلسله‌مراتبی
+        (نمونه‌گیری تصادفی از مسیرها، سپس از پروازهای هر مسیر) است. فروشنده‌هایی با کمتر از
+        ۳ پرواز واجدشرایط، از رتبه‌بندی حذف می‌شن.
+      </div>
+    </details>
   </div>
 
   <div class="legend">
@@ -220,15 +284,19 @@ function loadFlights(history) {
     if (!out.has(seller)) out.set(seller, new Map());
     const sellerMap = out.get(seller);
     if (!sellerMap.has(route)) sellerMap.set(route, []);
-    sellerMap.get(route).push([n, rho]);
+    sellerMap.get(route).push({
+      n, rho,
+      flight_no: pts[0].flight_no,
+      flight_date: pts[0].flight_date
+    });
   }
   return out;
 }
 
 function routeEffectiveAbsRho(flightList) {
-  const totalW = flightList.reduce((s, [n]) => s + Math.max(n - 3, 1), 0);
+  const totalW = flightList.reduce((s, f) => s + Math.max(f.n - 3, 1), 0);
   if (totalW === 0) return [null, 0];
-  const zAvg = flightList.reduce((s, [n, rho]) => s + Math.max(n - 3, 1) * Math.abs(fisherZ(rho)), 0) / totalW;
+  const zAvg = flightList.reduce((s, f) => s + Math.max(f.n - 3, 1) * Math.abs(fisherZ(f.rho)), 0) / totalW;
   return [Math.tanh(zAvg), totalW];
 }
 
@@ -283,7 +351,7 @@ async function run() {
       const result = sellerScore(sellerData);
       if (!result) continue;
       const [lo, hi] = bootstrapCI(sellerData);
-      rows.push({ seller, lo, hi, ...result });
+      rows.push({ seller, lo, hi, sellerData, ...result });
     }
     rows.sort((a, b) => b.score - a.score);
 
@@ -301,21 +369,43 @@ async function run() {
       return;
     }
     listEl.innerHTML = rows.map((r, i) => `
-      <div class="rank-card">
-        <div class="rank-num">${(i + 1).toLocaleString('fa-IR')}</div>
-        <div class="rank-main">
-          <div class="rank-seller">${r.seller}</div>
-          <div class="rank-stats">
+      <details class="rank-card">
+        <summary>
+          <div class="rank-num">${(i + 1).toLocaleString('fa-IR')}</div>
+          <div class="rank-main">
+            <div class="rank-seller">
+              ${r.seller}
+              <svg class="rank-toggle-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(r.score * 100).toFixed(1)}%"></div></div>
+          </div>
+          <div class="rank-score-wrap">
+            <div class="rank-score">${fmtPct(r.score)}<small>٪</small></div>
+            ${r.lo !== null ? `<span class="rank-ci">${fmtPct(r.lo)}–${fmtPct(r.hi)}٪</span>` : ''}
+          </div>
+        </summary>
+        <div class="rank-detail">
+          <div class="rank-detail-summary">
             <span>${r.nRoutes.toLocaleString('fa-IR')} مسیر</span>
             <span>${r.nFlights.toLocaleString('fa-IR')} پرواز</span>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="width:${(r.score * 100).toFixed(1)}%"></div></div>
+          ${[...r.sellerData.entries()].map(([route, flights]) => `
+            <div class="route-group">
+              <div class="route-name">
+                <span>${route}</span>
+                <span class="route-count">(${flights.length.toLocaleString('fa-IR')} پرواز)</span>
+              </div>
+              ${flights.map(f => `
+                <div class="flight-row">
+                  <span class="flight-no">${f.flight_no || '—'}</span>
+                  <span class="flight-date">${f.flight_date || '—'}</span>
+                  <span class="flight-n">${f.n.toLocaleString('fa-IR')} نقطه</span>
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
         </div>
-        <div class="rank-score-wrap">
-          <div class="rank-score">${fmtPct(r.score)}<small>٪</small></div>
-          ${r.lo !== null ? `<span class="rank-ci">${fmtPct(r.lo)}–${fmtPct(r.hi)}٪</span>` : ''}
-        </div>
-      </div>
+      </details>
     `).join('');
     stateEl.style.display = 'none';
   } catch (e) {
