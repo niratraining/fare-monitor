@@ -52,7 +52,15 @@ CREATE TABLE IF NOT EXISTS routes (
 );
 
 INSERT OR IGNORE INTO routes (label, origin, destination, start_date, end_date, active, created_at) VALUES
-  ('تهران-استانبول', 'THR,IKA,PYK', 'TEQ,SAW,IST', '2026-08-01', '2026-08-11', 1, datetime('now')),
-  ('استانبول-تهران', 'TEQ,SAW,IST', 'THR,IKA,PYK', '2026-08-01', '2026-08-11', 1, datetime('now')),
-  ('تهران-دبی',       'THR,IKA,PYK', 'SHJ,DWC,DXB', '2026-08-01', '2026-08-11', 1, datetime('now')),
-  ('دبی-تهران',       'SHJ,DWC,DXB', 'THR,IKA,PYK', '2026-08-01', '2026-08-11', 1, datetime('now'));
+  ('تهران-استانبول', 'THR,IKA,PYK', 'TEQ,SAW,IST', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('استانبول-تهران', 'TEQ,SAW,IST', 'THR,IKA,PYK', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('تهران-دبی',       'THR,IKA,PYK', 'SHJ,DWC,DXB', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('دبی-تهران',       'SHJ,DWC,DXB', 'THR,IKA,PYK', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('تهران-بغداد',     'THR,IKA,PYK', 'BGW',         '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('بغداد-تهران',     'BGW',         'THR,IKA,PYK', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('تهران-مسقط',      'THR,IKA,PYK', 'MCT',         '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('مسقط-تهران',      'MCT',         'THR,IKA,PYK', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('تهران-مسکو',      'THR,IKA,PYK', 'SVO,VKO,ZIA,DME', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('مسکو-تهران',      'SVO,VKO,ZIA,DME', 'THR,IKA,PYK', '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('مشهد-مسقط',       'MHD',         'MCT',         '2026-08-01', '2026-08-30', 1, datetime('now')),
+  ('مسقط-مشهد',       'MCT',         'MHD',         '2026-08-01', '2026-08-30', 1, datetime('now'));
