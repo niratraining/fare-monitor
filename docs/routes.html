@@ -65,9 +65,28 @@
       </div>
       <div class="row2">
         <div><label>از تاریخ (میلادی YYYY-MM-DD)</label><input id="fStart" placeholder="2026-08-01"></div>
-        <div><label>تا تاریخ (میلادی YYYY-MM-DD)</label><input id="fEnd" placeholder="2026-08-11"></div>
+        <div><label>تا تاریخ (میلادی YYYY-MM-DD)</label><input id="fEnd" placeholder="2026-08-30"></div>
       </div>
       <button class="btn-main" onclick="submitRoute()">ذخیره مسیر</button>
+    </div>
+
+    <div class="card">
+      <h2>ویرایش دسته‌جمعی تاریخ‌ها</h2>
+      <div class="muted" style="font-size:11.5px; margin-bottom:8px;">
+        روی مسیرهایی که تیک می‌زنی اعمال می‌شه. هر کدوم از دو فیلد زیر رو خالی بذاری،
+        همون فیلد برای مسیرهای انتخاب‌شده دست‌نخورده می‌مونه.
+      </div>
+      <div class="row2">
+        <div><label>از تاریخ جدید (اختیاری)</label><input id="bulkStart" placeholder="2026-08-01"></div>
+        <div><label>تا تاریخ جدید (اختیاری)</label><input id="bulkEnd" placeholder="2026-08-30"></div>
+      </div>
+      <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+        <input type="checkbox" id="bulkSelectAll" style="width:auto; margin:0;" onchange="toggleSelectAll(this.checked)">
+        انتخاب همه
+      </label>
+      <div id="bulkRouteList" style="margin-bottom:8px;"></div>
+      <button class="btn-main" onclick="bulkUpdateDates()">اعمال روی انتخاب‌شده‌ها</button>
+      <div class="msg" id="bulkMsg"></div>
     </div>
 
     <div class="card">
@@ -107,6 +126,7 @@
 <script>
 let WORKER_URL = localStorage.getItem('fm_worker_url') || 'https://fare-monitor-api.nirahelp.workers.dev';
 let SECRET = localStorage.getItem('fm_secret') || 'Sp89001671800@';
+let ALL_ROUTES = [];
 
 function headers() {
   return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SECRET };
@@ -142,9 +162,10 @@ async function saveGate() {
 async function loadRoutes() {
   const res = await fetch(WORKER_URL + '/routes', { headers: headers() });
   const data = await res.json();
+  ALL_ROUTES = data.routes || [];
   const tbody = document.getElementById('routesBody');
   tbody.innerHTML = '';
-  (data.routes || []).forEach(r => {
+  ALL_ROUTES.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${r.label}<div class="muted">${r.origin} ← ${r.destination}</div></td>
@@ -157,7 +178,8 @@ async function loadRoutes() {
       </td>`;
     tbody.appendChild(tr);
   });
-  fillForceRouteSelect(data.routes || []);
+  fillForceRouteSelect(ALL_ROUTES);
+  fillBulkRouteList(ALL_ROUTES);
 }
 
 // ===========================================================
@@ -180,6 +202,84 @@ function fillForceRouteSelect(routes) {
     sel.appendChild(opt);
   });
   if (prev) sel.value = prev;
+}
+
+function fillBulkRouteList(routes) {
+  const box = document.getElementById('bulkRouteList');
+  const prevChecked = new Set(
+    Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map(c => c.value)
+  );
+  box.innerHTML = '';
+  routes.forEach(r => {
+    const id = 'bulkChk_' + r.id;
+    const wrap = document.createElement('label');
+    wrap.style.cssText = 'display:flex; align-items:center; gap:6px; margin-bottom:6px; font-size:12.5px; color:#222;';
+    wrap.innerHTML = `
+      <input type="checkbox" id="${id}" value="${r.id}" style="width:auto; margin:0;">
+      ${r.label} <span class="muted"><bdi style="direction:ltr">(${r.start_date} → ${r.end_date})</bdi></span>`;
+    box.appendChild(wrap);
+    if (prevChecked.has(String(r.id))) wrap.querySelector('input').checked = true;
+  });
+  document.getElementById('bulkSelectAll').checked =
+    routes.length > 0 && routes.every(r => prevChecked.has(String(r.id)));
+}
+
+function toggleSelectAll(checked) {
+  document.querySelectorAll('#bulkRouteList input[type=checkbox]').forEach(c => c.checked = checked);
+}
+
+async function bulkUpdateDates() {
+  const bulkMsg = document.getElementById('bulkMsg');
+  const newStart = document.getElementById('bulkStart').value.trim();
+  const newEnd = document.getElementById('bulkEnd').value.trim();
+  if (!newStart && !newEnd) {
+    showMsg(bulkMsg, 'حداقل یکی از دو تاریخ رو پر کن', false);
+    return;
+  }
+  if (newStart && !/^\d{4}-\d{2}-\d{2}$/.test(newStart)) {
+    showMsg(bulkMsg, '«از تاریخ» باید به فرمت YYYY-MM-DD باشه', false);
+    return;
+  }
+  if (newEnd && !/^\d{4}-\d{2}-\d{2}$/.test(newEnd)) {
+    showMsg(bulkMsg, '«تا تاریخ» باید به فرمت YYYY-MM-DD باشه', false);
+    return;
+  }
+  const selectedIds = Array.from(
+    document.querySelectorAll('#bulkRouteList input[type=checkbox]:checked')
+  ).map(c => Number(c.value));
+  if (selectedIds.length === 0) {
+    showMsg(bulkMsg, 'حداقل یه مسیر رو انتخاب کن', false);
+    return;
+  }
+  const targets = ALL_ROUTES.filter(r => selectedIds.includes(r.id));
+  showMsg(bulkMsg, `در حال اعمال روی ${targets.length} مسیر...`, true);
+
+  let okCount = 0;
+  const failed = [];
+  for (const r of targets) {
+    const body = {
+      id: r.id,
+      label: r.label,
+      origin: r.origin,
+      destination: r.destination,
+      start_date: newStart || r.start_date,
+      end_date: newEnd || r.end_date,
+      active: r.active,
+    };
+    try {
+      const res = await fetch(WORKER_URL + '/routes', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+      if (res.ok) okCount++; else failed.push(r.label);
+    } catch (e) {
+      failed.push(r.label);
+    }
+  }
+
+  if (failed.length === 0) {
+    showMsg(bulkMsg, `${okCount} مسیر با موفقیت آپدیت شد ✓`, true);
+  } else {
+    showMsg(bulkMsg, `${okCount} مسیر آپدیت شد، خطا روی: ${failed.join('، ')}`, false);
+  }
+  loadRoutes();
 }
 
 function saveGhConfig() {
