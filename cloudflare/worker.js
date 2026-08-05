@@ -54,8 +54,9 @@ function tierIntervalHours(dtdDays) {
   if (dtdDays <= 0) return 20 / 60;  // امروز: هر ۲۰ دقیقه (سقف واقعی، برابر ضربان کرون)
   if (dtdDays <= 1) return 0.5;      // فردا: هر ۳۰ دقیقه
   if (dtdDays <= 3) return 1;        // ۲-۳ روز مونده: هر ۱ ساعت
-  if (dtdDays <= 7) return 3;        // تا یک هفته: هر ۳ ساعت
-  return 12;                          // بیش از یک هفته: هر ۱۲ ساعت (به‌ندرت تغییر می‌کنه)
+  if (dtdDays <= 7) return 4;        // تا یک هفته: هر ۴ ساعت
+  if (dtdDays <= 14) return 24;      // یک تا دو هفته: روزی یک‌بار
+  return 72;                          // بیش از دو هفته: هر ۳ روز (تقریباً بی‌تغییره، اهمیتش کمه)
 }
 
 function json(obj, status = 200) {
