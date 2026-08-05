@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-05T00:22",
+  "generated_at": "2026-08-05T03:41",
   "history": [
     {
       "route": "استانبول-تهران",
@@ -10694,6 +10694,16 @@
     {
       "route": "بغداد-تهران",
       "flight_date": "2026-08-08",
+      "flight_no": "7943",
+      "airline": "کاسپين",
+      "cabin": "economy",
+      "seller": "پرشین پرواز کویر",
+      "captured_at": "2026-08-05T03:41",
+      "price": 23500000
+    },
+    {
+      "route": "بغداد-تهران",
+      "flight_date": "2026-08-08",
       "flight_no": "9223",
       "airline": "آوا",
       "cabin": "economy",
@@ -17080,6 +17090,16 @@
       "seller": "",
       "captured_at": "2026-08-04T17:06",
       "price": 41612500
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-05",
+      "flight_no": "114",
+      "airline": "ماهان",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-05T03:41",
+      "price": 38538000
     },
     {
       "route": "تهران-استانبول",
@@ -45507,6 +45527,16 @@
       "flight_no": "2639",
       "airline": "کارون",
       "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-05T03:41",
+      "price": 6983088
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-05",
+      "flight_no": "2639",
+      "airline": "کارون",
+      "cabin": "economy",
       "seller": "همنواز آسمان آبی",
       "captured_at": "2026-07-31T13:52",
       "price": 8900000
@@ -45540,6 +45570,16 @@
       "seller": "همنواز آسمان آبی",
       "captured_at": "2026-08-03T23:30",
       "price": 8800000
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-05",
+      "flight_no": "2639",
+      "airline": "کارون",
+      "cabin": "economy",
+      "seller": "همنواز آسمان آبی",
+      "captured_at": "2026-08-05T03:41",
+      "price": 7500000
     },
     {
       "route": "مشهد-تهران",
@@ -50180,8 +50220,8 @@
     },
     "بغداد-تهران": {
       "median_abs_diff": 2000000,
-      "mad_abs_diff": 500000,
-      "sample_size": 17
+      "mad_abs_diff": 735000,
+      "sample_size": 18
     },
     "تفلیس-تهران": {
       "median_abs_diff": 3000000,
@@ -50189,9 +50229,9 @@
       "sample_size": 45
     },
     "تهران-استانبول": {
-      "median_abs_diff": 3349500,
-      "mad_abs_diff": 2150500,
-      "sample_size": 599
+      "median_abs_diff": 3346800,
+      "mad_abs_diff": 2153200,
+      "sample_size": 600
     },
     "تهران-بغداد": {
       "median_abs_diff": 800000,
@@ -50244,9 +50284,9 @@
       "sample_size": 8
     },
     "مشهد-تهران": {
-      "median_abs_diff": 906200,
-      "mad_abs_diff": 440000,
-      "sample_size": 406
+      "median_abs_diff": 913520,
+      "mad_abs_diff": 447320,
+      "sample_size": 408
     },
     "نجف-تهران": {
       "median_abs_diff": 1628000,
