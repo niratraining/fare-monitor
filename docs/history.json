@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T23:33",
+  "generated_at": "2026-08-08T00:05",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -11337,6 +11337,16 @@
       "flight_no": "6847",
       "airline": "وارش",
       "cabin": "economy",
+      "seller": "خیام گشت ایرانیان",
+      "captured_at": "2026-08-08T00:05",
+      "price": 26000000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-08",
+      "flight_no": "6847",
+      "airline": "وارش",
+      "cabin": "economy",
       "seller": "ریحان پرواز امین",
       "captured_at": "2026-07-31T11:14",
       "price": 20000000
@@ -15014,6 +15024,16 @@
     {
       "route": "اهواز-تهران",
       "flight_date": "2026-08-09",
+      "flight_no": "1805",
+      "airline": "جی اسکای",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-08T00:05",
+      "price": 9030700
+    },
+    {
+      "route": "اهواز-تهران",
+      "flight_date": "2026-08-09",
       "flight_no": "2651",
       "airline": "کارون",
       "cabin": "economy",
@@ -16300,6 +16320,16 @@
       "seller": "ره بال آسمان",
       "captured_at": "2026-08-07T23:32",
       "price": 15000000
+    },
+    {
+      "route": "بغداد-تهران",
+      "flight_date": "2026-08-08",
+      "flight_no": "9223",
+      "airline": "آوا",
+      "cabin": "economy",
+      "seller": "ره بال آسمان",
+      "captured_at": "2026-08-08T00:05",
+      "price": 25000000
     },
     {
       "route": "بغداد-تهران",
@@ -46074,6 +46104,16 @@
     {
       "route": "تهران-مشهد",
       "flight_date": "2026-08-09",
+      "flight_no": "5840",
+      "airline": "وارش",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-08T00:05",
+      "price": 9873200
+    },
+    {
+      "route": "تهران-مشهد",
+      "flight_date": "2026-08-09",
       "flight_no": "6212",
       "airline": "تابان",
       "cabin": "economy",
@@ -72024,6 +72064,16 @@
     {
       "route": "نجف-تهران",
       "flight_date": "2026-08-08",
+      "flight_no": "3029",
+      "airline": "زاگرس",
+      "cabin": "economy",
+      "seller": "امید پرواز اوج",
+      "captured_at": "2026-08-08T00:05",
+      "price": 23000000
+    },
+    {
+      "route": "نجف-تهران",
+      "flight_date": "2026-08-08",
       "flight_no": "3291",
       "airline": "فلای کیش",
       "cabin": "economy",
@@ -73679,14 +73729,14 @@
       "sample_size": 5
     },
     "استانبول-تهران": {
-      "median_abs_diff": 2234100,
-      "mad_abs_diff": 1234100,
-      "sample_size": 677
+      "median_abs_diff": 2267050,
+      "mad_abs_diff": 1267050,
+      "sample_size": 678
     },
     "اهواز-تهران": {
-      "median_abs_diff": 645000,
-      "mad_abs_diff": 555000,
-      "sample_size": 14
+      "median_abs_diff": 600000,
+      "mad_abs_diff": 510000,
+      "sample_size": 15
     },
     "اهواز-مشهد": {
       "median_abs_diff": 1499610,
@@ -73696,7 +73746,7 @@
     "بغداد-تهران": {
       "median_abs_diff": 2000000,
       "mad_abs_diff": 1000000,
-      "sample_size": 38
+      "sample_size": 39
     },
     "تبریز-استانبول": {
       "median_abs_diff": 30000000,
@@ -73766,7 +73816,7 @@
     "تهران-مشهد": {
       "median_abs_diff": 500000,
       "mad_abs_diff": 400000,
-      "sample_size": 185
+      "sample_size": 186
     },
     "تهران-نجف": {
       "median_abs_diff": 1000000,
@@ -73819,9 +73869,9 @@
       "sample_size": 0
     },
     "نجف-تهران": {
-      "median_abs_diff": 1628000,
-      "mad_abs_diff": 628000,
-      "sample_size": 101
+      "median_abs_diff": 1814000,
+      "mad_abs_diff": 814000,
+      "sample_size": 102
     }
   }
 }
