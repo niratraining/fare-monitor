@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T00:05",
+  "generated_at": "2026-08-08T02:25",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -12754,12 +12754,32 @@
     {
       "route": "استانبول-تهران",
       "flight_date": "2026-08-09",
+      "flight_no": "718",
+      "airline": "ايران اير",
+      "cabin": "economy",
+      "seller": "آدم و حوا",
+      "captured_at": "2026-08-08T02:25",
+      "price": 14500000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-09",
       "flight_no": "768",
       "airline": "ايران اير",
       "cabin": "economy",
       "seller": "آدم و حوا",
       "captured_at": "2026-08-07T21:05",
       "price": 15900000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-09",
+      "flight_no": "768",
+      "airline": "ايران اير",
+      "cabin": "economy",
+      "seller": "آدم و حوا",
+      "captured_at": "2026-08-08T02:25",
+      "price": 14500000
     },
     {
       "route": "استانبول-تهران",
@@ -32280,6 +32300,16 @@
       "seller": "آدم و حوا",
       "captured_at": "2026-08-07T21:05",
       "price": 27000000
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-09",
+      "flight_no": "769",
+      "airline": "ايران اير",
+      "cabin": "economy",
+      "seller": "آدم و حوا",
+      "captured_at": "2026-08-08T02:25",
+      "price": 26000000
     },
     {
       "route": "تهران-استانبول",
@@ -73729,9 +73759,9 @@
       "sample_size": 5
     },
     "استانبول-تهران": {
-      "median_abs_diff": 2267050,
-      "mad_abs_diff": 1267050,
-      "sample_size": 678
+      "median_abs_diff": 2234100,
+      "mad_abs_diff": 1234100,
+      "sample_size": 680
     },
     "اهواز-تهران": {
       "median_abs_diff": 600000,
@@ -73769,9 +73799,9 @@
       "sample_size": 49
     },
     "تهران-استانبول": {
-      "median_abs_diff": 3300000,
-      "mad_abs_diff": 1948600,
-      "sample_size": 715
+      "median_abs_diff": 3297800,
+      "mad_abs_diff": 1946400,
+      "sample_size": 716
     },
     "تهران-اهواز": {
       "median_abs_diff": 333000,
