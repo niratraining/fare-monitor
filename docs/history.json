@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-08T23:49",
+  "generated_at": "2026-08-09T01:28",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -18930,6 +18930,16 @@
       "seller": "",
       "captured_at": "2026-08-08T22:26",
       "price": 57554000
+    },
+    {
+      "route": "بغداد-تهران",
+      "flight_date": "2026-08-09",
+      "flight_no": "5055",
+      "airline": "ماهان",
+      "cabin": "business",
+      "seller": "",
+      "captured_at": "2026-08-09T01:28",
+      "price": 53154000
     },
     {
       "route": "بغداد-تهران",
@@ -45560,6 +45570,16 @@
       "seller": "راه تمدن پارسیان",
       "captured_at": "2026-08-08T21:49",
       "price": 15500000
+    },
+    {
+      "route": "تهران-مسقط",
+      "flight_date": "2026-08-09",
+      "flight_no": "6810",
+      "airline": "وارش",
+      "cabin": "economy",
+      "seller": "راه تمدن پارسیان",
+      "captured_at": "2026-08-09T01:28",
+      "price": 11900000
     },
     {
       "route": "تهران-مسقط",
@@ -84396,7 +84416,7 @@
     "بغداد-تهران": {
       "median_abs_diff": 1500000,
       "mad_abs_diff": 959300,
-      "sample_size": 88
+      "sample_size": 89
     },
     "تبریز-استانبول": {
       "median_abs_diff": 4499550,
@@ -84456,7 +84476,7 @@
     "تهران-مسقط": {
       "median_abs_diff": 1500000,
       "mad_abs_diff": 500000,
-      "sample_size": 105
+      "sample_size": 106
     },
     "تهران-مسکو": {
       "median_abs_diff": 7507500,
