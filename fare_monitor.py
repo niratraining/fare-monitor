@@ -63,7 +63,7 @@ DELAY_MAX_SEC = 9
 # سقف تعداد درخواست به سپهر۳۶۰ در هر بار اجرا (حتی اگه "due" خیلی بیشتر باشه)
 # چون حالا کرون هر ۲۰ دقیقه اجرا می‌شه (نه هر ۲ ساعت)، فرصت جبران بیشتره؛
 # بازم یه‌کم بالاتر از قبل گذاشتیمش برای حاشیه‌ی اطمینان بیشتر.
-MAX_TARGETS_PER_RUN = 40
+MAX_TARGETS_PER_RUN = 50
 
 # جیتر شروع: قبل از اولین درخواست، یه مدت رندوم صبر می‌کنیم تا لحظه‌ی
 # دقیق اجرا هر بار فرق کنه (نه دقیقاً سر ساعت‌های زوج)
@@ -336,9 +336,34 @@ def run_snapshot():
     # — فقط حالا اگه چیزی جا بمونه، همیشه چیزیه که فعلاً از همه کمتر
     # عقب افتاده، نه لزوماً چیزی که روزش دورتره)
     if len(due) > MAX_TARGETS_PER_RUN:
-        print(f"{len(due)} پرواز نوبتشونه؛ فقط {MAX_TARGETS_PER_RUN} تا رو "
-              f"این اجرا انجام می‌دیم (عقب‌افتاده‌ترین‌ها اول) و بقیه می‌مونن برای اجرای بعدی")
-        due = due[:MAX_TARGETS_PER_RUN]
+        # نکته: لایه‌ی امروز/فردا (near_tier=0) با نرخ due-شدنش (هر ۲۰-۳۰ دقیقه)
+        # و تعداد مسیرهای فعال، به‌تنهایی می‌تونه هر بار از سقف MAX_TARGETS_PER_RUN
+        # بیشتر due داشته باشه — یعنی اگه همین‌جوری خام برش بزنیم، لایه‌های دورتر
+        # (تاریخ‌هایی که هنوز اصلاً رصد نشدن) هیچ‌وقت نوبتشون نمی‌رسه، نه فقط دیر
+        # می‌رسن. برای همین بخشی از سقف رو مخصوص غیر-امروز/فردا رزرو می‌کنیم؛
+        # اگه چیزی تو اون لایه نبود، این رزرو به بقیه برمی‌گرده.
+        far_reserved = 10
+        near_budget = MAX_TARGETS_PER_RUN - far_reserved
+
+        near_items = [d for d in due if (d.get("dtd_days", _dtd_days(d["flight_date"])) <= 1) or d is forced_item]
+        far_items = [d for d in due if d not in near_items]
+
+        selected_near = near_items[:near_budget]
+        remaining_budget = MAX_TARGETS_PER_RUN - len(selected_near)
+        selected_far = far_items[:remaining_budget]
+
+        # اگه لایه‌ی دور خالی/کم بود، جای خالی رو با بقیه‌ی نزدیک‌ها پر می‌کنیم
+        leftover = MAX_TARGETS_PER_RUN - len(selected_near) - len(selected_far)
+        if leftover > 0:
+            selected_near += near_items[near_budget:near_budget + leftover]
+
+        due = selected_near + selected_far
+        due.sort(key=_urgency_key)
+        if forced_item is not None and (not due or due[0] is not forced_item):
+            due = [forced_item] + [d for d in due if d is not forced_item]
+
+        print(f"{len(due)} پرواز نوبتشونه؛ فقط {MAX_TARGETS_PER_RUN} تا رو این اجرا انجام می‌دیم "
+              f"({far_reserved} جای رزرو برای تاریخ‌های دورتر تا گرسنه نمونن) و بقیه می‌مونن برای اجرای بعدی")
 
     captured_at = datetime.now().isoformat(timespec="minutes")
 
