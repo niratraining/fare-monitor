@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T01:29",
+  "generated_at": "2026-08-10T03:30",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -14976,6 +14976,16 @@
       "flight_date": "2026-08-10",
       "flight_no": "117",
       "airline": "ماهان",
+      "cabin": "business",
+      "seller": "",
+      "captured_at": "2026-08-10T03:30",
+      "price": 75710000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "117",
+      "airline": "ماهان",
       "cabin": "economy",
       "seller": "",
       "captured_at": "2026-08-02T20:33",
@@ -15100,6 +15110,16 @@
       "seller": "پینگو تریپ",
       "captured_at": "2026-08-09T08:40",
       "price": 13000000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "2212",
+      "airline": "قشم اير",
+      "cabin": "economy",
+      "seller": "پینگو تریپ",
+      "captured_at": "2026-08-10T03:30",
+      "price": 12844600
     },
     {
       "route": "استانبول-تهران",
@@ -41067,6 +41087,16 @@
       "flight_no": "3287",
       "airline": "فلای کیش",
       "cabin": "economy",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "captured_at": "2026-08-10T03:30",
+      "price": 32000000
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-11",
+      "flight_no": "3287",
+      "airline": "فلای کیش",
+      "cabin": "economy",
       "seller": "مهر آگین سیر کیش",
       "captured_at": "2026-08-03T20:41",
       "price": 28000000
@@ -41400,6 +41430,16 @@
       "seller": "الفبای سفر پارسیان",
       "captured_at": "2026-08-05T00:22",
       "price": 29990000
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-11",
+      "flight_no": "7273",
+      "airline": "تابان",
+      "cabin": "economy",
+      "seller": "الفبای سفر پارسیان",
+      "captured_at": "2026-08-10T03:30",
+      "price": 37000000
     },
     {
       "route": "تهران-استانبول",
@@ -88424,6 +88464,16 @@
     {
       "route": "مشهد-تهران",
       "flight_date": "2026-08-10",
+      "flight_no": "6651",
+      "airline": "نسیم ایر",
+      "cabin": "economy",
+      "seller": "پرشین پرواز کویر",
+      "captured_at": "2026-08-10T03:30",
+      "price": 3000000
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-10",
       "flight_no": "7066",
       "airline": "کيش اير",
       "cabin": "economy",
@@ -93614,6 +93664,16 @@
     {
       "route": "نجف-تهران",
       "flight_date": "2026-08-11",
+      "flight_no": "7268",
+      "airline": "تابان",
+      "cabin": "economy",
+      "seller": "ره بال آسمان",
+      "captured_at": "2026-08-10T03:30",
+      "price": 17000000
+    },
+    {
+      "route": "نجف-تهران",
+      "flight_date": "2026-08-11",
       "flight_no": "7303",
       "airline": "سپهران",
       "cabin": "economy",
@@ -93821,7 +93881,7 @@
     "استانبول-تهران": {
       "median_abs_diff": 2500000,
       "mad_abs_diff": 1500000,
-      "sample_size": 967
+      "sample_size": 968
     },
     "اهواز-تهران": {
       "median_abs_diff": 575000,
@@ -93861,7 +93921,7 @@
     "تهران-استانبول": {
       "median_abs_diff": 3000000,
       "mad_abs_diff": 2000000,
-      "sample_size": 976
+      "sample_size": 978
     },
     "تهران-اهواز": {
       "median_abs_diff": 405849,
@@ -93949,9 +94009,9 @@
       "sample_size": 48
     },
     "مشهد-تهران": {
-      "median_abs_diff": 858891,
-      "mad_abs_diff": 464109,
-      "sample_size": 800
+      "median_abs_diff": 854700,
+      "mad_abs_diff": 465300,
+      "sample_size": 801
     },
     "مشهد-مسقط": {
       "median_abs_diff": null,
@@ -93959,9 +94019,9 @@
       "sample_size": 0
     },
     "نجف-تهران": {
-      "median_abs_diff": 1100000,
-      "mad_abs_diff": 600000,
-      "sample_size": 251
+      "median_abs_diff": 1093650,
+      "mad_abs_diff": 593650,
+      "sample_size": 252
     }
   }
 }
