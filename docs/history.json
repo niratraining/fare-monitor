@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T23:51",
+  "generated_at": "2026-08-10T01:29",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -15816,6 +15816,16 @@
       "flight_date": "2026-08-10",
       "flight_no": "718",
       "airline": "ايران اير",
+      "cabin": "business",
+      "seller": "",
+      "captured_at": "2026-08-10T01:28",
+      "price": 57886500
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "718",
+      "airline": "ايران اير",
       "cabin": "economy",
       "seller": "",
       "captured_at": "2026-08-04T17:06",
@@ -16080,6 +16090,16 @@
       "seller": "",
       "captured_at": "2026-08-09T08:40",
       "price": 12400000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "768",
+      "airline": "ايران اير",
+      "cabin": "business",
+      "seller": "",
+      "captured_at": "2026-08-10T01:28",
+      "price": 57886500
     },
     {
       "route": "استانبول-تهران",
@@ -70737,6 +70757,16 @@
       "flight_no": "3101",
       "airline": "فلای کیش",
       "cabin": "economy",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "captured_at": "2026-08-10T01:28",
+      "price": 4500000
+    },
+    {
+      "route": "کیش-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "3101",
+      "airline": "فلای کیش",
+      "cabin": "economy",
       "seller": "مهر آگین سیر کیش",
       "captured_at": "2026-08-09T06:53",
       "price": 8500000
@@ -93087,6 +93117,16 @@
       "flight_no": "6697",
       "airline": "نسیم ایر",
       "cabin": "economy",
+      "seller": "خیام گشت ایرانیان",
+      "captured_at": "2026-08-10T01:28",
+      "price": 17000000
+    },
+    {
+      "route": "نجف-تهران",
+      "flight_date": "2026-08-10",
+      "flight_no": "6697",
+      "airline": "نسیم ایر",
+      "cabin": "economy",
       "seller": "ریحان پرواز امین",
       "captured_at": "2026-08-04T12:21",
       "price": 20000000
@@ -93879,9 +93919,9 @@
       "sample_size": 142
     },
     "کیش-تهران": {
-      "median_abs_diff": 1352000,
-      "mad_abs_diff": 557000,
-      "sample_size": 45
+      "median_abs_diff": 1288000,
+      "mad_abs_diff": 547650,
+      "sample_size": 46
     },
     "مسقط-تهران": {
       "median_abs_diff": 1650000,
@@ -93919,9 +93959,9 @@
       "sample_size": 0
     },
     "نجف-تهران": {
-      "median_abs_diff": 1107900,
-      "mad_abs_diff": 607900,
-      "sample_size": 250
+      "median_abs_diff": 1100000,
+      "mad_abs_diff": 600000,
+      "sample_size": 251
     }
   }
 }
