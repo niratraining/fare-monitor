@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T23:23",
+  "generated_at": "2026-08-12T00:42",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -19864,6 +19864,16 @@
     {
       "route": "استانبول-تهران",
       "flight_date": "2026-08-12",
+      "flight_no": "7903",
+      "airline": "کاسپين",
+      "cabin": "economy",
+      "seller": "پرشین پرواز کویر",
+      "captured_at": "2026-08-12T00:41",
+      "price": 19000000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-12",
       "flight_no": "9215",
       "airline": "آوا",
       "cabin": "economy",
@@ -20610,6 +20620,16 @@
       "seller": "مهر آگین سیر کیش",
       "captured_at": "2026-08-11T21:27",
       "price": 17500000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-13",
+      "flight_no": "7903",
+      "airline": "کاسپين",
+      "cabin": "economy",
+      "seller": "مهر آگین سیر کیش",
+      "captured_at": "2026-08-12T00:41",
+      "price": 17000000
     },
     {
       "route": "استانبول-تهران",
@@ -52854,6 +52874,16 @@
     {
       "route": "تهران-استانبول",
       "flight_date": "2026-08-12",
+      "flight_no": "114",
+      "airline": "ماهان",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-12T00:41",
+      "price": 44594055
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-12",
       "flight_no": "116",
       "airline": "ماهان",
       "cabin": "economy",
@@ -57910,6 +57940,16 @@
       "seller": "",
       "captured_at": "2026-08-11T21:27",
       "price": 8420200
+    },
+    {
+      "route": "تهران-اهواز",
+      "flight_date": "2026-08-13",
+      "flight_no": "1826",
+      "airline": "جی اسکای",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-12T00:41",
+      "price": 8642200
     },
     {
       "route": "تهران-اهواز",
@@ -79507,6 +79547,16 @@
       "flight_no": "3102",
       "airline": "فلای کیش",
       "cabin": "economy",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "captured_at": "2026-08-12T00:41",
+      "price": 7300000
+    },
+    {
+      "route": "تهران-مشهد",
+      "flight_date": "2026-08-13",
+      "flight_no": "3102",
+      "airline": "فلای کیش",
+      "cabin": "economy",
       "seller": "مهر آگین سیر کیش",
       "captured_at": "2026-08-11T21:27",
       "price": 10800000
@@ -96960,6 +97010,16 @@
       "seller": "آسمان پرستاره کیش (تهران)",
       "captured_at": "2026-08-11T11:08",
       "price": 4000000
+    },
+    {
+      "route": "کیش-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "3101",
+      "airline": "فلای کیش",
+      "cabin": "economy",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "captured_at": "2026-08-12T00:41",
+      "price": 3500000
     },
     {
       "route": "کیش-تهران",
@@ -119384,6 +119444,16 @@
     {
       "route": "مشهد-تهران",
       "flight_date": "2026-08-12",
+      "flight_no": "3481",
+      "airline": "ايران اير",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-12T00:41",
+      "price": 3932500
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-12",
       "flight_no": "3497",
       "airline": "ايران اير",
       "cabin": "business",
@@ -119680,6 +119750,16 @@
       "seller": "",
       "captured_at": "2026-08-11T22:24",
       "price": 4173100
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "5841",
+      "airline": "وارش",
+      "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-12T00:41",
+      "price": 4573100
     },
     {
       "route": "مشهد-تهران",
@@ -128279,9 +128359,9 @@
       "sample_size": 24
     },
     "استانبول-تهران": {
-      "median_abs_diff": 2233300,
-      "mad_abs_diff": 1233300,
-      "sample_size": 1173
+      "median_abs_diff": 2233700,
+      "mad_abs_diff": 1233700,
+      "sample_size": 1174
     },
     "اهواز-تهران": {
       "median_abs_diff": 575000,
@@ -128321,7 +128401,7 @@
     "تهران-استانبول": {
       "median_abs_diff": 3000000,
       "mad_abs_diff": 2000000,
-      "sample_size": 1172
+      "sample_size": 1173
     },
     "تهران-اهواز": {
       "median_abs_diff": 405849,
@@ -128381,7 +128461,7 @@
     "کیش-تهران": {
       "median_abs_diff": 1000000,
       "mad_abs_diff": 500000,
-      "sample_size": 96
+      "sample_size": 97
     },
     "مسقط-تهران": {
       "median_abs_diff": 1609550,
@@ -128409,9 +128489,9 @@
       "sample_size": 62
     },
     "مشهد-تهران": {
-      "median_abs_diff": 751845,
-      "mad_abs_diff": 451845,
-      "sample_size": 986
+      "median_abs_diff": 750000,
+      "mad_abs_diff": 450000,
+      "sample_size": 988
     },
     "مشهد-مسقط": {
       "median_abs_diff": null,
