@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T00:42",
+  "generated_at": "2026-08-12T03:10",
   "history": [
     {
       "route": "استانبول-تبریز",
@@ -19047,6 +19047,16 @@
       "flight_no": "4804",
       "airline": "معراج",
       "cabin": "economy",
+      "seller": "",
+      "captured_at": "2026-08-12T03:10",
+      "price": 17216300
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "4804",
+      "airline": "معراج",
+      "cabin": "economy",
       "seller": "شهران گشت معراج",
       "captured_at": "2026-08-05T08:49",
       "price": 25222700
@@ -19080,6 +19090,16 @@
       "seller": "شهران گشت معراج",
       "captured_at": "2026-08-11T21:27",
       "price": 15102300
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "4804",
+      "airline": "معراج",
+      "cabin": "economy",
+      "seller": "شهران گشت معراج",
+      "captured_at": "2026-08-12T03:10",
+      "price": 16916300
     },
     {
       "route": "استانبول-تهران",
@@ -19400,6 +19420,16 @@
       "seller": "گسترش سیاحت اطلس",
       "captured_at": "2026-08-10T21:07",
       "price": 17000000
+    },
+    {
+      "route": "استانبول-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "6620",
+      "airline": "آتا",
+      "cabin": "economy",
+      "seller": "گسترش سیاحت اطلس",
+      "captured_at": "2026-08-12T03:10",
+      "price": 19000000
     },
     {
       "route": "استانبول-تهران",
@@ -54320,6 +54350,16 @@
       "seller": "تاپ تورز",
       "captured_at": "2026-08-11T21:27",
       "price": 25000000
+    },
+    {
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-13",
+      "flight_no": "5291",
+      "airline": "سروش ایر",
+      "cabin": "economy",
+      "seller": "تاپ تورز",
+      "captured_at": "2026-08-12T03:10",
+      "price": 23000000
     },
     {
       "route": "تهران-استانبول",
@@ -119066,6 +119106,16 @@
       "flight_date": "2026-08-12",
       "flight_no": "1036",
       "airline": "ماهان",
+      "cabin": "business",
+      "seller": "",
+      "captured_at": "2026-08-12T03:10",
+      "price": 10242738
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "1036",
+      "airline": "ماهان",
       "cabin": "economy",
       "seller": "",
       "captured_at": "2026-08-05T08:49",
@@ -120380,6 +120430,16 @@
       "seller": "ره بال آسمان",
       "captured_at": "2026-08-11T16:00",
       "price": 4000000
+    },
+    {
+      "route": "مشهد-تهران",
+      "flight_date": "2026-08-12",
+      "flight_no": "7705",
+      "airline": "آوا",
+      "cabin": "economy",
+      "seller": "ره بال آسمان",
+      "captured_at": "2026-08-12T03:10",
+      "price": 5000000
     },
     {
       "route": "مشهد-تهران",
@@ -128359,9 +128419,9 @@
       "sample_size": 24
     },
     "استانبول-تهران": {
-      "median_abs_diff": 2233700,
-      "mad_abs_diff": 1233700,
-      "sample_size": 1174
+      "median_abs_diff": 2200000,
+      "mad_abs_diff": 1200000,
+      "sample_size": 1177
     },
     "اهواز-تهران": {
       "median_abs_diff": 575000,
@@ -128489,9 +128549,9 @@
       "sample_size": 62
     },
     "مشهد-تهران": {
-      "median_abs_diff": 750000,
-      "mad_abs_diff": 450000,
-      "sample_size": 988
+      "median_abs_diff": 751845,
+      "mad_abs_diff": 451845,
+      "sample_size": 990
     },
     "مشهد-مسقط": {
       "median_abs_diff": null,
