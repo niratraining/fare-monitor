@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T16:22",
+  "generated_at": "2026-08-22T16:46",
   "stalest_captured_at": "2026-08-15T09:00",
   "flights": [
     {
@@ -7256,53 +7256,7 @@
       "closed": 0
     },
     {
-      "id": 113538,
-      "route": "اهواز-تهران",
-      "flight_date": "2026-08-23",
-      "airline": "فلای کیش",
-      "flight_no": "3117",
-      "dep_time": "21:00",
-      "arr_time": "22:00",
-      "airplane": "بوئینگ اِم دی",
-      "cabin": "economy",
-      "adult_price": "9,199,000",
-      "child_price": "9,199,000",
-      "infant_price": "1,500,000",
-      "seller": "آسمان پرستاره کیش (تهران)",
-      "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 18,
-        "count": 5,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113539,
-      "route": "اهواز-تهران",
-      "flight_date": "2026-08-23",
-      "airline": "فلای کیش",
-      "flight_no": "3117",
-      "dep_time": "21:00",
-      "arr_time": "22:00",
-      "airplane": "بوئینگ اِم دی",
-      "cabin": "business",
-      "adult_price": "16,189,480",
-      "child_price": "16,189,480",
-      "infant_price": "1,618,948",
-      "seller": "آسمان پرستاره کیش (تهران)",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 0,
-        "count": 1,
-        "low_sample": true
-      },
-      "closed": 0
-    },
-    {
-      "id": 113540,
+      "id": 113934,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
       "airline": "فلای کیش",
@@ -7316,7 +7270,7 @@
       "infant_price": "5,000,000",
       "seller": "مهر آگین سیر کیش",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
         "count": 1,
@@ -7325,30 +7279,30 @@
       "closed": 0
     },
     {
-      "id": 113535,
+      "id": 113935,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
-      "airline": "اروان",
-      "flight_no": "6709",
-      "dep_time": "22:50",
-      "arr_time": "00:20",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "7,800,000",
-      "child_price": "7,800,000",
-      "infant_price": "3,000,000",
-      "seller": "امید پرواز اوج",
+      "airline": "فلای کیش",
+      "flight_no": "3117",
+      "dep_time": "21:00",
+      "arr_time": "22:00",
+      "airplane": "بوئینگ اِم دی",
+      "cabin": "business",
+      "adult_price": "16,189,480",
+      "child_price": "16,189,480",
+      "infant_price": "1,618,948",
+      "seller": "آسمان پرستاره کیش (تهران)",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 5,
-        "low_sample": false
+        "count": 1,
+        "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 113536,
+      "id": 113931,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
       "airline": "اروان",
@@ -7362,16 +7316,39 @@
       "infant_price": "1,000,000",
       "seller": "امید پرواز مهر",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
-        "count": 5,
+        "pct": -1,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113537,
+      "id": 113932,
+      "route": "اهواز-تهران",
+      "flight_date": "2026-08-23",
+      "airline": "اروان",
+      "flight_no": "6709",
+      "dep_time": "22:50",
+      "arr_time": "00:20",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "7,800,000",
+      "child_price": "7,800,000",
+      "infant_price": "3,000,000",
+      "seller": "امید پرواز اوج",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -1,
+        "count": 4,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113933,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -7385,39 +7362,16 @@
       "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 2,
-        "count": 5,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113533,
-      "route": "اهواز-تهران",
-      "flight_date": "2026-08-23",
-      "airline": "زاگرس",
-      "flight_no": "4027",
-      "dep_time": "23:55",
-      "arr_time": "00:55",
-      "airplane": "بوئینگ اِم دی",
-      "cabin": "economy",
-      "adult_price": "6,838,100",
-      "child_price": "6,060,600",
-      "infant_price": "1,000,000",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": -12,
-        "count": 5,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113534,
+      "id": 113929,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
       "airline": "زاگرس",
@@ -7431,10 +7385,33 @@
       "infant_price": "1,200,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -1,
-        "count": 5,
+        "pct": -2,
+        "count": 4,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113930,
+      "route": "اهواز-تهران",
+      "flight_date": "2026-08-23",
+      "airline": "زاگرس",
+      "flight_no": "4027",
+      "dep_time": "23:55",
+      "arr_time": "00:55",
+      "airplane": "بوئینگ اِم دی",
+      "cabin": "economy",
+      "adult_price": "9,197,200",
+      "child_price": "8,065,900",
+      "infant_price": "1,200,000",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 18,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
@@ -8758,7 +8735,30 @@
       "closed": 0
     },
     {
-      "id": 113826,
+      "id": 113973,
+      "route": "اهواز-مشهد",
+      "flight_date": "2026-08-22",
+      "airline": "کاسپين",
+      "flight_no": "6913",
+      "dep_time": "23:50",
+      "arr_time": "01:35",
+      "airplane": "بوئینگ اِم دی",
+      "cabin": "business",
+      "adult_price": "14,213,529",
+      "child_price": "12,408,264",
+      "infant_price": "2,414,016",
+      "seller": "",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -11,
+        "count": 1,
+        "low_sample": true
+      },
+      "closed": 0
+    },
+    {
+      "id": 113974,
       "route": "اهواز-مشهد",
       "flight_date": "2026-08-22",
       "airline": "کاسپين",
@@ -8771,9 +8771,13 @@
       "child_price": "14,009,700",
       "infant_price": "2,785,700",
       "seller": "",
-      "seat_count": "3.0",
-      "captured_at": "2026-08-22T16:21",
-      "price_index": null,
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 12,
+        "count": 1,
+        "low_sample": true
+      },
       "closed": 0
     },
     {
@@ -10486,7 +10490,7 @@
       "closed": 0
     },
     {
-      "id": 112120,
+      "id": 113989,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "سپهران",
@@ -10499,17 +10503,17 @@
       "child_price": "19,800,000",
       "infant_price": "3,300,000",
       "seller": "",
-      "seat_count": "6.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "7.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 5,
+        "pct": 1,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112121,
+      "id": 113990,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "آوا",
@@ -10523,16 +10527,16 @@
       "infant_price": "4,400,000",
       "seller": "ره بال آسمان",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 5,
+        "pct": 1,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112122,
+      "id": 113988,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "ايران اير",
@@ -10541,21 +10545,21 @@
       "arr_time": "12:45",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "22,000,000",
-      "child_price": "22,000,000",
+      "adult_price": "21,500,000",
+      "child_price": "21,500,000",
       "infant_price": "4,000,000",
       "seller": "شریف گشت فرحان",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 5,
+        "pct": -2,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112118,
+      "id": 113986,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "کاسپين",
@@ -10564,21 +10568,21 @@
       "arr_time": "20:10",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "20,000,000",
-      "child_price": "20,000,000",
-      "infant_price": "2,000,000",
+      "adult_price": "20,900,000",
+      "child_price": "20,900,000",
+      "infant_price": "2,200,000",
       "seller": "پرشین پرواز کویر",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -9,
+        "pct": -5,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112119,
+      "id": 113987,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "کاسپين",
@@ -10587,21 +10591,21 @@
       "arr_time": "20:10",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "20,000,000",
-      "child_price": "20,000,000",
+      "adult_price": "22,000,000",
+      "child_price": "22,000,000",
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -9,
+        "pct": 1,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112123,
+      "id": 113991,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "کاسپين",
@@ -10615,7 +10619,7 @@
       "infant_price": "2,500,000",
       "seller": "پرشین پرواز کویر",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -12,
         "count": 1,
@@ -10624,7 +10628,7 @@
       "closed": 0
     },
     {
-      "id": 112124,
+      "id": 113992,
       "route": "بغداد-تهران",
       "flight_date": "2026-08-24",
       "airline": "کاسپين",
@@ -10638,7 +10642,7 @@
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 14,
         "count": 1,
@@ -12508,30 +12512,7 @@
       "closed": 0
     },
     {
-      "id": 111941,
-      "route": "تبریز-تهران",
-      "flight_date": "2026-08-24",
-      "airline": "آتا",
-      "flight_no": "5607",
-      "dep_time": "06:30",
-      "arr_time": "07:30",
-      "airplane": "بوئینگ اِم دی",
-      "cabin": "economy",
-      "adult_price": "8,876,439",
-      "child_price": "6,728,800",
-      "infant_price": "902,100",
-      "seller": "",
-      "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": -1,
-        "count": 3,
-        "low_sample": true
-      },
-      "closed": 0
-    },
-    {
-      "id": 111944,
+      "id": 113999,
       "route": "تبریز-تهران",
       "flight_date": "2026-08-24",
       "airline": "پويا",
@@ -12545,16 +12526,16 @@
       "infant_price": "738,100",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 1,
+        "pct": 0,
         "count": 3,
         "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 111942,
+      "id": 113997,
       "route": "تبریز-تهران",
       "flight_date": "2026-08-24",
       "airline": "آتا",
@@ -12568,7 +12549,7 @@
       "infant_price": "902,100",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -1,
         "count": 3,
@@ -12577,7 +12558,30 @@
       "closed": 0
     },
     {
-      "id": 111945,
+      "id": 114000,
+      "route": "تبریز-تهران",
+      "flight_date": "2026-08-24",
+      "airline": "ايران ايرتور",
+      "flight_no": "8029",
+      "dep_time": "19:00",
+      "arr_time": "20:10",
+      "airplane": "بوئینگ اِم دی",
+      "cabin": "economy",
+      "adult_price": "8,965,820",
+      "child_price": "7,623,497",
+      "infant_price": "901,882",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 0,
+        "count": 3,
+        "low_sample": true
+      },
+      "closed": 0
+    },
+    {
+      "id": 114001,
       "route": "تبریز-تهران",
       "flight_date": "2026-08-24",
       "airline": "ايران ايرتور",
@@ -12591,12 +12595,12 @@
       "infant_price": "1,574,320",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 111943,
+      "id": 113998,
       "route": "تبریز-تهران",
       "flight_date": "2026-08-24",
       "airline": "چابهار",
@@ -12610,9 +12614,9 @@
       "infant_price": "737,400",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 1,
+        "pct": 0,
         "count": 3,
         "low_sample": true
       },
@@ -15862,7 +15866,7 @@
       "closed": 0
     },
     {
-      "id": 112031,
+      "id": 114022,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "تابان",
@@ -15876,62 +15880,39 @@
       "infant_price": "5,000,000",
       "seller": "ره بال آسمان",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -3,
-        "count": 27,
+        "pct": 0,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112032,
+      "id": 114023,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "فلای کیش",
       "flight_no": "3287",
       "dep_time": "04:45",
-      "arr_time": "07:15",
+      "arr_time": "07:14",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
       "adult_price": "30,000,000",
       "child_price": "30,000,000",
       "infant_price": "3,000,000",
-      "seller": "آسمان پرستاره کیش (تهران)",
-      "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": -3,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112033,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "فلای کیش",
-      "flight_no": "3287",
-      "dep_time": "04:45",
-      "arr_time": "07:15",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "35,000,000",
-      "child_price": "35,000,000",
-      "infant_price": "3,500,000",
       "seller": "مهر آگین سیر کیش",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 13,
-        "count": 27,
+        "pct": 0,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112045,
+      "id": 114032,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "کاسپين",
@@ -15945,16 +15926,16 @@
       "infant_price": "990,000",
       "seller": "پادنا سیر گیتی",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 45,
-        "count": 27,
+        "pct": 50,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112020,
+      "id": 114009,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "ايران اير",
@@ -15963,21 +15944,21 @@
       "arr_time": "08:45",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "29,000,000",
-      "child_price": "29,000,000",
+      "adult_price": "28,000,000",
+      "child_price": "28,000,000",
       "infant_price": "4,000,000",
       "seller": "آدم و حوا",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -6,
-        "count": 27,
+        "pct": -7,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112021,
+      "id": 114010,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "ايران اير",
@@ -15991,16 +15972,16 @@
       "infant_price": "3,951,000",
       "seller": "",
       "seat_count": "1.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 41,
-        "count": 27,
+        "pct": 46,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112022,
+      "id": 114014,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "سروش ایر",
@@ -16014,16 +15995,39 @@
       "infant_price": "5,000,000",
       "seller": "تاپ تورز",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -5,
-        "count": 27,
+        "pct": -2,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112034,
+      "id": 114034,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "سروش ایر",
+      "flight_no": "5291",
+      "dep_time": "06:15",
+      "arr_time": "09:15",
+      "airplane": "AIRBUS A300",
+      "cabin": "business",
+      "adult_price": "50,000,000",
+      "child_price": "50,000,000",
+      "infant_price": "8,000,000",
+      "seller": "تاپ تورز",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 11,
+        "count": 5,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114024,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "آتا",
@@ -16037,16 +16041,62 @@
       "infant_price": "2,000,000",
       "seller": "گسترش سیاحت اطلس",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -3,
-        "count": 27,
+        "pct": 0,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112014,
+      "id": 114005,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "معراج",
+      "flight_no": "4805",
+      "dep_time": "07:15",
+      "arr_time": "10:00",
+      "airplane": "اِیرباس 300-600",
+      "cabin": "economy",
+      "adult_price": "27,304,900",
+      "child_price": "21,131,300",
+      "infant_price": "2,504,500",
+      "seller": "شهران گشت معراج",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -9,
+        "count": 25,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114006,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "معراج",
+      "flight_no": "4805",
+      "dep_time": "07:15",
+      "arr_time": "10:00",
+      "airplane": "اِیرباس 300-600",
+      "cabin": "economy",
+      "adult_price": "27,604,900",
+      "child_price": "21,431,300",
+      "infant_price": "2,504,500",
+      "seller": "",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -8,
+        "count": 25,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114007,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16059,17 +16109,17 @@
       "child_price": "22,256,300",
       "infant_price": "2,654,600",
       "seller": "شهران گشت معراج",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -7,
-        "count": 27,
+        "pct": -4,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112015,
+      "id": 114008,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16082,63 +16132,17 @@
       "child_price": "22,556,300",
       "infant_price": "2,654,600",
       "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -6,
-        "count": 27,
+        "pct": -3,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112016,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "معراج",
-      "flight_no": "4805",
-      "dep_time": "07:15",
-      "arr_time": "10:00",
-      "airplane": "اِیرباس 300-600",
-      "cabin": "economy",
-      "adult_price": "31,804,900",
-      "child_price": "24,506,200",
-      "infant_price": "2,954,600",
-      "seller": "شهران گشت معراج",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 3,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112017,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "معراج",
-      "flight_no": "4805",
-      "dep_time": "07:15",
-      "arr_time": "10:00",
-      "airplane": "اِیرباس 300-600",
-      "cabin": "economy",
-      "adult_price": "32,104,900",
-      "child_price": "24,806,200",
-      "infant_price": "2,954,600",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 4,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112040,
+      "id": 114028,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16151,17 +16155,17 @@
       "child_price": "34,256,300",
       "infant_price": "4,254,500",
       "seller": "شهران گشت معراج",
-      "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "3.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -6,
-        "count": 4,
+        "pct": -10,
+        "count": 5,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112041,
+      "id": 114029,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16174,17 +16178,17 @@
       "child_price": "34,556,300",
       "infant_price": "4,254,500",
       "seller": "",
-      "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "3.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -5,
-        "count": 4,
+        "pct": -9,
+        "count": 5,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112042,
+      "id": 114030,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16198,16 +16202,16 @@
       "infant_price": "4,754,600",
       "seller": "شهران گشت معراج",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 11,
-        "count": 4,
+        "pct": 10,
+        "count": 5,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112043,
+      "id": 114031,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -16221,16 +16225,16 @@
       "infant_price": "4,754,600",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 11,
-        "count": 4,
+        "count": 5,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112037,
+      "id": 114025,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "سپهران",
@@ -16243,17 +16247,17 @@
       "child_price": "31,500,000",
       "infant_price": "4,500,000",
       "seller": "",
-      "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 13,
-        "count": 27,
+        "pct": 17,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112023,
+      "id": 114015,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -16267,16 +16271,16 @@
       "infant_price": "2,614,500",
       "seller": "پینگو تریپ",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -3,
-        "count": 27,
+        "pct": 0,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112024,
+      "id": 114016,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -16285,21 +16289,21 @@
       "arr_time": "11:15",
       "airplane": "اِیرباس 300-600",
       "cabin": "economy",
-      "adult_price": "31,000,000",
-      "child_price": "31,000,000",
-      "infant_price": "3,100,000",
+      "adult_price": "30,000,000",
+      "child_price": "30,000,000",
+      "infant_price": "3,000,000",
       "seller": "مهر آگین سیر کیش",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 27,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112025,
+      "id": 114017,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -16308,21 +16312,21 @@
       "arr_time": "11:15",
       "airplane": "اِیرباس 300-600",
       "cabin": "economy",
-      "adult_price": "31,000,000",
-      "child_price": "31,000,000",
-      "infant_price": "3,100,000",
-      "seller": "آسمان پرستاره کیش (تهران)",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "adult_price": "30,800,000",
+      "child_price": "24,000,000",
+      "infant_price": "2,100,000",
+      "seller": "آسمان سفر بهاری",
+      "seat_count": "6.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
-        "count": 27,
+        "pct": 3,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112026,
+      "id": 114018,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -16331,21 +16335,21 @@
       "arr_time": "11:15",
       "airplane": "اِیرباس 300-600",
       "cabin": "economy",
-      "adult_price": "31,510,000",
+      "adult_price": "31,194,900",
       "child_price": "17,210,000",
       "infant_price": "2,895,000",
       "seller": "",
-      "seat_count": "2.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 2,
-        "count": 27,
+        "pct": 4,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112027,
+      "id": 114019,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -16354,44 +16358,21 @@
       "arr_time": "11:15",
       "airplane": "اِیرباس 300-600",
       "cabin": "economy",
-      "adult_price": "33,800,000",
-      "child_price": "26,000,000",
-      "infant_price": "2,100,000",
-      "seller": "آسمان سفر بهاری",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 9,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112028,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "قشم اير",
-      "flight_no": "2213",
-      "dep_time": "08:45",
-      "arr_time": "11:15",
-      "airplane": "اِیرباس 300-600",
-      "cabin": "economy",
-      "adult_price": "35,360,000",
+      "adult_price": "35,006,400",
       "child_price": "19,135,000",
       "infant_price": "3,280,000",
       "seller": "",
-      "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 14,
-        "count": 27,
+        "pct": 17,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112013,
+      "id": 114011,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "ايران ايرتور",
@@ -16404,17 +16385,17 @@
       "child_price": "24,359,100",
       "infant_price": "2,558,400",
       "seller": "",
-      "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "7.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -9,
-        "count": 27,
+        "pct": -6,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112036,
+      "id": 114004,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "ايران ايرتور",
@@ -16423,21 +16404,21 @@
       "arr_time": "15:30",
       "airplane": "اِیرباس 310",
       "cabin": "economy",
-      "adult_price": "31,145,000",
-      "child_price": "26,909,780",
-      "infant_price": "2,858,480",
+      "adult_price": "27,144,300",
+      "child_price": "23,509,185",
+      "infant_price": "2,458,410",
       "seller": "",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
-        "count": 27,
+        "pct": -9,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112029,
+      "id": 114020,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "تابان",
@@ -16451,16 +16432,16 @@
       "infant_price": "4,498,500",
       "seller": "الفبای سفر پارسیان",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -3,
-        "count": 27,
+        "pct": 0,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112030,
+      "id": 114021,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "تابان",
@@ -16469,21 +16450,21 @@
       "arr_time": "18:30",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "31,000,000",
-      "child_price": "31,000,000",
+      "adult_price": "32,000,000",
+      "child_price": "32,000,000",
       "infant_price": "3,000,000",
       "seller": "همنواز آسمان آبی",
-      "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
-        "count": 27,
+        "pct": 7,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112046,
+      "id": 114033,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "تابان",
@@ -16497,62 +16478,85 @@
       "infant_price": "6,750,000",
       "seller": "الفبای سفر پارسیان",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -5,
-        "count": 4,
+        "pct": -10,
+        "count": 5,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112044,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "ماهان",
-      "flight_no": "114",
-      "dep_time": "17:15",
-      "arr_time": "20:05",
-      "airplane": "",
-      "cabin": "economy",
-      "adult_price": "44,857,500",
-      "child_price": "35,151,500",
-      "infant_price": "3,917,500",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 45,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112035,
+      "id": 114002,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "ايران اير",
       "flight_no": "769",
       "dep_time": "17:30",
-      "arr_time": "20:00",
+      "arr_time": "20:50",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "30,000,000",
-      "child_price": "30,000,000",
-      "infant_price": "4,000,000",
-      "seller": "آدم و حوا",
-      "seat_count": "8.0",
-      "captured_at": "2026-08-22T11:58",
+      "adult_price": "26,872,500",
+      "child_price": "21,309,000",
+      "infant_price": "2,260,500",
+      "seller": "",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -3,
-        "count": 27,
+        "pct": -10,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112018,
+      "id": 114003,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "ايران اير",
+      "flight_no": "769",
+      "dep_time": "17:30",
+      "arr_time": "20:50",
+      "airplane": "",
+      "cabin": "economy",
+      "adult_price": "28,000,000",
+      "child_price": "28,000,000",
+      "infant_price": "4,000,000",
+      "seller": "آدم و حوا",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -7,
+        "count": 25,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114012,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "وارش",
+      "flight_no": "6846",
+      "dep_time": "20:00",
+      "arr_time": "23:00",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "29,000,000",
+      "child_price": "29,000,000",
+      "infant_price": "3,000,000",
+      "seller": "همنواز آسمان آبی",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -3,
+        "count": 25,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114013,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -16566,39 +16570,16 @@
       "infant_price": "2,700,000",
       "seller": "ریحان پرواز امین",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -6,
-        "count": 27,
+        "pct": -3,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112019,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "وارش",
-      "flight_no": "6846",
-      "dep_time": "20:00",
-      "arr_time": "23:00",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "29,000,000",
-      "child_price": "29,000,000",
-      "infant_price": "3,000,000",
-      "seller": "همنواز آسمان آبی",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": -6,
-        "count": 27,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 112038,
+      "id": 114026,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "آتا",
@@ -16611,17 +16592,17 @@
       "child_price": "35,000,000",
       "infant_price": "3,500,000",
       "seller": "گسترش سیاحت اطلس",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 13,
-        "count": 27,
+        "pct": 17,
+        "count": 25,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 112039,
+      "id": 114027,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -16630,12 +16611,12 @@
       "arr_time": "22:30",
       "airplane": "بوئینگ 737",
       "cabin": "premiumEconomy",
-      "adult_price": "38,110,000",
-      "child_price": "38,110,000",
-      "infant_price": "7,075,000",
+      "adult_price": "35,910,000",
+      "child_price": "35,910,000",
+      "infant_price": "6,635,000",
       "seller": "",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
@@ -21304,7 +21285,7 @@
       "closed": 0
     },
     {
-      "id": 113827,
+      "id": 113975,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-22",
       "airline": "کارون",
@@ -21315,10 +21296,10 @@
       "cabin": "economy",
       "adult_price": "7,925,456",
       "child_price": "6,349,714",
-      "infant_price": "1,094,660",
+      "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T16:21",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -12,
         "count": 1,
@@ -21327,7 +21308,7 @@
       "closed": 0
     },
     {
-      "id": 113828,
+      "id": 113976,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-22",
       "airline": "کارون",
@@ -21341,7 +21322,7 @@
       "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T16:21",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 14,
         "count": 1,
@@ -21350,7 +21331,7 @@
       "closed": 0
     },
     {
-      "id": 113516,
+      "id": 113954,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -21360,20 +21341,20 @@
       "airplane": "بوئینگ 733",
       "cabin": "economy",
       "adult_price": "7,653,506",
-      "child_price": "6,145,678",
+      "child_price": "6,271,100",
       "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -15,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113517,
+      "id": 113955,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -21387,16 +21368,39 @@
       "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113520,
+      "id": 113956,
+      "route": "تهران-اهواز",
+      "flight_date": "2026-08-23",
+      "airline": "کارون",
+      "flight_no": "2650",
+      "dep_time": "01:00",
+      "arr_time": "02:00",
+      "airplane": "بوئینگ 733",
+      "cabin": "economy",
+      "adult_price": "7,925,456",
+      "child_price": "6,349,714",
+      "infant_price": "1,117,000",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -12,
+        "count": 8,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113957,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -21406,20 +21410,20 @@
       "airplane": "بوئینگ 733",
       "cabin": "economy",
       "adult_price": "9,013,256",
-      "child_price": "7,165,564",
+      "child_price": "7,311,800",
       "infant_price": "1,117,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113518,
+      "id": 113958,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "اروان",
@@ -21428,44 +21432,44 @@
       "arr_time": "16:30",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "8,800,000",
-      "child_price": "8,800,000",
-      "infant_price": "1,500,000",
-      "seller": "امید پرواز مهر",
-      "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": -2,
-        "count": 7,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113519,
-      "route": "تهران-اهواز",
-      "flight_date": "2026-08-23",
-      "airline": "اروان",
-      "flight_no": "6708",
-      "dep_time": "15:00",
-      "arr_time": "16:30",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "8,800,000",
-      "child_price": "8,800,000",
+      "adult_price": "9,000,000",
+      "child_price": "9,000,000",
       "infant_price": "1,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -2,
-        "count": 7,
+        "pct": 0,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113521,
+      "id": 113959,
+      "route": "تهران-اهواز",
+      "flight_date": "2026-08-23",
+      "airline": "اروان",
+      "flight_no": "6708",
+      "dep_time": "15:00",
+      "arr_time": "16:30",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "9,000,000",
+      "child_price": "9,000,000",
+      "infant_price": "1,000,000",
+      "seller": "امید پرواز مهر",
+      "seat_count": "3.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 0,
+        "count": 8,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113960,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "زاگرس",
@@ -21478,17 +21482,17 @@
       "child_price": "8,065,900",
       "infant_price": "1,200,000",
       "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "seat_count": "6.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 2,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113523,
+      "id": 113962,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "فلای کیش",
@@ -21502,16 +21506,16 @@
       "infant_price": "1,500,000",
       "seller": "آسمان پرستاره کیش (تهران)",
       "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 2,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113522,
+      "id": 113961,
       "route": "تهران-اهواز",
       "flight_date": "2026-08-23",
       "airline": "زاگرس",
@@ -21525,10 +21529,10 @@
       "infant_price": "1,200,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 2,
-        "count": 7,
+        "count": 8,
         "low_sample": false
       },
       "closed": 0
@@ -23339,7 +23343,7 @@
       "closed": 0
     },
     {
-      "id": 113492,
+      "id": 113924,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "سپهران",
@@ -23353,16 +23357,16 @@
       "infant_price": "2,700,000",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 3,
+        "pct": 5,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113493,
+      "id": 113921,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -23371,21 +23375,21 @@
       "arr_time": "13:30",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "15,000,000",
-      "child_price": "14,900,000",
+      "adult_price": "14,500,000",
+      "child_price": "14,400,000",
       "infant_price": "2,000,000",
       "seller": "آتیان طلایی آروند",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 3,
+        "pct": 0,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113494,
+      "id": 113922,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -23399,16 +23403,16 @@
       "infant_price": "1,487,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 26,
+        "pct": 29,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113495,
+      "id": 113923,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -23422,16 +23426,16 @@
       "infant_price": "2,103,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 69,
+        "pct": 72,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113498,
+      "id": 113927,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -23445,7 +23449,7 @@
       "infant_price": "4,281,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 172,
         "count": 3,
@@ -23454,7 +23458,7 @@
       "closed": 0
     },
     {
-      "id": 113499,
+      "id": 113928,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -23468,7 +23472,7 @@
       "infant_price": "4,677,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 194,
         "count": 3,
@@ -23477,7 +23481,7 @@
       "closed": 0
     },
     {
-      "id": 113489,
+      "id": 113918,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "کاسپين",
@@ -23491,16 +23495,16 @@
       "infant_price": "1,500,000",
       "seller": "پرشین پرواز کویر",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -7,
+        "pct": -5,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113490,
+      "id": 113919,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "کاسپين",
@@ -23513,17 +23517,17 @@
       "child_price": "14,000,000",
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -7,
+        "pct": -5,
         "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113496,
+      "id": 113925,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "کاسپين",
@@ -23537,7 +23541,7 @@
       "infant_price": "1,500,000",
       "seller": "پرشین پرواز کویر",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -65,
         "count": 3,
@@ -23546,7 +23550,7 @@
       "closed": 0
     },
     {
-      "id": 113497,
+      "id": 113926,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "کاسپين",
@@ -23560,7 +23564,7 @@
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -63,
         "count": 3,
@@ -23569,7 +23573,7 @@
       "closed": 0
     },
     {
-      "id": 113491,
+      "id": 113920,
       "route": "تهران-بغداد",
       "flight_date": "2026-08-23",
       "airline": "آوا",
@@ -23583,9 +23587,9 @@
       "infant_price": "2,500,000",
       "seller": "ره بال آسمان",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -7,
+        "pct": -5,
         "count": 6,
         "low_sample": false
       },
@@ -25226,7 +25230,7 @@
       "closed": 0
     },
     {
-      "id": 112011,
+      "id": 113977,
       "route": "تهران-تفلیس",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -25235,21 +25239,21 @@
       "arr_time": "14:30",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "20,000,000",
-      "child_price": "20,000,000",
-      "infant_price": "2,000,000",
+      "adult_price": "21,000,000",
+      "child_price": "21,000,000",
+      "infant_price": "2,100,000",
       "seller": "آسمان پرستاره کیش (تهران)",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -5,
+        "pct": -16,
         "count": 2,
         "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 112012,
+      "id": 113978,
       "route": "تهران-تفلیس",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -25263,16 +25267,16 @@
       "infant_price": "899,000",
       "seller": "مهر آگین سیر کیش",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 35,
+        "pct": 9,
         "count": 2,
         "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 112010,
+      "id": 113979,
       "route": "تهران-تفلیس",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -25281,14 +25285,14 @@
       "arr_time": "18:30",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "17,000,000",
-      "child_price": "17,000,000",
-      "infant_price": "1,700,000",
+      "adult_price": "25,000,000",
+      "child_price": "25,000,000",
+      "infant_price": "2,500,000",
       "seller": "سفر دوستان قرن",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "3.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -24,
+        "pct": 9,
         "count": 2,
         "low_sample": true
       },
@@ -25758,36 +25762,13 @@
       "closed": 0
     },
     {
-      "id": 113541,
+      "id": 113911,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "وارش",
       "flight_no": "6800",
-      "dep_time": "08:15",
-      "arr_time": "10:45",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "25,000,000",
-      "child_price": "25,000,000",
-      "infant_price": "2,500,000",
-      "seller": "راه تمدن پارسیان",
-      "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": -17,
-        "count": 5,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113542,
-      "route": "تهران-دبی",
-      "flight_date": "2026-08-23",
-      "airline": "وارش",
-      "flight_no": "6800",
-      "dep_time": "08:15",
-      "arr_time": "10:45",
+      "dep_time": "08:45",
+      "arr_time": "11:15",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
       "adult_price": "25,669,800",
@@ -25795,16 +25776,16 @@
       "infant_price": "4,545,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -14,
-        "count": 5,
+        "pct": -16,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113547,
+      "id": 113916,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -25818,35 +25799,12 @@
       "infant_price": "11,505,800",
       "seller": "",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 113543,
-      "route": "تهران-دبی",
-      "flight_date": "2026-08-23",
-      "airline": "قشم اير",
-      "flight_no": "2210",
-      "dep_time": "09:50",
-      "arr_time": "12:30",
-      "airplane": "اِیرباس 320",
-      "cabin": "economy",
-      "adult_price": "30,000,000",
-      "child_price": "30,000,000",
-      "infant_price": "3,000,000",
-      "seller": "همنواز آسمان آبی",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 0,
-        "count": 5,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113544,
+      "id": 113912,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -25860,16 +25818,16 @@
       "infant_price": "4,000,000",
       "seller": "پینگو تریپ",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
-        "count": 5,
+        "pct": -2,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113545,
+      "id": 113913,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -25878,21 +25836,44 @@
       "arr_time": "12:30",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "31,609,800",
+      "adult_price": "30,000,000",
+      "child_price": "30,000,000",
+      "infant_price": "3,000,000",
+      "seller": "همنواز آسمان آبی",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -2,
+        "count": 4,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113914,
+      "route": "تهران-دبی",
+      "flight_date": "2026-08-23",
+      "airline": "قشم اير",
+      "flight_no": "2210",
+      "dep_time": "09:50",
+      "arr_time": "12:30",
+      "airplane": "اِیرباس 320",
+      "cabin": "economy",
+      "adult_price": "31,293,702",
       "child_price": "17,364,800",
       "infant_price": "2,884,000",
       "seller": "",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 5,
-        "count": 5,
+        "pct": 4,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113546,
+      "id": 113915,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -25901,21 +25882,21 @@
       "arr_time": "12:30",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "35,459,800",
+      "adult_price": "35,105,202",
       "child_price": "19,289,800",
       "infant_price": "3,269,000",
       "seller": "",
       "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 18,
-        "count": 5,
+        "pct": 17,
+        "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113548,
+      "id": 113917,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -25924,12 +25905,12 @@
       "arr_time": "12:30",
       "airplane": "اِیرباس 320",
       "cabin": "business",
-      "adult_price": "76,709,800",
+      "adult_price": "75,942,702",
       "child_price": "39,914,800",
       "infant_price": "7,394,000",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
@@ -26963,7 +26944,7 @@
       "closed": 0
     },
     {
-      "id": 111975,
+      "id": 113993,
       "route": "تهران-مسقط",
       "flight_date": "2026-08-24",
       "airline": "ماهان",
@@ -26972,21 +26953,21 @@
       "arr_time": "10:30",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "21,313,000",
-      "child_price": "17,380,500",
-      "infant_price": "1,608,000",
+      "adult_price": "25,383,000",
+      "child_price": "20,433,000",
+      "infant_price": "2,015,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -13,
+        "pct": -3,
         "count": 1,
         "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 111976,
+      "id": 113994,
       "route": "تهران-مسقط",
       "flight_date": "2026-08-24",
       "airline": "ماهان",
@@ -26995,67 +26976,21 @@
       "arr_time": "10:30",
       "airplane": "",
       "cabin": "economy",
-      "adult_price": "24,503,000",
-      "child_price": "19,773,000",
-      "infant_price": "1,927,000",
+      "adult_price": "26,263,000",
+      "child_price": "21,093,000",
+      "infant_price": "2,103,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 15,
+        "pct": 3,
         "count": 1,
         "low_sample": true
       },
       "closed": 0
     },
     {
-      "id": 111977,
-      "route": "تهران-مسقط",
-      "flight_date": "2026-08-24",
-      "airline": "ماهان",
-      "flight_no": "1129",
-      "dep_time": "07:30",
-      "arr_time": "10:30",
-      "airplane": "",
-      "cabin": "premiumEconomy",
-      "adult_price": "40,513,000",
-      "child_price": "32,455,500",
-      "infant_price": "3,258,000",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": -8,
-        "count": 1,
-        "low_sample": true
-      },
-      "closed": 0
-    },
-    {
-      "id": 111978,
-      "route": "تهران-مسقط",
-      "flight_date": "2026-08-24",
-      "airline": "ماهان",
-      "flight_no": "1129",
-      "dep_time": "07:30",
-      "arr_time": "10:30",
-      "airplane": "",
-      "cabin": "premiumEconomy",
-      "adult_price": "44,253,000",
-      "child_price": "35,260,500",
-      "infant_price": "3,632,000",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 9,
-        "count": 1,
-        "low_sample": true
-      },
-      "closed": 0
-    },
-    {
-      "id": 111979,
+      "id": 113995,
       "route": "تهران-مسقط",
       "flight_date": "2026-08-24",
       "airline": "ماهان",
@@ -27069,7 +27004,7 @@
       "infant_price": "4,248,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -8,
         "count": 1,
@@ -27078,7 +27013,7 @@
       "closed": 0
     },
     {
-      "id": 111980,
+      "id": 113996,
       "route": "تهران-مسقط",
       "flight_date": "2026-08-24",
       "airline": "ماهان",
@@ -27092,7 +27027,7 @@
       "infant_price": "4,721,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 9,
         "count": 1,
@@ -31116,7 +31051,7 @@
       "closed": 0
     },
     {
-      "id": 113505,
+      "id": 113907,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "سپهران",
@@ -31130,39 +31065,16 @@
       "infant_price": "2,700,000",
       "seller": "",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 8,
-        "count": 7,
+        "pct": -5,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113500,
-      "route": "تهران-نجف",
-      "flight_date": "2026-08-23",
-      "airline": "نسیم ایر",
-      "flight_no": "6696",
-      "dep_time": "07:00",
-      "arr_time": "07:30",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "12,000,000",
-      "child_price": "12,000,000",
-      "infant_price": "1,500,000",
-      "seller": "ریحان پرواز امین",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": -4,
-        "count": 7,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113501,
+      "id": 113904,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "نسیم ایر",
@@ -31176,16 +31088,39 @@
       "infant_price": "2,500,000",
       "seller": "خیام گشت ایرانیان",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -4,
-        "count": 7,
+        "pct": -16,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113507,
+      "id": 113905,
+      "route": "تهران-نجف",
+      "flight_date": "2026-08-23",
+      "airline": "نسیم ایر",
+      "flight_no": "6696",
+      "dep_time": "07:00",
+      "arr_time": "07:30",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "12,000,000",
+      "child_price": "12,000,000",
+      "infant_price": "1,500,000",
+      "seller": "ریحان پرواز امین",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -16,
+        "count": 6,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113909,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "ايران اير",
@@ -31199,22 +31134,22 @@
       "infant_price": "4,000,000",
       "seller": "شریف گشت فرحان",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 33,
-        "count": 7,
+        "pct": 28,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113502,
+      "id": 113906,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "فلای کیش",
       "flight_no": "3290",
-      "dep_time": "08:30",
-      "arr_time": "09:01",
+      "dep_time": "08:29",
+      "arr_time": "08:58",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
       "adult_price": "12,000,000",
@@ -31222,39 +31157,16 @@
       "infant_price": "1,200,000",
       "seller": "مهر آگین سیر کیش",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -4,
-        "count": 7,
+        "pct": -16,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113503,
-      "route": "تهران-نجف",
-      "flight_date": "2026-08-23",
-      "airline": "فلای کیش",
-      "flight_no": "3290",
-      "dep_time": "08:30",
-      "arr_time": "09:01",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "12,000,000",
-      "child_price": "12,000,000",
-      "infant_price": "1,200,000",
-      "seller": "آسمان پرستاره کیش (تهران)",
-      "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": -4,
-        "count": 7,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113504,
+      "id": 113910,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "آوا",
@@ -31263,21 +31175,21 @@
       "arr_time": "12:45",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "12,500,000",
-      "child_price": "12,500,000",
-      "infant_price": "2,000,000",
+      "adult_price": "25,000,000",
+      "child_price": "25,000,000",
+      "infant_price": "6,250,000",
       "seller": "ره بال آسمان",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "seat_count": "2.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 4,
-        "count": 7,
+        "pct": 100,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113506,
+      "id": 113908,
       "route": "تهران-نجف",
       "flight_date": "2026-08-23",
       "airline": "زاگرس",
@@ -31286,15 +31198,15 @@
       "arr_time": "17:30",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "15,000,000",
-      "child_price": "15,000,000",
+      "adult_price": "15,500,000",
+      "child_price": "15,500,000",
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 25,
-        "count": 7,
+        "pct": 24,
+        "count": 6,
         "low_sample": false
       },
       "closed": 0
@@ -33593,7 +33505,7 @@
       "closed": 0
     },
     {
-      "id": 113512,
+      "id": 113951,
       "route": "دبی-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -33607,16 +33519,16 @@
       "infant_price": "5,440,700",
       "seller": "",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 1,
+        "pct": -1,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113513,
+      "id": 113952,
       "route": "دبی-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -33630,12 +33542,35 @@
       "infant_price": "9,478,500",
       "seller": "",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 113508,
+      "id": 113947,
+      "route": "دبی-تهران",
+      "flight_date": "2026-08-23",
+      "airline": "قشم اير",
+      "flight_no": "2211",
+      "dep_time": "18:30",
+      "arr_time": "20:10",
+      "airplane": "اِیرباس 320",
+      "cabin": "economy",
+      "adult_price": "32,000,000",
+      "child_price": "32,000,000",
+      "infant_price": "3,000,000",
+      "seller": "همنواز آسمان آبی",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -2,
+        "count": 4,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113948,
       "route": "دبی-تهران",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -33649,16 +33584,16 @@
       "infant_price": "3,500,000",
       "seller": "پینگو تریپ",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 0,
+        "pct": -2,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113509,
+      "id": 113949,
       "route": "دبی-تهران",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -33667,67 +33602,44 @@
       "arr_time": "20:10",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "32,000,000",
-      "child_price": "32,000,000",
-      "infant_price": "3,000,000",
-      "seller": "همنواز آسمان آبی",
-      "seat_count": "4.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 0,
-        "count": 4,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113510,
-      "route": "دبی-تهران",
-      "flight_date": "2026-08-23",
-      "airline": "قشم اير",
-      "flight_no": "2211",
-      "dep_time": "18:30",
-      "arr_time": "20:10",
-      "airplane": "اِیرباس 320",
-      "cabin": "economy",
-      "adult_price": "32,065,600",
-      "child_price": "18,865,200",
-      "infant_price": "2,640,200",
-      "seller": "",
-      "seat_count": "6.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 0,
-        "count": 4,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113511,
-      "route": "دبی-تهران",
-      "flight_date": "2026-08-23",
-      "airline": "قشم اير",
-      "flight_no": "2211",
-      "dep_time": "18:30",
-      "arr_time": "20:10",
-      "airplane": "اِیرباس 320",
-      "cabin": "economy",
-      "adult_price": "33,450,300",
+      "adult_price": "33,115,797",
       "child_price": "19,557,500",
       "infant_price": "2,778,600",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 4,
+        "pct": 3,
         "count": 4,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113514,
+      "id": 113950,
+      "route": "دبی-تهران",
+      "flight_date": "2026-08-23",
+      "airline": "قشم اير",
+      "flight_no": "2211",
+      "dep_time": "18:30",
+      "arr_time": "20:10",
+      "airplane": "اِیرباس 320",
+      "cabin": "economy",
+      "adult_price": "34,486,650",
+      "child_price": "20,249,900",
+      "infant_price": "2,917,100",
+      "seller": "",
+      "seat_count": "7.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 7,
+        "count": 4,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113953,
       "route": "دبی-تهران",
       "flight_date": "2026-08-23",
       "airline": "قشم اير",
@@ -33736,17 +33648,17 @@
       "arr_time": "20:10",
       "airplane": "اِیرباس 320",
       "cabin": "business",
-      "adult_price": "80,436,700",
+      "adult_price": "79,632,333",
       "child_price": "43,050,700",
       "infant_price": "7,477,300",
       "seller": "",
-      "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "seat_count": "3.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 111969,
+      "id": 113980,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -33760,7 +33672,7 @@
       "infant_price": "2,500,000",
       "seller": "راه تمدن پارسیان",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -1,
         "count": 3,
@@ -33769,7 +33681,7 @@
       "closed": 0
     },
     {
-      "id": 111970,
+      "id": 113981,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -33782,8 +33694,8 @@
       "child_price": "25,408,100",
       "infant_price": "5,432,800",
       "seller": "",
-      "seat_count": "8.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "7.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 1,
         "count": 3,
@@ -33792,7 +33704,7 @@
       "closed": 0
     },
     {
-      "id": 111973,
+      "id": 113984,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "وارش",
@@ -33806,12 +33718,12 @@
       "infant_price": "10,403,200",
       "seller": "",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 111971,
+      "id": 113982,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "سپهران",
@@ -33824,8 +33736,8 @@
       "child_price": "28,800,000",
       "infant_price": "4,500,000",
       "seller": "",
-      "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "6.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -1,
         "count": 3,
@@ -33834,7 +33746,7 @@
       "closed": 0
     },
     {
-      "id": 111972,
+      "id": 113983,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "ايران ايرتور",
@@ -33847,8 +33759,8 @@
       "child_price": "28,257,500",
       "infant_price": "2,651,000",
       "seller": "",
-      "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 1,
         "count": 3,
@@ -33857,7 +33769,7 @@
       "closed": 0
     },
     {
-      "id": 111974,
+      "id": 113985,
       "route": "دبی-تهران",
       "flight_date": "2026-08-24",
       "airline": "ايران ايرتور",
@@ -33870,8 +33782,8 @@
       "child_price": "85,853,500",
       "infant_price": "9,427,000",
       "seller": "",
-      "seat_count": "2.0",
-      "captured_at": "2026-08-22T11:58",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
@@ -34710,7 +34622,7 @@
       "closed": 0
     },
     {
-      "id": 113823,
+      "id": 113972,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-22",
       "airline": "سپهران",
@@ -34724,12 +34636,12 @@
       "infant_price": "4,990,000",
       "seller": "",
       "seat_count": "1.0",
-      "captured_at": "2026-08-22T16:21",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 113553,
+      "id": 113967,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -34743,7 +34655,7 @@
       "infant_price": "1,833,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 11,
         "count": 5,
@@ -34752,7 +34664,7 @@
       "closed": 0
     },
     {
-      "id": 113554,
+      "id": 113968,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -34766,7 +34678,7 @@
       "infant_price": "2,256,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 28,
         "count": 5,
@@ -34775,7 +34687,7 @@
       "closed": 0
     },
     {
-      "id": 113556,
+      "id": 113970,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -34789,7 +34701,7 @@
       "infant_price": "6,204,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -8,
         "count": 1,
@@ -34798,7 +34710,7 @@
       "closed": 0
     },
     {
-      "id": 113557,
+      "id": 113971,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "ماهان",
@@ -34812,7 +34724,7 @@
       "infant_price": "6,909,000",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 9,
         "count": 1,
@@ -34821,7 +34733,7 @@
       "closed": 0
     },
     {
-      "id": 113549,
+      "id": 113963,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -34832,10 +34744,10 @@
       "cabin": "economy",
       "adult_price": "24,000,000",
       "child_price": "24,000,000",
-      "infant_price": "2,500,000",
-      "seller": "راه تمدن پارسیان",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "infant_price": "3,000,000",
+      "seller": "امید پرواز اوج",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
         "count": 5,
@@ -34844,7 +34756,7 @@
       "closed": 0
     },
     {
-      "id": 113550,
+      "id": 113964,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -34858,7 +34770,7 @@
       "infant_price": "2,500,000",
       "seller": "نو آوران پرواز کویر",
       "seat_count": "3.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
         "count": 5,
@@ -34867,7 +34779,7 @@
       "closed": 0
     },
     {
-      "id": 113551,
+      "id": 113965,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -34878,10 +34790,10 @@
       "cabin": "economy",
       "adult_price": "24,000,000",
       "child_price": "24,000,000",
-      "infant_price": "3,000,000",
-      "seller": "امید پرواز اوج",
-      "seat_count": "7.0",
-      "captured_at": "2026-08-22T15:42",
+      "infant_price": "2,500,000",
+      "seller": "راه تمدن پارسیان",
+      "seat_count": "8.0",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
         "count": 5,
@@ -34890,7 +34802,7 @@
       "closed": 0
     },
     {
-      "id": 113555,
+      "id": 113969,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "وارش",
@@ -34904,12 +34816,12 @@
       "infant_price": "4,848,700",
       "seller": "",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
     {
-      "id": 113552,
+      "id": 113966,
       "route": "مسقط-تهران",
       "flight_date": "2026-08-23",
       "airline": "سپهران",
@@ -34923,7 +34835,7 @@
       "infant_price": "4,990,000",
       "seller": "",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
         "count": 5,
@@ -36296,7 +36208,7 @@
       "closed": 0
     },
     {
-      "id": 113488,
+      "id": 113945,
       "route": "مسقط-مشهد",
       "flight_date": "2026-08-23",
       "airline": "سپهران",
@@ -36310,7 +36222,7 @@
       "infant_price": "4,990,000",
       "seller": "",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
@@ -36605,7 +36517,7 @@
       "closed": 0
     },
     {
-      "id": 112047,
+      "id": 114035,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36619,7 +36531,7 @@
       "infant_price": "2,553,200",
       "seller": "شهران گشت معراج",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -11,
         "count": 3,
@@ -36628,7 +36540,7 @@
       "closed": 0
     },
     {
-      "id": 112048,
+      "id": 114036,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36642,7 +36554,7 @@
       "infant_price": "2,553,200",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -9,
         "count": 3,
@@ -36651,7 +36563,7 @@
       "closed": 0
     },
     {
-      "id": 112049,
+      "id": 114037,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36665,7 +36577,7 @@
       "infant_price": "2,912,200",
       "seller": "شهران گشت معراج",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 10,
         "count": 3,
@@ -36674,7 +36586,7 @@
       "closed": 0
     },
     {
-      "id": 112050,
+      "id": 114038,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36688,7 +36600,7 @@
       "infant_price": "2,912,200",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 12,
         "count": 3,
@@ -36697,7 +36609,7 @@
       "closed": 0
     },
     {
-      "id": 112051,
+      "id": 114039,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36711,7 +36623,7 @@
       "infant_price": "5,068,200",
       "seller": "شهران گشت معراج",
       "seat_count": "8.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -50,
         "count": 3,
@@ -36720,7 +36632,7 @@
       "closed": 0
     },
     {
-      "id": 112052,
+      "id": 114040,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36734,7 +36646,7 @@
       "infant_price": "5,068,200",
       "seller": "",
       "seat_count": "8.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -50,
         "count": 3,
@@ -36743,7 +36655,7 @@
       "closed": 0
     },
     {
-      "id": 112053,
+      "id": 114041,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36757,7 +36669,7 @@
       "infant_price": "10,459,300",
       "seller": "شهران گشت معراج",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 99,
         "count": 3,
@@ -36766,7 +36678,7 @@
       "closed": 0
     },
     {
-      "id": 112054,
+      "id": 114042,
       "route": "مسکو-تهران",
       "flight_date": "2026-08-24",
       "airline": "معراج",
@@ -36780,7 +36692,7 @@
       "infant_price": "10,459,300",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 100,
         "count": 3,
@@ -37360,7 +37272,7 @@
       "closed": 0
     },
     {
-      "id": 113531,
+      "id": 113943,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "آتا",
@@ -37374,16 +37286,16 @@
       "infant_price": "1,780,000",
       "seller": "آوا نیک آسیا",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 1,
+        "pct": 3,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113532,
+      "id": 113944,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "آتا",
@@ -37397,16 +37309,16 @@
       "infant_price": "1,575,000",
       "seller": "آوا نیک آسیا",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 3,
+        "pct": 5,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113526,
+      "id": 113938,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -37420,16 +37332,16 @@
       "infant_price": "1,500,000",
       "seller": "همنواز آسمان آبی",
       "seat_count": "2.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -4,
+        "pct": -2,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113527,
+      "id": 113939,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -37443,16 +37355,16 @@
       "infant_price": "1,300,000",
       "seller": "امید پرواز مهر",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -4,
+        "pct": -2,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113528,
+      "id": 113940,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -37461,21 +37373,44 @@
       "arr_time": "17:00",
       "airplane": "فوکر 100",
       "cabin": "economy",
-      "adult_price": "6,900,000",
-      "child_price": "6,900,000",
+      "adult_price": "6,000,000",
+      "child_price": "6,000,000",
       "infant_price": "1,500,000",
       "seller": "پیک خورشید اهواز",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 13,
+        "pct": -2,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113529,
+      "id": 113941,
+      "route": "مشهد-اهواز",
+      "flight_date": "2026-08-23",
+      "airline": "کارون",
+      "flight_no": "2634",
+      "dep_time": "15:00",
+      "arr_time": "17:00",
+      "airplane": "فوکر 100",
+      "cabin": "economy",
+      "adult_price": "6,600,398",
+      "child_price": "5,601,700",
+      "infant_price": "1,117,000",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 10,
+        "count": 8,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 113942,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "کارون",
@@ -37489,39 +37424,16 @@
       "infant_price": "1,094,660",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 15,
+        "pct": 17,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113530,
-      "route": "مشهد-اهواز",
-      "flight_date": "2026-08-23",
-      "airline": "کارون",
-      "flight_no": "2634",
-      "dep_time": "15:00",
-      "arr_time": "17:00",
-      "airplane": "فوکر 100",
-      "cabin": "economy",
-      "adult_price": "11,985,008",
-      "child_price": "9,722,600",
-      "infant_price": "1,117,000",
-      "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-22T15:42",
-      "price_index": {
-        "pct": 96,
-        "count": 8,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 113524,
+      "id": 113936,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "اروان",
@@ -37535,16 +37447,16 @@
       "infant_price": "1,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -20,
+        "pct": -18,
         "count": 8,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 113525,
+      "id": 113937,
       "route": "مشهد-اهواز",
       "flight_date": "2026-08-23",
       "airline": "اروان",
@@ -37558,9 +37470,9 @@
       "infant_price": "1,000,000",
       "seller": "امید پرواز مهر",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -4,
+        "pct": -2,
         "count": 8,
         "low_sample": false
       },
@@ -44956,7 +44868,7 @@
       "closed": 0
     },
     {
-      "id": 113515,
+      "id": 113946,
       "route": "مشهد-مسقط",
       "flight_date": "2026-08-23",
       "airline": "سپهران",
@@ -44970,7 +44882,7 @@
       "infant_price": "4,990,000",
       "seller": "",
       "seat_count": "1.0",
-      "captured_at": "2026-08-22T15:42",
+      "captured_at": "2026-08-22T16:45",
       "price_index": null,
       "closed": 0
     },
@@ -45319,53 +45231,76 @@
       "closed": 0
     },
     {
-      "id": 111946,
+      "id": 114043,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
       "flight_no": "2236",
       "dep_time": "06:50",
-      "arr_time": "08:35",
+      "arr_time": "09:05",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "20,805,900",
+      "adult_price": "18,076,000",
+      "child_price": "14,226,000",
+      "infant_price": "1,575,000",
+      "seller": "پینگو تریپ",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": -18,
+        "count": 12,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114044,
+      "route": "نجف-تهران",
+      "flight_date": "2026-08-24",
+      "airline": "قشم اير",
+      "flight_no": "2236",
+      "dep_time": "06:50",
+      "arr_time": "09:05",
+      "airplane": "اِیرباس 320",
+      "cabin": "economy",
+      "adult_price": "20,597,841",
       "child_price": "11,296,600",
       "infant_price": "1,914,400",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": -5,
-        "count": 11,
+        "pct": -6,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111947,
+      "id": 114045,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
       "flight_no": "2236",
       "dep_time": "06:50",
-      "arr_time": "08:35",
+      "arr_time": "09:05",
       "airplane": "اِیرباس 320",
       "cabin": "economy",
-      "adult_price": "23,688,700",
+      "adult_price": "23,451,813",
       "child_price": "12,745,800",
       "infant_price": "2,191,800",
       "seller": "",
       "seat_count": "9.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 8,
-        "count": 11,
+        "pct": 7,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111958,
+      "id": 114056,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -45374,12 +45309,12 @@
       "arr_time": "08:35",
       "airplane": "اِیرباس 320",
       "cabin": "business",
-      "adult_price": "33,109,300",
+      "adult_price": "32,778,207",
       "child_price": "17,448,300",
       "infant_price": "3,141,600",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": -17,
         "count": 1,
@@ -45388,7 +45323,7 @@
       "closed": 0
     },
     {
-      "id": 111959,
+      "id": 114057,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "قشم اير",
@@ -45397,12 +45332,12 @@
       "arr_time": "08:35",
       "airplane": "اِیرباس 320",
       "cabin": "business",
-      "adult_price": "39,982,900",
+      "adult_price": "39,583,071",
       "child_price": "20,885,100",
       "infant_price": "3,829,000",
       "seller": "",
       "seat_count": "4.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 21,
         "count": 1,
@@ -45411,7 +45346,7 @@
       "closed": 0
     },
     {
-      "id": 111957,
+      "id": 114055,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "سپهران",
@@ -45425,16 +45360,16 @@
       "infant_price": "4,500,000",
       "seller": "",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 14,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111948,
+      "id": 114046,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "نسیم ایر",
@@ -45448,16 +45383,16 @@
       "infant_price": "2,500,000",
       "seller": "ریحان پرواز امین",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111949,
+      "id": 114047,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "نسیم ایر",
@@ -45471,16 +45406,16 @@
       "infant_price": "3,000,000",
       "seller": "خیام گشت ایرانیان",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111956,
+      "id": 114054,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "آوا",
@@ -45489,21 +45424,21 @@
       "arr_time": "16:00",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
-      "adult_price": "23,500,000",
-      "child_price": "23,500,000",
+      "adult_price": "23,000,000",
+      "child_price": "23,000,000",
       "infant_price": "4,000,000",
       "seller": "ره بال آسمان",
       "seat_count": "6.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
-        "pct": 7,
-        "count": 11,
+        "pct": 5,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111950,
+      "id": 114048,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "ساها",
@@ -45517,39 +45452,16 @@
       "infant_price": "21,900,000",
       "seller": "آتیان طلایی آروند",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111951,
-      "route": "نجف-تهران",
-      "flight_date": "2026-08-24",
-      "airline": "فلای کیش",
-      "flight_no": "3291",
-      "dep_time": "16:55",
-      "arr_time": "18:26",
-      "airplane": "بوئینگ 737",
-      "cabin": "economy",
-      "adult_price": "22,000,000",
-      "child_price": "22,000,000",
-      "infant_price": "2,000,000",
-      "seller": "مهر آگین سیر کیش",
-      "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
-      "price_index": {
-        "pct": 0,
-        "count": 11,
-        "low_sample": false
-      },
-      "closed": 0
-    },
-    {
-      "id": 111952,
+      "id": 114049,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "فلای کیش",
@@ -45563,39 +45475,39 @@
       "infant_price": "2,200,000",
       "seller": "آسمان پرستاره کیش (تهران)",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111953,
+      "id": 114050,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
-      "airline": "نسیم ایر",
-      "flight_no": "6699",
-      "dep_time": "21:50",
-      "arr_time": "23:20",
+      "airline": "فلای کیش",
+      "flight_no": "3291",
+      "dep_time": "16:55",
+      "arr_time": "18:26",
       "airplane": "بوئینگ 737",
       "cabin": "economy",
       "adult_price": "22,000,000",
       "child_price": "22,000,000",
-      "infant_price": "2,500,000",
-      "seller": "ریحان پرواز امین",
+      "infant_price": "2,000,000",
+      "seller": "مهر آگین سیر کیش",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111954,
+      "id": 114051,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "نسیم ایر",
@@ -45609,16 +45521,39 @@
       "infant_price": "3,000,000",
       "seller": "خیام گشت ایرانیان",
       "seat_count": "5.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
     },
     {
-      "id": 111955,
+      "id": 114052,
+      "route": "نجف-تهران",
+      "flight_date": "2026-08-24",
+      "airline": "نسیم ایر",
+      "flight_no": "6699",
+      "dep_time": "21:50",
+      "arr_time": "23:20",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "22,000,000",
+      "child_price": "22,000,000",
+      "infant_price": "2,500,000",
+      "seller": "ریحان پرواز امین",
+      "seat_count": "5.0",
+      "captured_at": "2026-08-22T16:45",
+      "price_index": {
+        "pct": 0,
+        "count": 12,
+        "low_sample": false
+      },
+      "closed": 0
+    },
+    {
+      "id": 114053,
       "route": "نجف-تهران",
       "flight_date": "2026-08-24",
       "airline": "زاگرس",
@@ -45632,10 +45567,10 @@
       "infant_price": "3,000,000",
       "seller": "امید پرواز اوج",
       "seat_count": "7.0",
-      "captured_at": "2026-08-22T11:58",
+      "captured_at": "2026-08-22T16:45",
       "price_index": {
         "pct": 0,
-        "count": 11,
+        "count": 12,
         "low_sample": false
       },
       "closed": 0
@@ -52661,6 +52596,24 @@
       "closed": 1
     },
     {
+      "id": 113538,
+      "route": "اهواز-تهران",
+      "flight_date": "2026-08-23",
+      "airline": "فلای کیش",
+      "flight_no": "3117",
+      "dep_time": "21:00",
+      "arr_time": "22:00",
+      "airplane": "بوئینگ اِم دی",
+      "cabin": "economy",
+      "adult_price": "9,199,000",
+      "child_price": "9,199,000",
+      "infant_price": "1,500,000",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T15:42",
+      "closed": 1
+    },
+    {
       "id": 112743,
       "route": "اهواز-تهران",
       "flight_date": "2026-08-23",
@@ -55163,21 +55116,21 @@
       "closed": 1
     },
     {
-      "id": 80038,
+      "id": 111941,
       "route": "تبریز-تهران",
       "flight_date": "2026-08-24",
-      "airline": "ايران ايرتور",
-      "flight_no": "8029",
-      "dep_time": "18:40",
-      "arr_time": "19:50",
+      "airline": "آتا",
+      "flight_no": "5607",
+      "dep_time": "06:30",
+      "arr_time": "07:30",
       "airplane": "بوئینگ اِم دی",
       "cabin": "economy",
-      "adult_price": "8,965,820",
-      "child_price": "7,623,497",
-      "infant_price": "901,882",
+      "adult_price": "8,876,439",
+      "child_price": "6,728,800",
+      "infant_price": "902,100",
       "seller": "",
-      "seat_count": "9.0",
-      "captured_at": "2026-08-18T05:29",
+      "seat_count": "7.0",
+      "captured_at": "2026-08-22T11:58",
       "closed": 1
     },
     {
@@ -58547,6 +58500,24 @@
       "closed": 1
     },
     {
+      "id": 112032,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "فلای کیش",
+      "flight_no": "3287",
+      "dep_time": "04:45",
+      "arr_time": "07:15",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "30,000,000",
+      "child_price": "30,000,000",
+      "infant_price": "3,000,000",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "seat_count": "4.0",
+      "captured_at": "2026-08-22T11:58",
+      "closed": 1
+    },
+    {
       "id": 109388,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
@@ -58565,21 +58536,21 @@
       "closed": 1
     },
     {
-      "id": 87986,
+      "id": 112025,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
-      "airline": "سروش ایر",
-      "flight_no": "5291",
-      "dep_time": "06:15",
-      "arr_time": "09:15",
-      "airplane": "AIRBUS A300",
-      "cabin": "business",
-      "adult_price": "55,000,000",
-      "child_price": "55,000,000",
-      "infant_price": "8,000,000",
-      "seller": "تاپ تورز",
+      "airline": "قشم اير",
+      "flight_no": "2213",
+      "dep_time": "08:45",
+      "arr_time": "11:15",
+      "airplane": "اِیرباس 300-600",
+      "cabin": "economy",
+      "adult_price": "31,000,000",
+      "child_price": "31,000,000",
+      "infant_price": "3,100,000",
+      "seller": "آسمان پرستاره کیش (تهران)",
       "seat_count": "5.0",
-      "captured_at": "2026-08-19T10:26",
+      "captured_at": "2026-08-22T11:58",
       "closed": 1
     },
     {
@@ -58619,6 +58590,24 @@
       "closed": 1
     },
     {
+      "id": 112044,
+      "route": "تهران-استانبول",
+      "flight_date": "2026-08-24",
+      "airline": "ماهان",
+      "flight_no": "114",
+      "dep_time": "17:15",
+      "arr_time": "20:05",
+      "airplane": "",
+      "cabin": "economy",
+      "adult_price": "44,857,500",
+      "child_price": "35,151,500",
+      "infant_price": "3,917,500",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T11:58",
+      "closed": 1
+    },
+    {
       "id": 70370,
       "route": "تهران-استانبول",
       "flight_date": "2026-08-24",
@@ -58633,24 +58622,6 @@
       "infant_price": "4,726,500",
       "seller": "",
       "seat_count": "5.0",
-      "captured_at": "2026-08-16T21:17",
-      "closed": 1
-    },
-    {
-      "id": 70360,
-      "route": "تهران-استانبول",
-      "flight_date": "2026-08-24",
-      "airline": "ايران اير",
-      "flight_no": "769",
-      "dep_time": "17:30",
-      "arr_time": "20:50",
-      "airplane": "فوکر 100",
-      "cabin": "economy",
-      "adult_price": "26,669,000",
-      "child_price": "21,147,000",
-      "infant_price": "2,244,000",
-      "seller": "",
-      "seat_count": "9.0",
       "captured_at": "2026-08-16T21:17",
       "closed": 1
     },
@@ -61661,6 +61632,24 @@
       "closed": 1
     },
     {
+      "id": 113541,
+      "route": "تهران-دبی",
+      "flight_date": "2026-08-23",
+      "airline": "وارش",
+      "flight_no": "6800",
+      "dep_time": "08:15",
+      "arr_time": "10:45",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "25,000,000",
+      "child_price": "25,000,000",
+      "infant_price": "2,500,000",
+      "seller": "راه تمدن پارسیان",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T15:42",
+      "closed": 1
+    },
+    {
       "id": 111612,
       "route": "تهران-دبی",
       "flight_date": "2026-08-23",
@@ -62071,6 +62060,42 @@
       "infant_price": "2,500,000",
       "seller": "نو آوران پرواز کویر",
       "seat_count": "2.0",
+      "captured_at": "2026-08-22T11:58",
+      "closed": 1
+    },
+    {
+      "id": 111977,
+      "route": "تهران-مسقط",
+      "flight_date": "2026-08-24",
+      "airline": "ماهان",
+      "flight_no": "1129",
+      "dep_time": "07:30",
+      "arr_time": "10:30",
+      "airplane": "",
+      "cabin": "premiumEconomy",
+      "adult_price": "40,513,000",
+      "child_price": "32,455,500",
+      "infant_price": "3,258,000",
+      "seller": "",
+      "seat_count": "9.0",
+      "captured_at": "2026-08-22T11:58",
+      "closed": 1
+    },
+    {
+      "id": 111978,
+      "route": "تهران-مسقط",
+      "flight_date": "2026-08-24",
+      "airline": "ماهان",
+      "flight_no": "1129",
+      "dep_time": "07:30",
+      "arr_time": "10:30",
+      "airplane": "",
+      "cabin": "premiumEconomy",
+      "adult_price": "44,253,000",
+      "child_price": "35,260,500",
+      "infant_price": "3,632,000",
+      "seller": "",
+      "seat_count": "9.0",
       "captured_at": "2026-08-22T11:58",
       "closed": 1
     },
@@ -65654,6 +65679,24 @@
       "seller": "",
       "seat_count": "8.0",
       "captured_at": "2026-08-20T07:10",
+      "closed": 1
+    },
+    {
+      "id": 113503,
+      "route": "تهران-نجف",
+      "flight_date": "2026-08-23",
+      "airline": "فلای کیش",
+      "flight_no": "3290",
+      "dep_time": "08:30",
+      "arr_time": "09:01",
+      "airplane": "بوئینگ 737",
+      "cabin": "economy",
+      "adult_price": "12,000,000",
+      "child_price": "12,000,000",
+      "infant_price": "1,200,000",
+      "seller": "آسمان پرستاره کیش (تهران)",
+      "seat_count": "1.0",
+      "captured_at": "2026-08-22T15:42",
       "closed": 1
     },
     {
